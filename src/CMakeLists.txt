@@ -17,6 +17,8 @@ qt_add_qml_module(FocusAssist9
     VERSION 1.0
     QML_FILES
         Main.qml
+        SOURCES
+        SOURCES focustimer.h focustimer.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

@@ -6,6 +6,7 @@ Window {
     visible: true
     title: qsTr("Focus Assist 9??")
     Text {
-        text: "Coming \"soon\" (in a few years)";
+        text: "FocusAssist9";
+        font.pointSize: 130;
     }
 }
