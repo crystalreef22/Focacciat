@@ -1,15 +1,16 @@
-#define nogui
-#ifndef nogui
+#define noguitest
+#ifndef noguitest
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #else
 #include <focustimer.h>
 #include <QDebug>
+#include <QCoreApplication>
 #endif
 
 int main(int argc, char *argv[])
 {
-#ifndef nogui
+#ifndef noguitest
     QGuiApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
@@ -23,7 +24,9 @@ int main(int argc, char *argv[])
 
     return app.exec();
 #else
-    FocusTimer ft;
-    qDebug() << ft.toString();
+    QCoreApplication app(argc, argv);
+    FocusTimer ft{10000};
+    ft.start(100);
+    return app.exec();
 #endif
 }

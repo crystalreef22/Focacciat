@@ -11,11 +11,16 @@ FocusTimer::FocusTimer(QObject *parent)
     connect(this, &QTimer::timeout, this, &FocusTimer::updateTimer);
 }
 
-QString FocusTimer::toString() {
-    return QString::number(_elapsedSecsSinceEpoch);
+FocusTimer::FocusTimer(long long timerLength)
+{
+    _elapsedMsSinceEpoch = QDateTime::currentMSecsSinceEpoch() + timerLength;
+    setTimerType(Qt::PreciseTimer);
+    connect(this, &QTimer::timeout, this, &FocusTimer::updateTimer);
 }
 
-
 void FocusTimer::updateTimer() {
-
+    const long long currentMs = QDateTime::currentMSecsSinceEpoch();
+    const long long elapsedMs = _elapsedMsSinceEpoch - currentMs;
+    emit timerUpdated(elapsedMs);
+    qDebug() << elapsedMs;
 }

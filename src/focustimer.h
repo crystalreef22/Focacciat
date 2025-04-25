@@ -10,6 +10,7 @@ public:
     Q_PROPERTY(TimerStatus timerStatus MEMBER _running NOTIFY runningChanged)
 
     explicit FocusTimer(QObject *parent = nullptr);
+    explicit FocusTimer(long long timerLength);
 
     enum class TimerStatus {
         Running,
@@ -24,12 +25,13 @@ public slots:
 
 signals:
     void runningChanged();
+    void timerUpdated(long long elapsedMs);
 
 private:
     void updateTimer();
 
     TimerStatus _running = TimerStatus::Paused;
-    long long _elapsedSecsSinceEpoch = 0; //temptest
+    long long _elapsedMsSinceEpoch;
 
 };
 
