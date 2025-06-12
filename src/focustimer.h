@@ -10,7 +10,7 @@ class FocusTimer
 public:
     Q_PROPERTY(TimerStatus timerStatus MEMBER _running NOTIFY runningChanged)
 
-    explicit FocusTimer(QTimer *timer, QObject *parent = nullptr);
+    explicit FocusTimer(QObject *parent = nullptr);
 
     enum class TimerStatus {
         Running,
@@ -32,7 +32,7 @@ private:
 
     TimerStatus _running = TimerStatus::Paused;
     long long _elapsedMsSinceEpoch;
-    QTimer* timer;
+    QTimer _timer;
 
 };
 

@@ -4,11 +4,10 @@
 #include <QDateTime>
 
 
-FocusTimer::FocusTimer(QTimer *timer, QObject *parent)
+FocusTimer::FocusTimer(QObject *parent)
 {
-    timer = timer;
-    timer->setTimerType(Qt::PreciseTimer);
-    connect(timer, &QTimer::timeout, this, &FocusTimer::updateTimer);
+    _timer.setTimerType(Qt::PreciseTimer);
+    connect(&_timer, &QTimer::timeout, this, &FocusTimer::updateTimer);
 }
 
 void FocusTimer::updateTimer() {
@@ -19,6 +18,6 @@ void FocusTimer::updateTimer() {
 
 void FocusTimer::start(long long timerLength) {
     _elapsedMsSinceEpoch = QDateTime::currentMSecsSinceEpoch() + timerLength;
-    timer->start(100);
+    _timer.start(100);
     updateTimer();
 }
