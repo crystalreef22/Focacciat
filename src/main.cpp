@@ -1,17 +1,18 @@
-#define noguitest
 #ifndef noguitest
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #else
-#include <focustimer.h>
 #include <QDebug>
 #include <QCoreApplication>
 #endif
+#include <focustimer.h>
 
 int main(int argc, char *argv[])
 {
 #ifndef noguitest
     QGuiApplication app(argc, argv);
+
+    qmlRegisterType<FocusTimer>("FocusAssist9", 1, 0, "FocusTimer");
 
     QQmlApplicationEngine engine;
     QObject::connect(

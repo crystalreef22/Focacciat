@@ -3,14 +3,14 @@
 
 #include <QTimer>
 
-class FocusTimer : public QTimer
+class FocusTimer
+    : public QObject
 {
     Q_OBJECT
 public:
     Q_PROPERTY(TimerStatus timerStatus MEMBER _running NOTIFY runningChanged)
 
-    explicit FocusTimer(QObject *parent = nullptr);
-    explicit FocusTimer(long long timerLength);
+    explicit FocusTimer(QTimer *timer, QObject *parent = nullptr);
 
     enum class TimerStatus {
         Running,
@@ -19,9 +19,9 @@ public:
     };
     Q_ENUM(TimerStatus)
 
-    QString toString();
 
 public slots:
+    void start(long long timerLength);
 
 signals:
     void runningChanged();
@@ -32,6 +32,7 @@ private:
 
     TimerStatus _running = TimerStatus::Paused;
     long long _elapsedMsSinceEpoch;
+    QTimer* timer;
 
 };
 
