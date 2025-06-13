@@ -1,20 +1,25 @@
-#ifndef noguitest
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-#else
-#include <QDebug>
-#include <QCoreApplication>
-#endif
-#include <focustimer.h>
+
+#include <QQmlContext>
+
+#include "todolist.h"
+#include "focustimer.h"
+#include "todomodel.h"
 
 int main(int argc, char *argv[])
 {
-#ifndef noguitest
     QGuiApplication app(argc, argv);
 
     qmlRegisterType<FocusTimer>("FocusAssist9", 1, 0, "FocusTimer");
+    qmlRegisterType<TodoModel>("Todo", 1, 0, "TodoModel");
+    qmlRegisterUncreatableType<TodoList>("Todo", 1, 0, "TodoList",
+        QStringLiteral("TodoList should not be created in QML"));
+
+    TodoList todoList;
 
     QQmlApplicationEngine engine;
+    engine.rootContext()->setContextProperty(QStringLiteral("todoList"), &todoList);
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreationFailed,
@@ -24,10 +29,4 @@ int main(int argc, char *argv[])
     engine.loadFromModule("FocusAssist9", "Main");
 
     return app.exec();
-#else
-    QCoreApplication app(argc, argv);
-    FocusTimer ft{10000};
-    ft.start(100);
-    return app.exec();
-#endif
 }
