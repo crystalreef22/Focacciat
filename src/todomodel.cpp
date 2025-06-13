@@ -4,6 +4,7 @@
 TodoModel::TodoModel(QObject *parent)
     : QAbstractListModel(parent)
     , _list(nullptr)
+    , _activeItem()
 {}
 
 int TodoModel::rowCount(const QModelIndex &parent) const
@@ -57,6 +58,17 @@ bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int rol
         return false;
     case ActiveRole:
         item.active = value.toBool();
+        if (item.active) {
+            if (_activeItem.isValid()) {
+                TodoItem oldActive = _list->items().at(_activeItem.row());
+                oldActive.active = false;
+                _list->setItemAt(_activeItem.row(), oldActive);
+                emit dataChanged(_activeItem, _activeItem, {ActiveRole});
+            }
+            _activeItem = TodoModel::createIndex(index.row(), 0);
+        } else {
+            _activeItem = QModelIndex();
+        }
         break;
     }
 

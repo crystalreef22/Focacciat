@@ -38,8 +38,10 @@ public:
     void setList(TodoList *list);
 
 
+
 private:
     TodoList *_list;
+    QModelIndex _activeItem;
 };
 
 #endif // TODOMODEL_H
