@@ -17,8 +17,7 @@ bool TodoList::setItemAt(int index, const TodoItem &item)
     const TodoItem &oldItem = _items.at(index);
     if (item.done == oldItem.done && item.description == oldItem.description &&
             item.timeElapsed == oldItem.timeElapsed
-        && item.timeEstimate == oldItem.timeEstimate
-        && item.active == oldItem.active) {
+        && item.timeEstimate == oldItem.timeEstimate ) {
         return false;
     }
 
@@ -32,7 +31,6 @@ void TodoList::appendItem()
 
     TodoItem item;
     item.done = false;
-    item.active = false;
     item.timeEstimate = 0;
     item.timeElapsed = 0;
     _items.append(item);

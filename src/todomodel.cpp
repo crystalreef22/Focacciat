@@ -1,4 +1,5 @@
 #include "todomodel.h"
+#include <QDebug>
 #include "todolist.h"
 
 TodoModel::TodoModel(QObject *parent)
@@ -33,7 +34,7 @@ QVariant TodoModel::data(const QModelIndex &index, int role) const
     case TimeElapsedRole:
         return QVariant(item.timeElapsed);
     case ActiveRole:
-        return QVariant(item.active);
+        return index == _activeItem;
     }
 
     return QVariant();
@@ -57,19 +58,17 @@ bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int rol
     case TimeElapsedRole:
         return false;
     case ActiveRole:
-        item.active = value.toBool();
-        if (item.active) {
-            if (_activeItem.isValid()) {
-                TodoItem oldActive = _list->items().at(_activeItem.row());
-                oldActive.active = false;
-                _list->setItemAt(_activeItem.row(), oldActive);
-                emit dataChanged(_activeItem, _activeItem, {ActiveRole});
-            }
+        if (value.toBool()) {
+            const QModelIndex oldActive = _activeItem;
             _activeItem = TodoModel::createIndex(index.row(), 0);
+            if (oldActive.isValid()) {
+                emit dataChanged(oldActive, oldActive, {ActiveRole});
+            }
         } else {
             _activeItem = QModelIndex();
         }
-        break;
+        emit dataChanged(index, index, {ActiveRole});
+        return true;
     }
 
     if (_list->setItemAt(index.row(), item)) {
