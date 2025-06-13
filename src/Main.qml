@@ -27,8 +27,9 @@ Window {
             onClicked: ft.start(10000);
             text: "START";
         }
-        TodoList {
 
+        TodoList {
+            labelText: "today's tasks"
         }
     }
 

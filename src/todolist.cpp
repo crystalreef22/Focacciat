@@ -15,7 +15,10 @@ bool TodoList::setItemAt(int index, const TodoItem &item)
 {
     if (index < 0 || index >= _items.size()) return false;
     const TodoItem &oldItem = _items.at(index);
-    if (item.done == oldItem.done && item.description == oldItem.description) {
+    if (item.done == oldItem.done && item.description == oldItem.description &&
+            item.timeElapsed == oldItem.timeElapsed
+        && item.timeEstimate == oldItem.timeEstimate
+        && item.active == oldItem.active) {
         return false;
     }
 
@@ -29,6 +32,9 @@ void TodoList::appendItem()
 
     TodoItem item;
     item.done = false;
+    item.active = false;
+    item.timeEstimate = 0;
+    item.timeElapsed = 0;
     _items.append(item);
 
     emit postItemAppended();

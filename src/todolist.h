@@ -7,6 +7,9 @@
 struct TodoItem {
     bool done;
     QString description;
+    long long timeEstimate;
+    long long timeElapsed;
+    bool active;
 };
 
 class TodoList : public QObject

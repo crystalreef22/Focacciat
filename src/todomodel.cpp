@@ -27,6 +27,12 @@ QVariant TodoModel::data(const QModelIndex &index, int role) const
         return QVariant(item.done);
     case DescriptionRole:
         return QVariant(item.description);
+    case TimeEstimateRole:
+        return QVariant(item.timeEstimate);
+    case TimeElapsedRole:
+        return QVariant(item.timeElapsed);
+    case ActiveRole:
+        return QVariant(item.active);
     }
 
     return QVariant();
@@ -43,6 +49,14 @@ bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int rol
         break;
     case DescriptionRole:
         item.description = value.toString();
+        break;
+    case TimeEstimateRole:
+        item.timeEstimate = value.toLongLong();
+        break;
+    case TimeElapsedRole:
+        return false;
+    case ActiveRole:
+        item.active = value.toBool();
         break;
     }
 
@@ -67,6 +81,9 @@ QHash<int, QByteArray> TodoModel::roleNames() const
     QHash<int, QByteArray> names;
     names[DoneRole] = "done";
     names[DescriptionRole] = "description";
+    names[TimeEstimateRole] = "timeEstimate";
+    names[TimeElapsedRole] = "timeElapsed";
+    names[ActiveRole] = "active";
     return names;
 }
 

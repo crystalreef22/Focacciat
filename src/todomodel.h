@@ -2,6 +2,7 @@
 #define TODOMODEL_H
 
 #include <QAbstractListModel>
+#include <QModelIndex>
 
 class TodoList;
 
@@ -15,7 +16,10 @@ public:
 
     enum {
         DoneRole = Qt::UserRole,
-        DescriptionRole
+        DescriptionRole,
+        TimeEstimateRole,
+        TimeElapsedRole,
+        ActiveRole
     };
 
     // Basic functionality:
@@ -32,6 +36,7 @@ public:
 
     TodoList *list() const;
     void setList(TodoList *list);
+
 
 private:
     TodoList *_list;

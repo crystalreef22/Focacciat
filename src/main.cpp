@@ -19,6 +19,7 @@ int main(int argc, char *argv[])
     TodoList todoList;
 
     QQmlApplicationEngine engine;
+    // make todoList available to qml
     engine.rootContext()->setContextProperty(QStringLiteral("todoList"), &todoList);
     QObject::connect(
         &engine,
