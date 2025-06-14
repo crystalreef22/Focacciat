@@ -5,5 +5,15 @@ FormatUtils::FormatUtils(QObject *parent)
 {}
 
 QString FormatUtils::msToTime(long long ms) {
-    return QString::number(ms);
+    QString negative = ms >= -1000 ? "" : "-";
+    long long totalSecs = abs(ms / 1000 + (ms>0));
+    long long s = totalSecs % 60;
+    long long m = (totalSecs / 60) % 60;
+    long long h = (totalSecs / 60 / 60);
+    return QString("%5%1:%2:%3")
+        .arg(h, 2, 10, QChar('0'))
+        .arg(m, 2, 10, QChar('0'))
+        .arg(s, 2, 10, QChar('0'))
+        .arg(negative)
+    ;
 }
