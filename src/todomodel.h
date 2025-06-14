@@ -18,7 +18,7 @@ public:
         DoneRole = Qt::UserRole,
         DescriptionRole,
         TimeEstimateRole,
-        TimeElapsedRole,
+        TimeRemainingRole,
         ActiveRole
     };
     Q_ENUM(Roles);

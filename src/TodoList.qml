@@ -47,7 +47,7 @@ ColumnLayout {
                         implicitWidth: 80;
                     }
                     Text {
-                        text: model.timeElapsed
+                        text: model.timeRemaining
                     }
                 }
             }
