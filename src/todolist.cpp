@@ -38,10 +38,10 @@ qsizetype TodoList::getActiveIndex() const {
 
 void TodoList::setActiveIndex(qsizetype index) {
     long long startTime{0};
+    _activeIndex = index;
     if (activeItemExists()) {
         startTime = getActiveItem().timeElapsed;
     }
-    _activeIndex = index;
     _lastStartEpoch = QDateTime::currentMSecsSinceEpoch() - startTime;
     _timer.start(100);
 }

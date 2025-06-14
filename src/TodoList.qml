@@ -47,6 +47,9 @@ ColumnLayout {
                         implicitWidth: 80;
                     }
                     Text {
+                        text: model.timeRemaining
+                    }
+                    Text {
                         text: FormatUtils.msToTime(model.timeRemaining)
                     }
                 }
