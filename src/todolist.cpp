@@ -6,12 +6,39 @@ TodoList::TodoList(QObject *parent)
     //_items.append( {true, QStringLiteral("testtest1") });
 }
 
-QVector<TodoItem> TodoList::items() const
+// private
+void TodoList::removeItem(qsizetype index) {
+    _items.removeAt(index);
+    if (_activeIndex > index) --_activeIndex;
+    else if (_activeIndex == index) _activeIndex = -1;
+}
+
+// public
+
+const QVector<TodoItem>& TodoList::getItems() const
 {
     return _items;
 }
 
-bool TodoList::setItemAt(int index, const TodoItem &item)
+
+// precondition: an item is active
+const TodoItem& TodoList::getActiveItem() const {
+    return _items.at(_activeIndex);
+}
+
+bool TodoList::activeItemExists() const {
+    return _activeIndex >= 0 && _activeIndex < _items.size();
+}
+
+qsizetype TodoList::getActiveIndex() const {
+    return _activeIndex;
+}
+
+void TodoList::setActiveIndex(qsizetype index) {
+    _activeIndex = index;
+}
+
+bool TodoList::setItemAt(qsizetype index, const TodoItem &item)
 {
     if (index < 0 || index >= _items.size()) return false;
     const TodoItem &oldItem = _items.at(index);
@@ -40,11 +67,11 @@ void TodoList::appendItem()
 
 void TodoList::removeCompletedItems()
 {
-    for (int i = 0; i < _items.size(); ) {
+    for (qsizetype i = 0; i < _items.size(); ) {
         if (_items.at(i).done) {
             emit preItemRemoved(i);
 
-            _items.removeAt(i);
+            removeItem(i);
 
             emit postItemRemoved();
         } else {

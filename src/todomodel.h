@@ -14,13 +14,14 @@ class TodoModel : public QAbstractListModel
 public:
     explicit TodoModel(QObject *parent = nullptr);
 
-    enum {
+    enum Roles {
         DoneRole = Qt::UserRole,
         DescriptionRole,
         TimeEstimateRole,
         TimeElapsedRole,
         ActiveRole
     };
+    Q_ENUM(Roles);
 
     // Basic functionality:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -39,9 +40,10 @@ public:
 
 
 
+
+
 private:
     TodoList *_list;
-    QModelIndex _activeItem;
 };
 
 #endif // TODOMODEL_H

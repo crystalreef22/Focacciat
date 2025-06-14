@@ -5,8 +5,12 @@
 TodoModel::TodoModel(QObject *parent)
     : QAbstractListModel(parent)
     , _list(nullptr)
-    , _activeItem()
-{}
+{
+    connect(_list, &TodoList::timeElapsedUpdated, this, [=](int index) {
+        const auto modelIdx = TodoModel::createIndex(index, 0);
+        emit dataChanged(modelIdx, modelIdx, {ActiveRole});
+    });
+}
 
 int TodoModel::rowCount(const QModelIndex &parent) const
 {
@@ -15,7 +19,7 @@ int TodoModel::rowCount(const QModelIndex &parent) const
     if (parent.isValid() || !_list)
         return 0;
 
-    return _list->items().size();
+    return _list->getItems().size();
 }
 
 QVariant TodoModel::data(const QModelIndex &index, int role) const
@@ -23,7 +27,7 @@ QVariant TodoModel::data(const QModelIndex &index, int role) const
     if (!index.isValid() || !_list)
         return QVariant();
 
-    const TodoItem item = _list->items().at(index.row());
+    const TodoItem item = _list->getItems().at(index.row());
     switch (role) {
     case DoneRole:
         return QVariant(item.done);
@@ -34,7 +38,7 @@ QVariant TodoModel::data(const QModelIndex &index, int role) const
     case TimeElapsedRole:
         return QVariant(item.timeElapsed);
     case ActiveRole:
-        return index == _activeItem;
+        return _list->getActiveIndex() == index.row();
     }
 
     return QVariant();
@@ -44,7 +48,7 @@ bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int rol
 {
     if (!_list) return false;
 
-    TodoItem item = _list->items().at(index.row());
+    TodoItem item = _list->getItems().at(index.row());
     switch (role) {
     case DoneRole:
         item.done = value.toBool();
@@ -56,17 +60,16 @@ bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int rol
         item.timeEstimate = value.toLongLong();
         break;
     case TimeElapsedRole:
+        qWarning() << "todomodel.cpp: tried to time travel";
         return false;
     case ActiveRole:
-        if (value.toBool()) {
-            const QModelIndex oldActive = _activeItem;
-            _activeItem = TodoModel::createIndex(index.row(), 0);
-            if (oldActive.isValid()) {
-                emit dataChanged(oldActive, oldActive, {ActiveRole});
-            }
-        } else {
-            _activeItem = QModelIndex();
+        if (_list->getActiveIndex() == index.row()) {
+            _list->setActiveIndex(-1);
+            return true;
         }
+        const auto oldIndex = TodoModel::createIndex(_list->getActiveIndex(), 0);
+        _list->setActiveIndex(index.row());
+        emit dataChanged(oldIndex, oldIndex, {ActiveRole});
         emit dataChanged(index, index, {ActiveRole});
         return true;
     }
@@ -113,7 +116,7 @@ void TodoModel::setList(TodoList *list)
 
     if (_list) {
         connect(_list, &TodoList::preItemAppended, this, [=]() {
-            const int index = _list->items().size();
+            const int index = _list->getItems().size();
             beginInsertRows(QModelIndex(), index, index);
         });
         connect(_list, &TodoList::postItemAppended, this, [=]() {

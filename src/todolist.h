@@ -17,16 +17,23 @@ class TodoList : public QObject
 public:
     explicit TodoList(QObject *parent = nullptr);
 
-    QVector<TodoItem> items() const;
+    const QVector<TodoItem>& getItems() const;
 
-    bool setItemAt(int index, const TodoItem &item);
+    bool setItemAt(qsizetype index, const TodoItem &item);
+
+    const TodoItem& getActiveItem() const;
+    bool activeItemExists() const;
+    qsizetype getActiveIndex() const;
+    void setActiveIndex(qsizetype index);
 
 signals:
     void preItemAppended();
     void postItemAppended();
 
-    void preItemRemoved(int index);
+    void preItemRemoved(qsizetype index);
     void postItemRemoved();
+
+    void timeElapsedUpdated(qsizetype index);
 
 public slots:
     void appendItem();
@@ -34,6 +41,9 @@ public slots:
 
 private:
     QVector<TodoItem> _items;
+    qsizetype _activeIndex{-1};
+
+    void removeItem(qsizetype index);
 };
 
 #endif // TODOLIST_H
