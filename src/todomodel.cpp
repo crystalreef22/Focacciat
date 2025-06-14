@@ -5,12 +5,7 @@
 TodoModel::TodoModel(QObject *parent)
     : QAbstractListModel(parent)
     , _list(nullptr)
-{
-    connect(_list, &TodoList::timeElapsedUpdated, this, [=](int index) {
-        const auto modelIdx = TodoModel::createIndex(index, 0);
-        emit dataChanged(modelIdx, modelIdx, {ActiveRole});
-    });
-}
+{ }
 
 int TodoModel::rowCount(const QModelIndex &parent) const
 {
@@ -127,6 +122,10 @@ void TodoModel::setList(TodoList *list)
         });
         connect(_list, &TodoList::postItemRemoved, this, [=]() {
             endRemoveRows();
+        });
+        connect(_list, &TodoList::timeElapsedUpdated, this, [=](int index) {
+            const auto modelIdx = TodoModel::createIndex(index, 0);
+            emit dataChanged(modelIdx, modelIdx, {ActiveRole});
         });
     }
     endResetModel();

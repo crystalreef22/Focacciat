@@ -1,4 +1,5 @@
 #include "todolist.h"
+#include <QDateTime>
 
 TodoList::TodoList(QObject *parent)
     : QObject{parent}
@@ -36,6 +37,7 @@ qsizetype TodoList::getActiveIndex() const {
 
 void TodoList::setActiveIndex(qsizetype index) {
     _activeIndex = index;
+    _lastStartEpoch = QDateTime::currentMSecsSinceEpoch();
 }
 
 bool TodoList::setItemAt(qsizetype index, const TodoItem &item)
@@ -78,4 +80,9 @@ void TodoList::removeCompletedItems()
             i++;
         }
     }
+}
+
+void TodoList::updateTimeElapsed() {
+    _items[_activeIndex].timeElapsed = QDateTime::currentMSecsSinceEpoch() - _lastStartEpoch;
+    emit timeElapsedUpdated(_activeIndex);
 }

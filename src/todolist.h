@@ -26,6 +26,8 @@ public:
     qsizetype getActiveIndex() const;
     void setActiveIndex(qsizetype index);
 
+    void updateTimeElapsed();
+
 signals:
     void preItemAppended();
     void postItemAppended();
@@ -42,6 +44,7 @@ public slots:
 private:
     QVector<TodoItem> _items;
     qsizetype _activeIndex{-1};
+    long long _lastStartEpoch;
 
     void removeItem(qsizetype index);
 };
