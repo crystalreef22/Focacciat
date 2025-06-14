@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QVector>
+#include <QTimer>
 
 struct TodoItem {
     bool done;
@@ -45,6 +46,8 @@ private:
     QVector<TodoItem> _items;
     qsizetype _activeIndex{-1};
     long long _lastStartEpoch;
+
+    QTimer _timer;
 
     void removeItem(qsizetype index);
 };

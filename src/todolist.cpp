@@ -5,6 +5,7 @@ TodoList::TodoList(QObject *parent)
     : QObject{parent}
 {
     //_items.append( {true, QStringLiteral("testtest1") });
+    connect(&_timer, &QTimer::timeout, this, &TodoList::updateTimeElapsed);
 }
 
 // private
@@ -36,8 +37,13 @@ qsizetype TodoList::getActiveIndex() const {
 }
 
 void TodoList::setActiveIndex(qsizetype index) {
+    long long startTime{0};
+    if (activeItemExists()) {
+        startTime = getActiveItem().timeElapsed;
+    }
     _activeIndex = index;
-    _lastStartEpoch = QDateTime::currentMSecsSinceEpoch();
+    _lastStartEpoch = QDateTime::currentMSecsSinceEpoch() - startTime;
+    _timer.start(100);
 }
 
 bool TodoList::setItemAt(qsizetype index, const TodoItem &item)
@@ -83,6 +89,9 @@ void TodoList::removeCompletedItems()
 }
 
 void TodoList::updateTimeElapsed() {
-    _items[_activeIndex].timeElapsed = QDateTime::currentMSecsSinceEpoch() - _lastStartEpoch;
-    emit timeElapsedUpdated(_activeIndex);
+    if (activeItemExists()) {
+        _items[_activeIndex].timeElapsed = QDateTime::currentMSecsSinceEpoch() - _lastStartEpoch;
+        emit timeElapsedUpdated(_activeIndex);
+        qInfo() << _items[_activeIndex].timeElapsed;
+    }
 }

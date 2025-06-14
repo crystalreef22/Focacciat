@@ -125,7 +125,7 @@ void TodoModel::setList(TodoList *list)
         });
         connect(_list, &TodoList::timeElapsedUpdated, this, [=](int index) {
             const auto modelIdx = TodoModel::createIndex(index, 0);
-            emit dataChanged(modelIdx, modelIdx, {ActiveRole});
+            emit dataChanged(modelIdx, modelIdx, {TimeElapsedRole});
         });
     }
     endResetModel();
