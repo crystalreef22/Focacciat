@@ -4,7 +4,6 @@
 #include <QQmlContext>
 
 #include "todolist.h"
-#include "focustimer.h"
 #include "todomodel.h"
 #include "formatutils.h"
 
@@ -12,7 +11,6 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-    qmlRegisterType<FocusTimer>("FocusAssist9", 1, 0, "FocusTimer");
     qmlRegisterType<TodoModel>("Todo", 1, 0, "TodoModel");
     qmlRegisterUncreatableType<TodoList>("Todo", 1, 0, "TodoList",
         QStringLiteral("TodoList should not be created in QML"));

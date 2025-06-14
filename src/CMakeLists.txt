@@ -18,7 +18,7 @@ qt_add_qml_module(FocusAssist9
     QML_FILES
         Main.qml
         SOURCES
-        SOURCES focustimer.h focustimer.cpp
+        SOURCES
         QML_FILES
         QML_FILES TodoList.qml
         SOURCES todolist.h todolist.cpp

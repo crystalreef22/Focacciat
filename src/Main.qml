@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Controls
-import FocusAssist9 1.0
 
 Window {
     id: root
@@ -23,20 +22,10 @@ Window {
             id: tmtx;
             font.pointSize: 20;
         }
-        Button {
-            onClicked: ft.start(10000);
-            text: "START";
-        }
 
         TodoList {
             labelText: "today's tasks"
         }
     }
 
-    FocusTimer {
-        id: ft
-        onTimerUpdated: {
-            tmtx.text = Math.ceil(elapsedMs/10)*10;
-        }
-    }
 }
