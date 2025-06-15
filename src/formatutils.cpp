@@ -5,8 +5,9 @@ FormatUtils::FormatUtils(QObject *parent)
 {}
 
 QString FormatUtils::msToTime(long long ms) {
-    QString negative = ms >= -1000 ? "" : "-";
-    long long totalSecs = abs(ms / 1000 + (ms>0));
+    QString negative = ms >= -1000 ? "" : "\u2212";
+    long long totalSecs = abs((ms+(ms>0)*999) / 1000);
+
     long long s = totalSecs % 60;
     long long m = (totalSecs / 60) % 60;
     long long h = (totalSecs / 60 / 60);

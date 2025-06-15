@@ -53,7 +53,12 @@ bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int rol
         break;
     case TimeEstimateRole:
         item.timeEstimate = value.toLongLong();
-        break;
+        if (_list->setItemAt(index.row(), item)) {
+            emit dataChanged(index, index, {role});
+            emit dataChanged(index, index, {TimeRemainingRole});
+            return true;
+        }
+        return false;
     case TimeRemainingRole:
         qWarning() << "todomodel.cpp: tried to time travel";
         return false;
