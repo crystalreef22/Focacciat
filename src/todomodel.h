@@ -19,6 +19,7 @@ public:
         DescriptionRole,
         TimeEstimateRole,
         TimeRemainingRole,
+        TimeElapsedRole,
         ActiveRole
     };
     Q_ENUM(Roles);

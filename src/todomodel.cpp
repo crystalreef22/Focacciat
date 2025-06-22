@@ -32,6 +32,8 @@ QVariant TodoModel::data(const QModelIndex &index, int role) const
         return QVariant(item.timeEstimate);
     case TimeRemainingRole:
         return QVariant(item.timeEstimate - item.timeElapsed);
+    case TimeElapsedRole:
+        return QVariant(item.timeElapsed);
     case ActiveRole:
         return _list->getActiveIndex() == index.row();
     }
@@ -62,6 +64,9 @@ bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int rol
     case TimeRemainingRole:
         qWarning() << "todomodel.cpp: tried to time travel";
         return false;
+    case TimeElapsedRole:
+        item.timeElapsed = value.toLongLong();
+        _list->updateTimeElapsed(index.row());
     case ActiveRole:
         if (_list->getActiveIndex() == index.row()) {
             _list->setActiveIndex(-1);
@@ -97,6 +102,7 @@ QHash<int, QByteArray> TodoModel::roleNames() const
     names[DescriptionRole] = "description";
     names[TimeEstimateRole] = "timeEstimate";
     names[TimeRemainingRole] = "timeRemaining";
+    names[TimeElapsedRole] = "timeElapsed";
     names[ActiveRole] = "active";
     return names;
 }

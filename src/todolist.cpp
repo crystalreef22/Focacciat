@@ -95,3 +95,8 @@ void TodoList::updateTimeElapsed() {
         qInfo() << _items[_activeIndex].timeElapsed;
     }
 }
+bool TodoList::setTimeElapsed(qsizetype index, long long value) {
+    if (index < 0 || index >= _items.size()) return false;
+    if
+    return true;
+}

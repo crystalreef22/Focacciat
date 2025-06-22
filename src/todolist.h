@@ -28,6 +28,7 @@ public:
     void setActiveIndex(qsizetype index);
 
     void updateTimeElapsed();
+    bool setTimeElapsed(qsizetype index, long long value);
 
 signals:
     void preItemAppended();
