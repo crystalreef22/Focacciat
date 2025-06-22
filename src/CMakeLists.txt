@@ -27,6 +27,7 @@ qt_add_qml_module(FocusAssist9
         SOURCES
         SOURCES
         SOURCES formatutils.h formatutils.cpp
+        SOURCES todoitem.h todoitem.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

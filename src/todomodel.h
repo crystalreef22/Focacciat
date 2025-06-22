@@ -4,12 +4,14 @@
 #include <QAbstractListModel>
 #include <QModelIndex>
 
+#include "todoitem.h"
+
 class TodoList;
 
 class TodoModel : public QAbstractListModel
 {
     Q_OBJECT
-    Q_PROPERTY(TodoList *list READ list WRITE setList)
+    Q_PROPERTY(QVector *list READ list WRITE setList)
 
 public:
     explicit TodoModel(QObject *parent = nullptr);
@@ -36,15 +38,13 @@ public:
 
     virtual QHash<int, QByteArray> roleNames() const override;
 
-    TodoList *list() const;
-    void setList(TodoList *list);
 
 
 
 
 
 private:
-    TodoList *_list;
+    QVector<TodoItem *> _list;
 };
 
 #endif // TODOMODEL_H

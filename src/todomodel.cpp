@@ -4,38 +4,37 @@
 
 TodoModel::TodoModel(QObject *parent)
     : QAbstractListModel(parent)
-    , _list(nullptr)
-{ }
+{}
 
 int TodoModel::rowCount(const QModelIndex &parent) const
 {
     // For list models only the root node (an invalid parent) should return the list's size. For all
     // other (valid) parents, rowCount() should return 0 so that it does not become a tree model.
-    if (parent.isValid() || !_list)
+    if (parent.isValid())
         return 0;
 
-    return _list->getItems().size();
+    return _list.size();
 }
 
 QVariant TodoModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid() || !_list)
+    if (!index.isValid())
         return QVariant();
 
-    const TodoItem item = _list->getItems().at(index.row());
+    const TodoItem* const item = _list.at(index.row());
     switch (role) {
     case DoneRole:
-        return QVariant(item.done);
+        return QVariant(item->done);
     case DescriptionRole:
-        return QVariant(item.description);
+        return QVariant(item->description);
     case TimeEstimateRole:
-        return QVariant(item.timeEstimate);
+        return QVariant(item->timeEstimate);
     case TimeRemainingRole:
-        return QVariant(item.timeEstimate - item.timeElapsed);
+        return QVariant(item->timeEstimate - item->timeElapsed);
     case TimeElapsedRole:
-        return QVariant(item.timeElapsed);
+        return QVariant(item->timeElapsed);
     case ActiveRole:
-        return _list->getActiveIndex() == index.row();
+        return _activeIndex == index;
     }
 
     return QVariant();
@@ -43,19 +42,17 @@ QVariant TodoModel::data(const QModelIndex &index, int role) const
 
 bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if (!_list) return false;
-
-    TodoItem item = _list->getItems().at(index.row());
+    const TodoItem* item = _list.at(index.row());
     switch (role) {
     case DoneRole:
-        item.done = value.toBool();
+        item->done = value.toBool();
         break;
     case DescriptionRole:
-        item.description = value.toString();
+        item->description = value.toString();
         break;
     case TimeEstimateRole:
-        item.timeEstimate = value.toLongLong();
-        if (_list->setItemAt(index.row(), item)) {
+        item->timeEstimate = value.toLongLong();
+        if (_list.setItemAt(index.row(), item)) {
             emit dataChanged(index, index, {role});
             emit dataChanged(index, index, {TimeRemainingRole});
             return true;
@@ -65,24 +62,21 @@ bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int rol
         qWarning() << "todomodel.cpp: tried to time travel";
         return false;
     case TimeElapsedRole:
-        item.timeElapsed = value.toLongLong();
-        _list->updateTimeElapsed(index.row());
+        item->timeElapsed = value.toLongLong();
+        item->updateTimeElapsed();
     case ActiveRole:
-        if (_list->getActiveIndex() == index.row()) {
-            _list->setActiveIndex(-1);
+        if (_activeIndex == index) {
+            _activeIndex = -1;
             return true;
         }
-        const auto oldIndex = TodoModel::createIndex(_list->getActiveIndex(), 0);
-        _list->setActiveIndex(index.row());
+        const auto oldIndex = _activeIndex;
+        _activeIndex = index;
         emit dataChanged(oldIndex, oldIndex, {ActiveRole});
         emit dataChanged(index, index, {ActiveRole});
         return true;
     }
-
-    if (_list->setItemAt(index.row(), item)) {
-        emit dataChanged(index, index, {role});
-        return true;
-    }
+    return true;
+    // TODO: make it return based on whether changed
     return false;
 }
 
@@ -107,10 +101,6 @@ QHash<int, QByteArray> TodoModel::roleNames() const
     return names;
 }
 
-TodoList *TodoModel::list() const
-{
-    return _list;
-}
 
 void TodoModel::setList(TodoList *list)
 {
