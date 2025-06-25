@@ -10,7 +10,7 @@ class TodoItem : public QObject
     Q_PROPERTY(QString description READ description WRITE setDescription NOTIFY descriptionChanged FINAL)
     Q_PROPERTY(long long timeEstimate READ timeEstimate WRITE setTimeEstimate NOTIFY timeEstimateChanged FINAL)
     Q_PROPERTY(long long timeElapsed READ timeElapsed WRITE setTimeElapsed NOTIFY timeElapsedChanged FINAL)
-    Q_PROPERTY(long long timeLeft READ timeLeft NOTIFY timeLeftChanged FINAL)
+    Q_PROPERTY(long long timeRemaining READ timeRemaining NOTIFY timeRemainingChanged FINAL)
 public:
     explicit TodoItem(QObject *parent = nullptr);
 
@@ -18,7 +18,7 @@ public:
     QString description() const;
     long long timeEstimate() const;
     long long timeElapsed() const;
-    long long timeLeft() const;
+    long long timeRemaining() const;
 
     void setDone(bool value);
     void setDescription(QString value);
@@ -30,7 +30,7 @@ signals:
     void descriptionChanged();
     void timeEstimateChanged();
     void timeElapsedChanged();
-    void timeLeftChanged();
+    void timeRemainingChanged();
 
 public slots:
     void updateTimer();

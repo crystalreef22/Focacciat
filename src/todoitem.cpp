@@ -1,4 +1,5 @@
 #include <QDateTime>
+#include <QDebug>
 
 #include "todoitem.h"
 
@@ -10,7 +11,7 @@ bool TodoItem::done() const { return _done; }
 QString TodoItem::description() const { return _description; }
 long long TodoItem::timeEstimate() const { return _timeEstimate; }
 long long TodoItem::timeElapsed() const { return _timeElapsed; }
-long long TodoItem::timeLeft() const {
+long long TodoItem::timeRemaining() const {
     return _timeEstimate - _timeElapsed;
 }
 
@@ -27,14 +28,14 @@ void TodoItem::setDescription(QString value){
 void TodoItem::setTimeEstimate(long long value){
     _timeEstimate = value;
     emit timeEstimateChanged();
-    emit timeElapsedChanged();
+    emit timeRemainingChanged();
 }
 
 void TodoItem::setTimeElapsed(long long value){
     _timeElapsed = value;
     resetTimer();
-    emit timeEstimateChanged();
     emit timeElapsedChanged();
+    emit timeRemainingChanged();
 }
 
 void TodoItem::resetTimer() {
@@ -43,5 +44,7 @@ void TodoItem::resetTimer() {
 
 void TodoItem::updateTimer() {
     _timeElapsed = QDateTime::currentMSecsSinceEpoch() - _lastResetTime;
+    emit timeElapsedChanged();
+    emit timeRemainingChanged();
 }
 

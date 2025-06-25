@@ -4,6 +4,8 @@
 #include <QAbstractListModel>
 #include <QModelIndex>
 
+#include <QTimer>
+
 #include "todoitem.h"
 
 class TodoModel : public QAbstractListModel
@@ -15,11 +17,7 @@ public:
     explicit TodoModel(QObject *parent = nullptr);
 
     enum Roles {
-        DoneRole = Qt::UserRole,
-        DescriptionRole,
-        TimeEstimateRole,
-        TimeRemainingRole,
-        TimeElapsedRole,
+        ItemRole = Qt::UserRole,
         ActiveRole
     };
     Q_ENUM(Roles);
@@ -48,6 +46,7 @@ public slots:
 private:
     QVector<TodoItem *> _list;
     QModelIndex _activeIndex;
+    QTimer _timer;
 };
 
 #endif // TODOMODEL_H

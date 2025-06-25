@@ -3,7 +3,11 @@
 
 TodoModel::TodoModel(QObject *parent)
     : QAbstractListModel(parent)
-{}
+{
+    _timer.setInterval(100);
+    _timer.setTimerType(Qt::TimerType::PreciseTimer);
+    _timer.start();
+}
 
 int TodoModel::rowCount(const QModelIndex &parent) const
 {
@@ -20,18 +24,10 @@ QVariant TodoModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-    const TodoItem* const item = _list.at(index.row());
+    TodoItem* const item = _list.at(index.row());
     switch (role) {
-    case DoneRole:
-        return QVariant(item->done());
-    case DescriptionRole:
-        return QVariant(item->description());
-    case TimeEstimateRole:
-        return QVariant(item->timeEstimate());
-    case TimeRemainingRole:
-        return QVariant(item->timeLeft());
-    case TimeElapsedRole:
-        return QVariant(item->timeElapsed());
+    case ItemRole:
+        return QVariant::fromValue(item);
     case ActiveRole:
         return _activeIndex == index;
     }
@@ -43,36 +39,22 @@ bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int rol
 {
     TodoItem*const item = _list.at(index.row());
     switch (role) {
-    case DoneRole:
-        item->setDone(value.toBool());
-        break;
-    case DescriptionRole:
-        item->setDescription(value.toString());
-        break;
-    case TimeEstimateRole:
-        item->setTimeEstimate(value.toLongLong());
-        emit dataChanged(index, index, {role});
-        emit dataChanged(index, index, {TimeRemainingRole});
-        return true; //todo
-    case TimeRemainingRole:
-        qWarning() << "todomodel.cpp: tried to time travel";
+    case ItemRole:
         return false;
-    case TimeElapsedRole:
-        item->setTimeElapsed(value.toLongLong());
-        break;
     case ActiveRole:
+        _timer.disconnect();
         if (_activeIndex == index) {
             _activeIndex = QModelIndex{};
             return true;
         }
         const auto oldIndex = _activeIndex;
         _activeIndex = index;
+        item->resetTimer();
+        connect(&_timer, &QTimer::timeout, item, &TodoItem::updateTimer);
         emit dataChanged(oldIndex, oldIndex, {ActiveRole});
         emit dataChanged(index, index, {ActiveRole});
         return true;
     }
-    return true;
-    // TODO: make it return based on whether changed
     return false;
 }
 
@@ -88,11 +70,7 @@ Qt::ItemFlags TodoModel::flags(const QModelIndex &index) const
 QHash<int, QByteArray> TodoModel::roleNames() const
 {
     QHash<int, QByteArray> names;
-    names[DoneRole] = "done";
-    names[DescriptionRole] = "description";
-    names[TimeEstimateRole] = "timeEstimate";
-    names[TimeRemainingRole] = "timeRemaining";
-    names[TimeElapsedRole] = "timeElapsed";
+    names[ItemRole] = "item";
     names[ActiveRole] = "active";
     return names;
 }
