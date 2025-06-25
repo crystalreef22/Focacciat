@@ -8,10 +8,9 @@
 
 #include "todoitem.h"
 
-class TodoModel : public QAbstractListModel
-{
+class TodoModel : public QAbstractListModel {
     Q_OBJECT
-    //Q_PROPERTY(QVector *list READ list WRITE setList)
+    Q_PROPERTY(TodoItem* activeItem READ activeItem NOTIFY activeItemChanged FINAL)
 
 public:
     explicit TodoModel(QObject *parent = nullptr);
@@ -35,6 +34,10 @@ public:
 
     virtual QHash<int, QByteArray> roleNames() const override;
 
+    TodoItem* activeItem() const;
+
+signals:
+    void activeItemChanged();
 
 public slots:
     void appendItem();

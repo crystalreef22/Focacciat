@@ -3,12 +3,10 @@
 
 #include <QQmlContext>
 
-#include "todolist.h"
 #include "todomodel.h"
 #include "formatutils.h"
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     QGuiApplication app(argc, argv);
 
     qmlRegisterType<TodoModel>("Todo", 1, 0, "TodoModel");

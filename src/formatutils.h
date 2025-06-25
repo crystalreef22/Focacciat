@@ -3,8 +3,7 @@
 
 #include <QObject>
 
-class FormatUtils : public QObject
-{
+class FormatUtils : public QObject {
     Q_OBJECT
 public:
     explicit FormatUtils(QObject *parent = nullptr);

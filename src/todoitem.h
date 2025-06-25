@@ -3,8 +3,7 @@
 
 #include <QObject>
 
-class TodoItem : public QObject
-{
+class TodoItem : public QObject {
     Q_OBJECT
     Q_PROPERTY(bool done READ done WRITE setDone NOTIFY doneChanged FINAL)
     Q_PROPERTY(QString description READ description WRITE setDescription NOTIFY descriptionChanged FINAL)
