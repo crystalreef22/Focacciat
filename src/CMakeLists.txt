@@ -21,7 +21,7 @@ qt_add_qml_module(FocusAssist9
         SOURCES
         QML_FILES
         QML_FILES TodoList.qml
-        SOURCES todolist.h todolist.cpp
+        SOURCES
         SOURCES
         SOURCES todomodel.h todomodel.cpp
         SOURCES
