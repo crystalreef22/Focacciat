@@ -22,7 +22,8 @@ ColumnLayout {
             ListView {
                 id: todoListView
                 model: TodoModel {
-                    list: todoList // todoList defined in main.cpp
+                    id: todoModel
+                    //list: todoList // todoList defined in main.cpp
                 }
 
                 delegate: RowLayout {
@@ -60,12 +61,12 @@ ColumnLayout {
     RowLayout {
         Button {
             text: qsTr("Add")
-            onClicked: todoList.appendItem()
+            onClicked: todoModel.appendItem()
             Layout.fillWidth: true
         }
         Button {
             text: qsTr("Remove completed")
-            onClicked: todoList.removeCompletedItems()
+            onClicked: todoModel.removeCompletedItems()
             Layout.fillWidth: true
         }
     }

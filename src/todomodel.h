@@ -6,12 +6,10 @@
 
 #include "todoitem.h"
 
-class TodoList;
-
 class TodoModel : public QAbstractListModel
 {
     Q_OBJECT
-    Q_PROPERTY(QVector *list READ list WRITE setList)
+    //Q_PROPERTY(QVector *list READ list WRITE setList)
 
 public:
     explicit TodoModel(QObject *parent = nullptr);
@@ -34,17 +32,22 @@ public:
     // Editable:
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
 
+
     Qt::ItemFlags flags(const QModelIndex &index) const override;
 
     virtual QHash<int, QByteArray> roleNames() const override;
 
 
+public slots:
+    void appendItem();
+    void removeCompletedItems();
 
 
 
 
 private:
     QVector<TodoItem *> _list;
+    QModelIndex _activeIndex;
 };
 
 #endif // TODOMODEL_H

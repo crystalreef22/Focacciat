@@ -1,6 +1,5 @@
 #include "todomodel.h"
 #include <QDebug>
-#include "todolist.h"
 
 TodoModel::TodoModel(QObject *parent)
     : QAbstractListModel(parent)
@@ -42,7 +41,7 @@ QVariant TodoModel::data(const QModelIndex &index, int role) const
 
 bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    const TodoItem* item = _list.at(index.row());
+    TodoItem*const item = _list.at(index.row());
     switch (role) {
     case DoneRole:
         item->done = value.toBool();
@@ -52,21 +51,19 @@ bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int rol
         break;
     case TimeEstimateRole:
         item->timeEstimate = value.toLongLong();
-        if (_list.setItemAt(index.row(), item)) {
-            emit dataChanged(index, index, {role});
-            emit dataChanged(index, index, {TimeRemainingRole});
-            return true;
-        }
-        return false;
+        emit dataChanged(index, index, {role});
+        emit dataChanged(index, index, {TimeRemainingRole});
+        return true; //todo
     case TimeRemainingRole:
         qWarning() << "todomodel.cpp: tried to time travel";
         return false;
     case TimeElapsedRole:
         item->timeElapsed = value.toLongLong();
-        item->updateTimeElapsed();
+        // item->updateTimeElapsed(); // makes it immediately update time
+        break;
     case ActiveRole:
         if (_activeIndex == index) {
-            _activeIndex = -1;
+            _activeIndex = QModelIndex{};
             return true;
         }
         const auto oldIndex = _activeIndex;
@@ -101,7 +98,28 @@ QHash<int, QByteArray> TodoModel::roleNames() const
     return names;
 }
 
+void TodoModel::appendItem() {
+    const int index = _list.size();
+    beginInsertRows(QModelIndex{}, index, index);
+    _list.append(new TodoItem{});
+    endInsertRows();
+}
+void TodoModel::removeCompletedItems()
+{
+    for (qsizetype i = 0; i < _list.size();) {
+        if (_list.at(i)->done) {
+            beginRemoveRows(QModelIndex{}, i, i);
+            _list.at(i)->deleteLater();
+            _list.removeAt(i);
+            endRemoveRows();
+        }
+        else {
+            ++i;
+        }
+    }
+}
 
+#if false
 void TodoModel::setList(TodoList *list)
 {
     beginResetModel();
@@ -131,3 +149,5 @@ void TodoModel::setList(TodoList *list)
     }
     endResetModel();
 }
+
+#endif

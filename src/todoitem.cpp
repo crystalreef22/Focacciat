@@ -2,4 +2,5 @@
 
 TodoItem::TodoItem(QObject *parent)
     : QObject{parent}
-{}
+{
+}
