@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtMultimedia
 
 import Todo 1.0
 
@@ -9,6 +10,29 @@ import Todo 1.0
 
 ColumnLayout {
     property string labelText: ""
+
+    MediaPlayer {
+        id: expiredNotifier;
+        audioOutput: AudioOutput { device: mediaDevices.defaultAudioOutput; }
+        source: "media/alm_focus.mp3";
+        loops: MediaPlayer.Infinite;
+        function setPlayStatus(b) {
+            if (b) {
+                expiredNotifier.play();
+            } else {
+                expiredNotifier.stop();
+            }
+        }
+    }
+    MediaDevices { id: mediaDevices }
+
+    Connections { target: todoModel.activeItem; function onTimerExpiredChanged() {
+        expiredNotifier.setPlayStatus(todoModel.activeItem.timerExpired)
+    }}
+    Connections { target: todoModel; function onActiveItemChanged() {
+        expiredNotifier.setPlayStatus(todoModel.activeItem && todoModel.activeItem.timerExpired)
+    }}
+
     Label {
         text: labelText
     }

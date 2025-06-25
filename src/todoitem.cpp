@@ -46,5 +46,12 @@ void TodoItem::updateTimer() {
     _timeElapsed = QDateTime::currentMSecsSinceEpoch() - _lastResetTime;
     emit timeElapsedChanged();
     emit timeRemainingChanged();
+    timerExpired(); // performs check
 }
 
+bool TodoItem::timerExpired() {
+    bool oldTimerExpired = _timerExpired;
+    _timerExpired = _timeElapsed >= _timeEstimate;
+    if (oldTimerExpired != _timerExpired) emit timerExpiredChanged();
+    return _timerExpired;
+}
