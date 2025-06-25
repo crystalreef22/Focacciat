@@ -23,15 +23,15 @@ QVariant TodoModel::data(const QModelIndex &index, int role) const
     const TodoItem* const item = _list.at(index.row());
     switch (role) {
     case DoneRole:
-        return QVariant(item->done);
+        return QVariant(item->done());
     case DescriptionRole:
-        return QVariant(item->description);
+        return QVariant(item->description());
     case TimeEstimateRole:
-        return QVariant(item->timeEstimate);
+        return QVariant(item->timeEstimate());
     case TimeRemainingRole:
-        return QVariant(item->timeEstimate - item->timeElapsed);
+        return QVariant(item->timeLeft());
     case TimeElapsedRole:
-        return QVariant(item->timeElapsed);
+        return QVariant(item->timeElapsed());
     case ActiveRole:
         return _activeIndex == index;
     }
@@ -44,13 +44,13 @@ bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int rol
     TodoItem*const item = _list.at(index.row());
     switch (role) {
     case DoneRole:
-        item->done = value.toBool();
+        item->setDone(value.toBool());
         break;
     case DescriptionRole:
-        item->description = value.toString();
+        item->setDescription(value.toString());
         break;
     case TimeEstimateRole:
-        item->timeEstimate = value.toLongLong();
+        item->setTimeEstimate(value.toLongLong());
         emit dataChanged(index, index, {role});
         emit dataChanged(index, index, {TimeRemainingRole});
         return true; //todo
@@ -58,8 +58,7 @@ bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int rol
         qWarning() << "todomodel.cpp: tried to time travel";
         return false;
     case TimeElapsedRole:
-        item->timeElapsed = value.toLongLong();
-        // item->updateTimeElapsed(); // makes it immediately update time
+        item->setTimeElapsed(value.toLongLong());
         break;
     case ActiveRole:
         if (_activeIndex == index) {
@@ -107,7 +106,7 @@ void TodoModel::appendItem() {
 void TodoModel::removeCompletedItems()
 {
     for (qsizetype i = 0; i < _list.size();) {
-        if (_list.at(i)->done) {
+        if (_list.at(i)->done()) {
             beginRemoveRows(QModelIndex{}, i, i);
             _list.at(i)->deleteLater();
             _list.removeAt(i);
