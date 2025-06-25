@@ -4,22 +4,20 @@
 #include <QAbstractListModel>
 #include <QModelIndex>
 
-class TodoList;
+#include <QTimer>
+
+#include "todoitem.h"
 
 class TodoModel : public QAbstractListModel
 {
     Q_OBJECT
-    Q_PROPERTY(TodoList *list READ list WRITE setList)
+    //Q_PROPERTY(QVector *list READ list WRITE setList)
 
 public:
     explicit TodoModel(QObject *parent = nullptr);
 
     enum Roles {
-        DoneRole = Qt::UserRole,
-        DescriptionRole,
-        TimeEstimateRole,
-        TimeRemainingRole,
-        TimeElapsedRole,
+        ItemRole = Qt::UserRole,
         ActiveRole
     };
     Q_ENUM(Roles);
@@ -32,19 +30,23 @@ public:
     // Editable:
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
 
+
     Qt::ItemFlags flags(const QModelIndex &index) const override;
 
     virtual QHash<int, QByteArray> roleNames() const override;
 
-    TodoList *list() const;
-    void setList(TodoList *list);
 
+public slots:
+    void appendItem();
+    void removeCompletedItems();
 
 
 
 
 private:
-    TodoList *_list;
+    QVector<TodoItem *> _list;
+    QModelIndex _activeIndex;
+    QTimer _timer;
 };
 
 #endif // TODOMODEL_H

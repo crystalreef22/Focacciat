@@ -22,7 +22,8 @@ ColumnLayout {
             ListView {
                 id: todoListView
                 model: TodoModel {
-                    list: todoList // todoList defined in main.cpp
+                    id: todoModel
+                    //list: todoList // todoList defined in main.cpp
                 }
 
                 delegate: RowLayout {
@@ -33,24 +34,24 @@ ColumnLayout {
                     }
 
                     CheckBox {
-                        checked: model.done
-                        onClicked: model.done = checked
+                        checked: model.item.done
+                        onClicked: model.item.done = checked
                     }
                     TextField {
                         Layout.fillWidth: true
-                        onEditingFinished: model.description = text
-                        text: model.description
+                        onEditingFinished: model.item.description = text
+                        text: model.item.description
                     }
                     TextField {
-                        text: model.timeEstimate
-                        onEditingFinished: model.timeEstimate = text
+                        text: model.item.timeEstimate
+                        onEditingFinished: model.item.timeEstimate = text
                         implicitWidth: 80;
                     }
                     Text {
                         text: "time left"
                     }
                     Text {
-                        text: FormatUtils.msToTime(model.timeRemaining)
+                        text: FormatUtils.msToTime(model.item.timeRemaining)
                     }
                 }
             }
@@ -60,12 +61,12 @@ ColumnLayout {
     RowLayout {
         Button {
             text: qsTr("Add")
-            onClicked: todoList.appendItem()
+            onClicked: todoModel.appendItem()
             Layout.fillWidth: true
         }
         Button {
             text: qsTr("Remove completed")
-            onClicked: todoList.removeCompletedItems()
+            onClicked: todoModel.removeCompletedItems()
             Layout.fillWidth: true
         }
     }

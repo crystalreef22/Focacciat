@@ -1,3 +1,4 @@
+#if false
 #include "todolist.h"
 #include <QDateTime>
 
@@ -100,3 +101,5 @@ bool TodoList::setTimeElapsed(qsizetype index, long long value) {
     if
     return true;
 }
+
+#endif

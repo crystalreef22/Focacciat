@@ -1,5 +1,4 @@
-#ifndef TODOLIST_H
-#define TODOLIST_H
+#if false
 
 #include <QObject>
 #include <QVector>

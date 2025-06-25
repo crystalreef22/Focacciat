@@ -1,41 +1,35 @@
 #include "todomodel.h"
 #include <QDebug>
-#include "todolist.h"
 
 TodoModel::TodoModel(QObject *parent)
     : QAbstractListModel(parent)
-    , _list(nullptr)
-{ }
+{
+    _timer.setInterval(100);
+    _timer.setTimerType(Qt::TimerType::PreciseTimer);
+    _timer.start();
+}
 
 int TodoModel::rowCount(const QModelIndex &parent) const
 {
     // For list models only the root node (an invalid parent) should return the list's size. For all
     // other (valid) parents, rowCount() should return 0 so that it does not become a tree model.
-    if (parent.isValid() || !_list)
+    if (parent.isValid())
         return 0;
 
-    return _list->getItems().size();
+    return _list.size();
 }
 
 QVariant TodoModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid() || !_list)
+    if (!index.isValid())
         return QVariant();
 
-    const TodoItem item = _list->getItems().at(index.row());
+    TodoItem* const item = _list.at(index.row());
     switch (role) {
-    case DoneRole:
-        return QVariant(item.done);
-    case DescriptionRole:
-        return QVariant(item.description);
-    case TimeEstimateRole:
-        return QVariant(item.timeEstimate);
-    case TimeRemainingRole:
-        return QVariant(item.timeEstimate - item.timeElapsed);
-    case TimeElapsedRole:
-        return QVariant(item.timeElapsed);
+    case ItemRole:
+        return QVariant::fromValue(item);
     case ActiveRole:
-        return _list->getActiveIndex() == index.row();
+        return _activeIndex == index;
     }
 
     return QVariant();
@@ -43,44 +37,22 @@ QVariant TodoModel::data(const QModelIndex &index, int role) const
 
 bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if (!_list) return false;
-
-    TodoItem item = _list->getItems().at(index.row());
+    TodoItem*const item = _list.at(index.row());
     switch (role) {
-    case DoneRole:
-        item.done = value.toBool();
-        break;
-    case DescriptionRole:
-        item.description = value.toString();
-        break;
-    case TimeEstimateRole:
-        item.timeEstimate = value.toLongLong();
-        if (_list->setItemAt(index.row(), item)) {
-            emit dataChanged(index, index, {role});
-            emit dataChanged(index, index, {TimeRemainingRole});
-            return true;
-        }
+    case ItemRole:
         return false;
-    case TimeRemainingRole:
-        qWarning() << "todomodel.cpp: tried to time travel";
-        return false;
-    case TimeElapsedRole:
-        item.timeElapsed = value.toLongLong();
-        _list->updateTimeElapsed(index.row());
     case ActiveRole:
-        if (_list->getActiveIndex() == index.row()) {
-            _list->setActiveIndex(-1);
+        _timer.disconnect();
+        if (_activeIndex == index) {
+            _activeIndex = QModelIndex{};
             return true;
         }
-        const auto oldIndex = TodoModel::createIndex(_list->getActiveIndex(), 0);
-        _list->setActiveIndex(index.row());
+        const auto oldIndex = _activeIndex;
+        _activeIndex = index;
+        item->resetTimer();
+        connect(&_timer, &QTimer::timeout, item, &TodoItem::updateTimer);
         emit dataChanged(oldIndex, oldIndex, {ActiveRole});
         emit dataChanged(index, index, {ActiveRole});
-        return true;
-    }
-
-    if (_list->setItemAt(index.row(), item)) {
-        emit dataChanged(index, index, {role});
         return true;
     }
     return false;
@@ -98,20 +70,33 @@ Qt::ItemFlags TodoModel::flags(const QModelIndex &index) const
 QHash<int, QByteArray> TodoModel::roleNames() const
 {
     QHash<int, QByteArray> names;
-    names[DoneRole] = "done";
-    names[DescriptionRole] = "description";
-    names[TimeEstimateRole] = "timeEstimate";
-    names[TimeRemainingRole] = "timeRemaining";
-    names[TimeElapsedRole] = "timeElapsed";
+    names[ItemRole] = "item";
     names[ActiveRole] = "active";
     return names;
 }
 
-TodoList *TodoModel::list() const
+void TodoModel::appendItem() {
+    const int index = _list.size();
+    beginInsertRows(QModelIndex{}, index, index);
+    _list.append(new TodoItem{});
+    endInsertRows();
+}
+void TodoModel::removeCompletedItems()
 {
-    return _list;
+    for (qsizetype i = 0; i < _list.size();) {
+        if (_list.at(i)->done()) {
+            beginRemoveRows(QModelIndex{}, i, i);
+            _list.at(i)->deleteLater();
+            _list.removeAt(i);
+            endRemoveRows();
+        }
+        else {
+            ++i;
+        }
+    }
 }
 
+#if false
 void TodoModel::setList(TodoList *list)
 {
     beginResetModel();
@@ -141,3 +126,5 @@ void TodoModel::setList(TodoList *list)
     }
     endResetModel();
 }
+
+#endif
