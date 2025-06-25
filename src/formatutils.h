@@ -9,7 +9,6 @@ public:
     explicit FormatUtils(QObject *parent = nullptr);
 
     Q_INVOKABLE static QString msToTime(long long ms);
-
 signals:
 };
 

@@ -42,6 +42,7 @@ bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int rol
         _timer.disconnect();
         if (_activeIndex == index) {
             _activeIndex = QModelIndex{};
+            emit activeItemChanged();
             return true;
         }
         const auto oldIndex = _activeIndex;
@@ -79,6 +80,12 @@ void TodoModel::appendItem() {
 }
 
 void TodoModel::removeCompletedItems() {
+    // make sure to clear active index if removed
+    if (_list.at(_activeIndex.row())->done()) {
+        _activeIndex = QModelIndex{};
+        emit activeItemChanged();
+    }
+
     for (qsizetype i = 0; i < _list.size();) {
         if (_list.at(i)->done()) {
             beginRemoveRows(QModelIndex{}, i, i);
@@ -93,5 +100,8 @@ void TodoModel::removeCompletedItems() {
 }
 
 TodoItem* TodoModel::activeItem() const {
-    return _list.at(_activeIndex.row());
+    if (_activeIndex.isValid())
+        return _list.at(_activeIndex.row());
+    else
+        return nullptr;
 }

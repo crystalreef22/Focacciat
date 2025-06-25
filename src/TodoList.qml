@@ -12,6 +12,38 @@ ColumnLayout {
     Label {
         text: labelText
     }
+    RowLayout {
+        width: todoListView.width
+
+        Label {
+            text: todoModel.activeItem ? "Active" : "Inactive"
+        }
+
+        CheckBox {
+            checked: todoModel.activeItem ? todoModel.activeItem.done : false;
+            onClicked: todoModel.activeItem.done = checked
+            enabled: todoModel.activeItem
+        }
+        TextField {
+            Layout.fillWidth: true
+            onEditingFinished: todoModel.activeItem.description = text
+            text: todoModel.activeItem ? todoModel.activeItem.description : ""
+            enabled: todoModel.activeItem
+        }
+        TextField {
+            text: todoModel.activeItem ? todoModel.activeItem.timeEstimate : "0"
+            onEditingFinished: todoModel.activeItem.timeEstimate = text
+            enabled: todoModel.activeItem
+            implicitWidth: 80;
+        }
+        Text {
+            text: "time left"
+        }
+        Text {
+            text: todoModel.activeItem ? FormatUtils.msToTime(todoModel.activeItem.timeRemaining) : "xx:xx:xx"
+        }
+    }
+
     Frame {
         Layout.fillWidth: true
         ScrollView {
