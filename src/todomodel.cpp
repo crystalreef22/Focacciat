@@ -81,7 +81,7 @@ void TodoModel::appendItem() {
 
 void TodoModel::removeCompletedItems() {
     // make sure to clear active index if removed
-    if (_list.at(_activeIndex.row())->done()) {
+    if (_activeIndex.isValid() && _list.at(_activeIndex.row())->done()) {
         _activeIndex = QModelIndex{};
         emit activeItemChanged();
     }
