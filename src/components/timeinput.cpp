@@ -54,6 +54,7 @@ void TimeInput::commit() {
     _committedValue = _internalValue;
     emit timeChanged();
     emit displayTextChanged();
+    emit editingFinished();
 }
 
 QString TimeInput::displayText() const {

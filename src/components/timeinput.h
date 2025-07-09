@@ -28,6 +28,7 @@ signals:
     void timeChanged();
     void focusChanged();
     void selectedChanged();
+    void editingFinished();
 
 public slots:
     bool handleKeyPress(int key, int modifiers);

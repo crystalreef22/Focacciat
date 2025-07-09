@@ -3,6 +3,8 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtMultimedia
 
+import "components" as MyComponents
+
 import Todo 1.0
 
 // https://github.com/rohanrajpal/QtToDoList
@@ -54,9 +56,9 @@ ColumnLayout {
             text: todoModel.activeItem ? todoModel.activeItem.description : ""
             enabled: todoModel.activeItem
         }
-        TextField {
-            text: todoModel.activeItem ? todoModel.activeItem.timeEstimate : "0"
-            onEditingFinished: todoModel.activeItem.timeEstimate = text
+        MyComponents.TimeInput {
+            time: todoModel.activeItem ? todoModel.activeItem.timeEstimate/1000 : "0"
+            onEditingFinished: todoModel.activeItem.timeEstimate = time*1000
             enabled: todoModel.activeItem
             implicitWidth: 80;
         }
@@ -99,9 +101,9 @@ ColumnLayout {
                         onEditingFinished: model.item.description = text
                         text: model.item.description
                     }
-                    TextField {
-                        text: model.item.timeEstimate
-                        onEditingFinished: model.item.timeEstimate = text
+                    MyComponents.TimeInput {
+                        time: model.item.timeEstimate / 1000
+                        onEditingFinished: model.item.timeEstimate = time * 1000
                         implicitWidth: 80;
                     }
                     Text {

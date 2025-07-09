@@ -11,15 +11,18 @@ FocusScope {
     property int borderWidth: 2
     property int margin: 5
     property alias font: text.font
+    property alias time: timeInput.time
+    signal editingFinished;
 
     SystemPalette {
         id: myPalette;
-        colorGroup: scope.activeFocus ? SystemPalette.Active : SystemPalette.Inactive
+        onColorGroupChanged: console.log(colorGroup)
     }
 
     TimeInput {
         id: timeInput
-        focus: scope.focus
+        focus: scope.activeFocus
+        onEditingFinished: scope.editingFinished();
     }
 
     Keys.onPressed: (event)=> {
@@ -32,7 +35,7 @@ FocusScope {
         color: myPalette.base
         width: text.width + padding
         height: text.height + padding
-        border.width: scope.focus ? borderWidth : 0
+        border.width: scope.activeFocus ? borderWidth : 0
         border.color: myPalette.accent
 
         Label {
@@ -41,7 +44,7 @@ FocusScope {
             text: timeInput.displayText
             font.features: { "tnum": true }
             background: Rectangle {
-                color: "lightblue";
+                color: myPalette.highlight;
                 visible: timeInput.selected;
             }
         }
@@ -51,7 +54,7 @@ FocusScope {
     MouseArea {
         anchors.fill: parent
         onClicked: () => {
-            if (scope.focus) {
+            if (scope.activeFocus) {
                 timeInput.selected = !timeInput.selected;
             }
             scope.forceActiveFocus()
