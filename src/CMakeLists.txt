@@ -5,6 +5,7 @@ project(FocusAssist9 VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Quick)
+find_package(Qt6 REQUIRED COMPONENTS Core)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
@@ -29,6 +30,8 @@ qt_add_qml_module(FocusAssist9
         SOURCES formatutils.h formatutils.cpp
         SOURCES todoitem.h todoitem.cpp
         RESOURCES media/alm_focus.mp3
+        QML_FILES components/TimeInput.qml
+        SOURCES components/timeinput.h components/timeinput.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -45,6 +48,7 @@ set_target_properties(FocusAssist9 PROPERTIES
 target_link_libraries(FocusAssist9
     PRIVATE Qt6::Quick
 )
+target_link_libraries(FocusAssist9 PRIVATE Qt6::Core)
 
 include(GNUInstallDirs)
 install(TARGETS FocusAssist9

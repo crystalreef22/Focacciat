@@ -65,6 +65,7 @@ ColumnLayout {
         }
         Text {
             text: todoModel.activeItem ? FormatUtils.msToTime(todoModel.activeItem.timeRemaining) : "xx:xx:xx"
+            font.features: { "tnum": true }
         }
     }
 
