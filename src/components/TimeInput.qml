@@ -16,7 +16,6 @@ FocusScope {
 
     SystemPalette {
         id: myPalette;
-        onColorGroupChanged: console.log(colorGroup)
     }
 
     TimeInput {

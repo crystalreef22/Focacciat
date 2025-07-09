@@ -14,15 +14,10 @@ int TimeInput::timeToValue(int t) {
     val += (t % 60) * 100; // mins
     t /= 60;
     val += (t % 60) * 10000; // hours
-    qInfo() << val;
     return val;
 }
 
 int TimeInput::valueToTime(int v) {
-    qInfo() << (v / 10000  ) * 3600  // hours
-         + ((v / 100) % 100) * 60    // mins
-         +  v % 100                    // secs
-    ;
     return (v / 10000  ) * 3600  // hours
          + ((v / 100) % 100) * 60    // mins
          +  v % 100                    // secs

@@ -1,6 +1,8 @@
 #ifndef TIMEINPUT_H
 #define TIMEINPUT_H
 
+// todo: flags to allow negatives and disallow seconds
+
 #include <QObject>
 #include <QKeyEvent>
 
