@@ -13,6 +13,7 @@ FocusScope {
     property alias font: text.font
     property alias time: timeInput.time
     signal editingFinished;
+    activeFocusOnTab: true
 
     SystemPalette {
         id: myPalette;
