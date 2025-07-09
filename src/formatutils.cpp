@@ -11,10 +11,9 @@ QString FormatUtils::msToTime(long long ms) {
     long long s = totalSecs % 60;
     long long m = (totalSecs / 60) % 60;
     long long h = (totalSecs / 60 / 60);
-    return QString("%5%1:%2:%3")
+    return negative + QString("%1:%2:%3")
         .arg(h, 2, 10, QChar('0'))
         .arg(m, 2, 10, QChar('0'))
         .arg(s, 2, 10, QChar('0'))
-        .arg(negative)
     ;
 }

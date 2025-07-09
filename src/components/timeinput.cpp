@@ -1,6 +1,8 @@
 #include "timeinput.h"
 #include <QDebug>
 #include <QKeyEvent>
+#include <QGUIApplication>
+#include <QClipboard>
 
 TimeInput::TimeInput(QObject *parent)
     : QObject{parent}
@@ -24,6 +26,38 @@ int TimeInput::valueToTime(int v) {
     ;
 }
 
+int TimeInput::stringToTime(QString s) {
+    int smhd[4] = {};
+    size_t smhdI = 0;
+    int place = 1;
+    for (qsizetype i = s.length() - 1; i >= 0; i--) {
+        QChar c = s.at(i);
+        if (c.isDigit()) {
+            smhd[smhdI] += c.digitValue() * place;
+            place *= 10;
+        } else {
+            if (c == QChar(':') || c == QChar('\t')) {
+                smhdI++;
+                if (smhdI >= 4) return -1;
+                place = 1;
+            } else if (QSet<QChar>({' ', '\r', '\n', ','}).contains(c)) {
+            } else if (c == QChar('.')) {
+                break;
+            } else return -1;
+        }
+    }
+    return smhd[0] + (smhd[1] + (smhd[2] + smhd[3] * 24) * 60) * 60;
+}
+
+bool TimeInput::setFromString(QString s) {
+    int t = stringToTime(s);
+    if (t == -1) return false;
+    if (t > 86400) t = 86400;
+    _internalValue = timeToValue(t);
+    emit displayTextChanged();
+    return true;
+}
+
 bool TimeInput::focus() const { return _focus; }
 bool TimeInput::selected() const { return _selected; }
 
@@ -33,7 +67,6 @@ void TimeInput::setSelected(bool selected) {
 }
 
 void TimeInput::setFocus(bool focus) {
-    bool initialFocus = _focus;
     _focus = focus;
     if (!focus) {
         commit();
@@ -78,6 +111,31 @@ bool TimeInput::setTime(int secs) {
 }
 
 bool TimeInput::handleKeyPress(int key, int modifiers) {
+    if (modifiers & Qt::ControlModifier) {
+        switch (key) {
+        case Qt::Key_Delete:
+        case Qt::Key_Backspace:
+            _internalValue = 0;
+            emit displayTextChanged();
+            break;
+        case Qt::Key_A:
+            setSelected(true);
+            break;
+        case Qt::Key_Insert:
+        case Qt::Key_C: {
+            QClipboard *clipboard = QGuiApplication::clipboard();
+            clipboard->setText(displayText());
+            break;
+        }
+        case Qt::Key_V:
+            setFromString(QGuiApplication::clipboard()->text());
+            break;
+        default:
+            return false;
+        }
+        return true;
+    }
+
     if (key >= Qt::Key_0 && key <= Qt::Key_9) {
         if (_selected) {
             _internalValue = 0;
@@ -93,18 +151,18 @@ bool TimeInput::handleKeyPress(int key, int modifiers) {
     switch (key) {
     case Qt::Key_Delete:
     case Qt::Key_Backspace:
-        if (modifiers & Qt::ControlModifier || _selected) {
+        if (_selected) {
             _internalValue = 0;
         } else {
             _internalValue /= 10;
         }
         emit displayTextChanged();
-        return true;
+        break;
     case Qt::Key_Return:
     case Qt::Key_Enter:
         setSelected(true);
         commit();
-        return true;
+        break;
     case Qt::Key_Escape:
         if (_selected) {
             setSelected(false);
@@ -114,8 +172,10 @@ bool TimeInput::handleKeyPress(int key, int modifiers) {
             emit selectedChanged();
             emit displayTextChanged();
         }
-        return true;
+        break;
+    default:
+        return false;
     }
-    return false;
+    return true;
 }
 

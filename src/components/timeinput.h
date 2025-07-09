@@ -34,6 +34,7 @@ signals:
 
 public slots:
     bool handleKeyPress(int key, int modifiers);
+    bool setFromString(QString s);
 
 private:
     int _internalValue;
@@ -42,6 +43,7 @@ private:
     bool _selected;
     static int timeToValue(int t);
     static int valueToTime(int v);
+    static int stringToTime(QString s);
     void commit();
 };
 

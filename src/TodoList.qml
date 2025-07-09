@@ -111,6 +111,7 @@ ColumnLayout {
                     }
                     Text {
                         text: FormatUtils.msToTime(model.item.timeRemaining)
+                        font.features: { "tnum": true }
                     }
                 }
             }
