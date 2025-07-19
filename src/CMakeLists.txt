@@ -9,6 +9,8 @@ find_package(Qt6 REQUIRED COMPONENTS Core)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
+add_subdirectory(extensionhost)
+
 qt_add_executable(FocusAssist9
     main.cpp
 )
@@ -32,6 +34,7 @@ qt_add_qml_module(FocusAssist9
         RESOURCES media/alm_focus.mp3
         QML_FILES components/TimeInput.qml
         SOURCES components/timeinput.h components/timeinput.cpp
+        SOURCES extensionconnection.h extensionconnection.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -56,3 +59,19 @@ install(TARGETS FocusAssist9
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+
+# The extension host should be inserted into the app
+
+if(APPLE)
+    add_custom_command(TARGET FocusAssist9 POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy extensionhost/extensionhost FocusAssist9.app/Contents/MacOS
+    )
+endif()
+
+# Now generate the deployment script
+
+qt_generate_deploy_qml_app_script(
+    TARGET FocusAssist9
+    OUTPUT_SCRIPT deploy_script
+)
+install(SCRIPT ${deploy_script})
