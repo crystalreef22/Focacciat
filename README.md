@@ -1,3 +1,3 @@
 # FocusAssist9
 
-*Learning from my mistakes with FocusAssist8*
+A temporary name for my application designed to stop procrastination, including a todo list, website blocker, and always-on-top timers.
