@@ -1,0 +1,7 @@
+{
+  "name": "FocusAssist9",
+  "description": "Example host for native messaging",
+  "path": "/Applications/FocusAssist9.app/Contents/MacOS/extensionhost",
+  "type": "stdio",
+  "allowed_extensions": ["FocusAssist9"]
+}

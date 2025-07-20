@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Layouts
 
 import "components" as MyComponents
 
@@ -35,8 +36,17 @@ ApplicationWindow {
             TodoList {
                 labelText: "today's tasks"
             }
-            MyComponents.TimeInput {
-                font.pointSize: 100;
+            RowLayout {
+                Button {
+                    text: "check Firefox integration"
+                    onClicked: ExtensionIntegration.checkFirefoxEnabled();
+                }
+                CheckBox {
+                    text: "integration enabled"
+                    onToggled:  ExtensionIntegration.firefoxEnabled = checked;
+                    checked: ExtensionIntegration.firefoxEnabled;
+                    Component.onCompleted: ExtensionIntegration.checkFirefoxEnabled();
+                }
             }
         }
     }

@@ -34,7 +34,9 @@ qt_add_qml_module(FocusAssist9
         RESOURCES media/alm_focus.mp3
         QML_FILES components/TimeInput.qml
         SOURCES components/timeinput.h components/timeinput.cpp
-        SOURCES extensionconnection.h extensionconnection.cpp
+        SOURCES
+        SOURCES extensionintegration.h extensionintegration.cpp
+        RESOURCES extensionmanifest.json
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
