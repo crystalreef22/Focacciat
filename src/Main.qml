@@ -24,13 +24,9 @@ ApplicationWindow {
             onClicked: defaultFocus.forceActiveFocus();
         }
         Column {
-            Text {
+            Label {
                 text: "FocusAssist9";
                 font.pointSize: 100;
-            }
-            Text {
-                id: tmtx;
-                font.pointSize: 20;
             }
 
             TodoList {

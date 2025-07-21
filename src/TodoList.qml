@@ -62,10 +62,10 @@ ColumnLayout {
             enabled: todoModel.activeItem
             implicitWidth: 80;
         }
-        Text {
+        Label {
             text: "time left"
         }
-        Text {
+        Label {
             text: todoModel.activeItem ? FormatUtils.msToTime(todoModel.activeItem.timeRemaining) : "xx:xx:xx"
             font.features: { "tnum": true }
         }
@@ -106,10 +106,10 @@ ColumnLayout {
                         onEditingFinished: model.item.timeEstimate = time * 1000
                         implicitWidth: 80;
                     }
-                    Text {
+                    Label {
                         text: "time left"
                     }
-                    Text {
+                    Label {
                         text: FormatUtils.msToTime(model.item.timeRemaining)
                         font.features: { "tnum": true }
                     }
