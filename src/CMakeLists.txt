@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Quick)
 find_package(Qt6 REQUIRED COMPONENTS Core)
+find_package(Qt6 REQUIRED COMPONENTS Network)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
@@ -50,10 +51,9 @@ set_target_properties(FocusAssist9 PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
-target_link_libraries(FocusAssist9
-    PRIVATE Qt6::Quick
-)
+target_link_libraries(FocusAssist9 PRIVATE Qt6::Quick)
 target_link_libraries(FocusAssist9 PRIVATE Qt6::Core)
+target_link_libraries(FocusAssist9 PRIVATE Qt6::Network)
 
 include(GNUInstallDirs)
 install(TARGETS FocusAssist9

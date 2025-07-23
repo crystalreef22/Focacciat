@@ -2,14 +2,63 @@
 #include <QFile>
 #include <QDir>
 #include <QDebug>
-
+#include <QLocalServer>
+#include <QLocalSocket>
 
 ExtensionIntegration::ExtensionIntegration(QObject *parent)
     : QObject{parent}
 {
     m_firefoxNMManifestDir = QDir::homePath() + "/Library/Application Support/Mozilla/NativeMessagingHosts";
 
-    qInfo() << m_firefoxNMManifestDir;
+    qWarning() << "see https://doc.qt.io/qt-6/qlocalserver.html#removeServer";
+    QLocalServer::removeServer(m_serverName);
+
+    m_server.setSocketOptions(QLocalServer::UserAccessOption);
+    m_server.listen(m_serverName);
+
+    qInfo() << "listening on " << m_server.fullServerName();
+    connect(&m_server, &QLocalServer::newConnection, this, &ExtensionIntegration::connectNextSocket);
+}
+
+void ExtensionIntegration::connectNextSocket() {
+    QLocalSocket* conn = m_server.nextPendingConnection();
+    if (!conn) {
+        qWarning() << "connection failed";
+        return;
+    }
+    if (!conn->isValid()) {
+        qWarning() << "connection invalid";
+        conn->deleteLater();
+        return;
+    }
+    m_clients.append(conn);
+    connect(conn, &QLocalSocket::disconnected, this, &ExtensionIntegration::socketDisconnected);
+    connect(conn, &QLocalSocket::readyRead, this, [=]{
+        parseRecieved(conn->readAll());
+    });
+}
+
+void ExtensionIntegration::socketDisconnected() {
+    QLocalSocket* socket = qobject_cast<QLocalSocket*>(sender());
+    if (socket) {
+        m_clients.removeOne(socket);
+        socket->deleteLater();
+    }
+}
+
+
+void ExtensionIntegration::parseRecieved(const QString& data) {
+    qInfo() << "recieved: " << data;
+}
+
+bool ExtensionIntegration::send(const QString& data) {
+    bool success{false};
+    QByteArray bytes = data.toUtf8();
+    for (QLocalSocket* client: std::as_const(m_clients)) {
+        success |= (client->write(bytes) == bytes.length());
+    }
+    if (!success) qInfo() << "did not write to any clients";
+    return success;
 }
 
 bool ExtensionIntegration::checkFirefoxEnabled() {

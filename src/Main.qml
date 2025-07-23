@@ -44,6 +44,15 @@ ApplicationWindow {
                     Component.onCompleted: ExtensionIntegration.checkFirefoxEnabled();
                 }
             }
+            RowLayout {
+                TextField {
+                    id: toSend
+                }
+                Button {
+                    text: "Send data"
+                    onClicked: ExtensionIntegration.send(toSend.text);
+                }
+            }
         }
     }
 

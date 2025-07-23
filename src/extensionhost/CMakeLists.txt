@@ -11,10 +11,16 @@ file(GLOB SOURCES
     *.cpp
 )
 
-add_executable(extensionhost
-    main.cpp
-)
-# add_executable(extensionhost-test testserver.cpp )
+if(WIN32)
+    add_executable(extensionhost
+        main_win.cpp
+    )
+else()
+    add_executable(extensionhost
+        main_mac.cpp
+    )
+    # add_executable(extensionhost-test testserver.cpp )
+endif()
 
 set_target_properties(extensionhost PROPERTIES
     MACOSX_BUNDLE FALSE

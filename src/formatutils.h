@@ -2,9 +2,12 @@
 #define FORMATUTILS_H
 
 #include <QObject>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 class FormatUtils : public QObject {
     Q_OBJECT
+    QML_ELEMENT
+    QML_SINGLETON
 public:
     explicit FormatUtils(QObject *parent = nullptr);
 
