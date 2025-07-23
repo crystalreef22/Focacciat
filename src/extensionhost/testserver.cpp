@@ -13,7 +13,6 @@ int main() {
     std::cin.tie(nullptr);
 
     constexpr size_t maxBufLength = 4096;
-    constexpr char socketClosedMessage[] = "[{\"error\": \"connection closed\"}]";
 
     int sockfd = socket(AF_UNIX, SOCK_STREAM, 0);
     if (sockfd == -1) {
@@ -49,15 +48,26 @@ int main() {
 #endif
     std::strncat(addr.sun_path, socketName, socketNameLen);
 
-    if (connect(sockfd, reinterpret_cast<const struct sockaddr *>(&addr), sizeof(addr)) < 0) {
-        std::cerr << "failed to connect: " << strerror(errno) << std::endl;
+    std::cerr << addr.sun_path << std::endl;
+
+    // unlink() removes the old file if it exists so that the socket can be used
+    unlink(addr.sun_path);
+    if (bind(sockfd,reinterpret_cast<const struct sockaddr *>(&addr), sizeof(addr)) < 0) {
+        std::cerr << "bind: " << strerror(errno) << std::endl;
+        return 1;
+    }
+
+    listen(sockfd, 5);
+    int clientSocket = accept(sockfd, nullptr, nullptr);
+    if (clientSocket < 0) {
+        std::cerr << "did not accept connection: " << strerror(errno) << std::endl;
         return 1;
     }
 
     constexpr size_t pfds_len = 2;
     struct pollfd pfds[pfds_len] = {
         { .fd = STDIN_FILENO, .events = POLLIN },
-        { .fd = sockfd, .events = POLLIN }
+        { .fd = clientSocket, .events = POLLIN }
     };
     short eventsStdin, eventsSock;
 
@@ -65,33 +75,35 @@ int main() {
 
     while (true) {
         if (poll(pfds, pfds_len, -1) > 0) {
-            eventsStdin = pfds[0].revents; eventsSock = pfds[1].revents;
-
+            eventsStdin = pfds[0].revents;
+            eventsSock = pfds[1].revents;
             if (eventsStdin & (POLLHUP | POLLERR | POLLNVAL)) {
-                std::cerr << "Connection closed." << std::endl;
-                close(sockfd);
+                std::cerr << "Server input closed. exiting" << std::endl;
+                close(clientSocket);
                 return 0;
             }
             if (eventsSock & (POLLHUP | POLLERR | POLLNVAL)) {
-                std::cerr << "Socket closed. Sending closed message." << std::endl;
-                std::cout << socketClosedMessage << std::endl;
-
-                close(sockfd);
-                return 0;
+                std::cerr << "Client closed connection. Trying to reconnect." << std::endl;
+                if (!(eventsSock&POLLNVAL)) close(clientSocket);
+                clientSocket = accept(sockfd, nullptr, nullptr);
+                if (clientSocket < 0) {
+                    std::cerr << "did not accept connection: " << strerror(errno) << std::endl;
+                    return 1;
+                }
             }
-            if (eventsStdin & POLLIN) {
+            if (eventsStdin & POLLIN) { // stdin
                 std::string response;
-                getline(std::cin, response); // will crash if failed
-                send(sockfd, response.c_str(), response.length(), 0);
+                getline(std::cin, response);
+                send(clientSocket, response.c_str(), response.length(), 0);
             }
-            if (eventsSock & POLLIN) {
+            if (eventsSock & POLLIN) { // socket
                 int bytesRecieved = 0;
                 do {
                     // DONTWAIT makes sure that if we send exatly maxBufLength chars, it will not block
-                    bytesRecieved = recv(sockfd, &buffer[0], buffer.size(), MSG_DONTWAIT);
+                    bytesRecieved = recv(clientSocket, &buffer[0], buffer.size(), MSG_DONTWAIT);
                     // append string from buffer.
                     if ( bytesRecieved == -1 ) {
-                        // error
+                        // error or finished
                     } else {
                         std::copy(buffer.cbegin(), buffer.cbegin() + bytesRecieved, std::ostream_iterator<char>(std::cout));
                     }
@@ -100,7 +112,6 @@ int main() {
             }
         }
     }
-
 
     return 0;
 }

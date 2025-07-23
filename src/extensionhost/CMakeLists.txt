@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.16)
 
 project(extensionhost VERSION 0.1 LANGUAGES CXX)
+# project(extensionhost-test VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 20)
 
 file(GLOB SOURCES
     *.h
@@ -12,11 +14,13 @@ file(GLOB SOURCES
 add_executable(extensionhost
     main.cpp
 )
+# add_executable(extensionhost-test testserver.cpp )
 
 set_target_properties(extensionhost PROPERTIES
     MACOSX_BUNDLE FALSE
     WIN32_EXECUTABLE TRUE
 )
+# set_target_properties(extensionhost-test PROPERTIES MACOSX_BUNDLE FALSE WIN32_EXECUTABLE TRUE )
 
 include(GNUInstallDirs)
 install(TARGETS extensionhost
