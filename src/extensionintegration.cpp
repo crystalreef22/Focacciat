@@ -33,7 +33,7 @@ void ExtensionIntegration::connectNextSocket() {
     }
     m_clients.append(conn);
     connect(conn, &QLocalSocket::disconnected, this, &ExtensionIntegration::socketDisconnected);
-    connect(conn, &QLocalSocket::readyRead, this, [=, this]{
+    connect(conn, &QLocalSocket::readyRead, this, [=]{
         readMessage(conn);
     });
 }
@@ -57,13 +57,12 @@ bool ExtensionIntegration::send(const QString& data) {
     bool success{false};
     QByteArray bytes = data.toUtf8();
     uint32_t header = bytes.size();
-    QByteArray byteHeader{4, Qt::Initialization()};
-    for (size_t i = 3; i >=0; i--) {
-        byteHeader[i] = header & 0xFF;
-        header >>= 8;
-    }
     for (QLocalSocket* client: std::as_const(m_clients)) {
-        success |= (client->write(byteHeader + bytes) == bytes.length());
+        success |= (client->write(reinterpret_cast<char*>(&header), sizeof(header)) == sizeof(header));
+        QByteArray test = QByteArray::fromRawData(reinterpret_cast<char*>(&header),4);
+        qInfo() << header;
+        qInfo() << test.toHex();
+        success |= (client->write(bytes) == bytes.length());
     }
     if (!success) qInfo() << "did not write to any clients";
     return success;
