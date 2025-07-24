@@ -3,7 +3,6 @@
 #include <sys/un.h>
 #include <unistd.h>
 #include <cstring>
-#include <array>
 #include <poll.h>
 #include <errno.h>
 
@@ -61,7 +60,7 @@ int main() {
     };
     short eventsStdin, eventsSock;
 
-    std::array<char, maxBufLength> buffer;
+    char buffer[maxBufLength];
 
     while (true) {
         if (poll(pfds, pfds_len, -1) > 0) {
@@ -74,14 +73,24 @@ int main() {
             }
             if (eventsSock & (POLLHUP | POLLERR | POLLNVAL)) {
                 std::cerr << "Socket closed. Sending closed message." << std::endl;
-                std::cout << socketClosedMessage << std::endl;
+                uint32_t value = strlen(socketName);
+
+                char header[sizeof(value)];
+                for (size_t i = 3; i >= 0; i--) {
+                    std::uint8_t byte = value & 0xFF;
+                    header[i] = byte;
+                    value >>= 8;
+                }
+
+                std::cout.write(header, sizeof(value))
+                std::cout << socketClosedMessage << std::flush;
 
                 close(sockfd);
                 return 0;
             }
             if (eventsStdin & POLLIN) {
                 uint32_t respSize;
-                std::cin.read(reinterpret_cast<char*>(&respSize), sizeof(respSize));
+                std::cin.read(&respSize, sizeof(respSize));
                 char response[respSize];
                 std::cin.read(response, respSize);
                 send(sockfd, response, respSize, 0);
@@ -90,15 +99,15 @@ int main() {
                 int bytesRecieved = 0;
                 do {
                     // DONTWAIT makes sure that if we send exatly maxBufLength chars, it will not block
-                    bytesRecieved = recv(sockfd, &buffer[0], buffer.size(), MSG_DONTWAIT);
+                    bytesRecieved = recv(sockfd, &buffer[0], sizeof(buffer), MSG_DONTWAIT);
                     // append string from buffer.
                     if ( bytesRecieved == -1 ) {
                         // error
                     } else {
-                        std::copy(buffer.cbegin(), buffer.cbegin() + bytesRecieved, std::ostream_iterator<char>(std::cout));
+                        std::cout.write(buffer, bytesRecieved);
                     }
                 } while (bytesRecieved == maxBufLength);
-                std::cout << std::endl; // flush and print new line
+                std::cout.flush();
             }
         }
     }
