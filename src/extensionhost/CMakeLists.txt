@@ -17,7 +17,7 @@ if(WIN32)
     )
 else()
     add_executable(extensionhost
-        main_mac.cpp
+        main_unix.cpp
     )
     # add_executable(extensionhost-test testserver.cpp )
 endif()

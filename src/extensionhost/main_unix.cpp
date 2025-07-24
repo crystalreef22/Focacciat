@@ -27,15 +27,16 @@ int main() {
 
     // get tmpdir
     const size_t sunPathLimit = sizeof(addr.sun_path);
-    const char* socketName = "focusassist9_nmhostpipe";
-    const size_t socketNameLen = strlen(socketName);
+    constexpr char socketName[] = "focusassist9_nmhostpipe";
+    constexpr size_t socketNameLen = sizeof(socketName)/sizeof(char);
+    std::cerr << socketNameLen << "=" << strlen(socketName);
     // subtract 1 for null character
     const size_t confstrMaxSize = sunPathLimit - 1 - socketNameLen;
 #ifdef __APPLE__
     size_t confstrSize = confstr(_CS_DARWIN_USER_TEMP_DIR, addr.sun_path, confstrMaxSize);
 #else
     const char* tmp_p = std::getenv("XDG_RUNTIME_DIR");
-    size_t confstrSize = strlen(tmp_p);
+    size_t confstrSize = strlen(tmp_p) + 1;
 #endif
     if (confstrSize == 0) {
         std::cerr << "Unknown tmpdir path." << std::endl;
@@ -45,7 +46,7 @@ int main() {
         return 1;
     }
 #ifndef __APPLE__
-    std::strncpy(addr.sun_path, tmp_p, confstrSize+1)
+    std::strncpy(addr.sun_path, tmp_p, confstrSize)
 #endif
     std::strncat(addr.sun_path, socketName, socketNameLen);
 
