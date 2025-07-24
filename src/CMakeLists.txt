@@ -55,20 +55,20 @@ target_link_libraries(FocusAssist9 PRIVATE Qt6::Quick)
 target_link_libraries(FocusAssist9 PRIVATE Qt6::Core)
 target_link_libraries(FocusAssist9 PRIVATE Qt6::Network)
 
-include(GNUInstallDirs)
-install(TARGETS FocusAssist9
+# include(GNUInstallDirs) # nothing outside of bundle
+install(TARGETS FocusAssist9 extensionhost
     BUNDLE DESTINATION .
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    # LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    # RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
 # The extension host should be inserted into the app
 
-if(APPLE)
-    add_custom_command(TARGET FocusAssist9 POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy extensionhost/extensionhost FocusAssist9.app/Contents/MacOS
-    )
-endif()
+# if(APPLE)
+#     add_custom_command(TARGET FocusAssist9 POST_BUILD
+#         COMMAND ${CMAKE_COMMAND} -E copy extensionhost/extensionhost FocusAssist9.app/Contents/MacOS
+#     )
+# endif()
 
 # Now generate the deployment script
 

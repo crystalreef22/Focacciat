@@ -23,14 +23,7 @@ else()
 endif()
 
 set_target_properties(extensionhost PROPERTIES
-    MACOSX_BUNDLE FALSE
+    MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
 )
 # set_target_properties(extensionhost-test PROPERTIES MACOSX_BUNDLE FALSE WIN32_EXECUTABLE TRUE )
-
-include(GNUInstallDirs)
-install(TARGETS extensionhost
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
-
