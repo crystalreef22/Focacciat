@@ -48,9 +48,7 @@ void ExtensionIntegration::socketDisconnected() {
 
 
 void ExtensionIntegration::readMessage(QLocalSocket* conn) {
-    quint32 header;
-    conn->read(reinterpret_cast<char*>(&header), sizeof(quint32));
-    qInfo() << "header: " << header;
+    // header is taken care of by extensionhost
     QByteArray data{conn->readAll()};
     qInfo() << "recieved: " << data;
 }
@@ -58,7 +56,7 @@ void ExtensionIntegration::readMessage(QLocalSocket* conn) {
 bool ExtensionIntegration::send(const QString& data) {
     bool success{false};
     QByteArray bytes = data.toUtf8();
-    quint32 header = bytes.size();
+    uint32_t header = bytes.size();
     for (QLocalSocket* client: std::as_const(m_clients)) {
         success |= (client->write(reinterpret_cast<char*>(&header), sizeof(header)) == sizeof(header));
         success |= (client->write(bytes) == bytes.length());
