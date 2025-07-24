@@ -25,7 +25,7 @@ signals:
     void firefoxEnabledChanged();
 private:
     void connectNextSocket();
-    void parseRecieved(const QString& data);
+    void readMessage(QLocalSocket* conn);
     void socketDisconnected();
 
     bool m_firefoxEnabled;

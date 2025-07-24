@@ -28,8 +28,7 @@ int main() {
     // get tmpdir
     const size_t sunPathLimit = sizeof(addr.sun_path);
     constexpr char socketName[] = "focusassist9_nmhostpipe";
-    constexpr size_t socketNameLen = sizeof(socketName)/sizeof(char);
-    std::cerr << socketNameLen << "=" << strlen(socketName);
+    constexpr size_t socketNameLen = sizeof(socketName)/sizeof(char)-1;
     // subtract 1 for null character
     const size_t confstrMaxSize = sunPathLimit - 1 - socketNameLen;
 #ifdef __APPLE__
@@ -81,9 +80,11 @@ int main() {
                 return 0;
             }
             if (eventsStdin & POLLIN) {
-                std::string response;
-                getline(std::cin, response); // will crash if failed
-                send(sockfd, response.c_str(), response.length(), 0);
+                uint32_t respSize;
+                std::cin.read(reinterpret_cast<char*>(&respSize), sizeof(respSize));
+                char response[respSize];
+                std::cin.read(response, respSize);
+                send(sockfd, response, respSize, 0);
             }
             if (eventsSock & POLLIN) {
                 int bytesRecieved = 0;

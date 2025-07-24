@@ -34,7 +34,7 @@ void ExtensionIntegration::connectNextSocket() {
     m_clients.append(conn);
     connect(conn, &QLocalSocket::disconnected, this, &ExtensionIntegration::socketDisconnected);
     connect(conn, &QLocalSocket::readyRead, this, [=]{
-        parseRecieved(conn->readAll());
+        readMessage(conn);
     });
 }
 
@@ -47,14 +47,20 @@ void ExtensionIntegration::socketDisconnected() {
 }
 
 
-void ExtensionIntegration::parseRecieved(const QString& data) {
+void ExtensionIntegration::readMessage(QLocalSocket* conn) {
+    quint32 header;
+    conn->read(reinterpret_cast<char*>(&header), sizeof(quint32));
+    qInfo() << "header: " << header;
+    QByteArray data{conn->readAll()};
     qInfo() << "recieved: " << data;
 }
 
 bool ExtensionIntegration::send(const QString& data) {
     bool success{false};
     QByteArray bytes = data.toUtf8();
+    quint32 header = bytes.size();
     for (QLocalSocket* client: std::as_const(m_clients)) {
+        success |= (client->write(reinterpret_cast<char*>(&header), sizeof(header)) == sizeof(header));
         success |= (client->write(bytes) == bytes.length());
     }
     if (!success) qInfo() << "did not write to any clients";
