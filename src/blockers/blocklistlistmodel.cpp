@@ -5,18 +5,12 @@ BlocklistListModel::BlocklistListModel(QObject *parent)
 {}
 
 
-QModelIndex BlocklistListModel::index(int row, int column, const QModelIndex &parent) const
-{
-    // FIXME: Implement me!
-    return QModelIndex{};
-}
-
 int BlocklistListModel::rowCount(const QModelIndex &parent) const
 {
     if (!parent.isValid())
         return 0;
 
-    // FIXME: Implement me!
+    return m_blocklists.length();
 }
 
 QVariant BlocklistListModel::data(const QModelIndex &index, int role) const
@@ -24,25 +18,38 @@ QVariant BlocklistListModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-    // FIXME: Implement me!
+    Blocklist* const item = m_blocklists.at(index.row());
+    switch (role) {
+    case NameRole:
+        return QVariant(item->name);
+    case ItemRole:
+        return QVariant::fromValue(item);
+    }
+
     return QVariant();
 }
 
 bool BlocklistListModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if (data(index, role) != value) {
-        // FIXME: Implement me!
+    if (role == NameRole && index.isValid() && data(index, role) != value) {
+        m_blocklists.at(index.row())->name = value.toString();
         emit dataChanged(index, index, {role});
         return true;
     }
     return false;
 }
 
-Qt::ItemFlags BlocklistListModel::flags(const QModelIndex &index) const
-{
+Qt::ItemFlags BlocklistListModel::flags(const QModelIndex &index) const {
     if (!index.isValid())
         return Qt::NoItemFlags;
 
-    return QAbstractItemModel::flags(index) | Qt::ItemIsEditable; // FIXME: Implement me!
+    return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
+}
+
+QHash<int, QByteArray> BlocklistListModel::roleNames() const {
+    QHash<int, QByteArray> names;
+    names[NameRole] = "name";
+    names[ItemRole] = "item";
+    return names;
 }
 

@@ -42,6 +42,7 @@ qt_add_qml_module(FocusAssist9
         SOURCES blockers/extensionintegration.h blockers/extensionintegration.cpp
         RESOURCES extensionmanifest.json
         SOURCES blockers/blocklist.h blockers/blocklist.cpp
+        SOURCES blockers/blocklistlistmodel.h blockers/blocklistlistmodel.cpp
         QML_FILES blockers/BlocklistPopup.qml
 )
 

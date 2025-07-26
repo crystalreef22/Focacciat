@@ -12,6 +12,8 @@ class Blocklist : public QObject
 public:
     explicit Blocklist(QObject *parent = nullptr);
 
+    QString name; // holds the name of the blocklist, optional
+
 signals:
     void websiteListChanged();
 
