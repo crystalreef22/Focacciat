@@ -11,9 +11,7 @@ bool TodoItem::done() const { return _done; }
 QString TodoItem::description() const { return _description; }
 long long TodoItem::timeEstimate() const { return _timeEstimate; }
 long long TodoItem::timeElapsed() const { return _timeElapsed; }
-long long TodoItem::timeRemaining() const {
-    return _timeEstimate - _timeElapsed;
-}
+long long TodoItem::timeRemaining() const { return _timeEstimate - _timeElapsed; }
 
 void TodoItem::setDone(bool value) {
     _done = value;

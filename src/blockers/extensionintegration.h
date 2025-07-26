@@ -19,10 +19,12 @@ public:
 
     bool setFirefoxEnabled(bool b);
 
-    Q_INVOKABLE bool send(const QString& data);
-
 signals:
     void firefoxEnabledChanged();
+
+public slots:
+    bool send(const QString& data);
+
 private:
     void connectNextSocket();
     void readMessage(QLocalSocket* conn);

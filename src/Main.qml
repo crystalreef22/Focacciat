@@ -3,11 +3,12 @@ import QtQuick.Controls
 import QtQuick.Layouts
 
 import "components" as MyComponents
+import FocusAssist9 1.0
 
 ApplicationWindow {
     id: root
     width: 640
-    height: 480
+    height: 640
     visible: true
     title: qsTr("Focus Assist 9??")
 
@@ -52,6 +53,15 @@ ApplicationWindow {
                     text: "Send data"
                     onClicked: ExtensionIntegration.send(toSend.text);
                 }
+            }
+            BlocklistPopup {
+                id: blocklistPopup
+                blocklist: Blocklist{}
+            }
+
+            Button {
+                text: "edit blocklist"
+                onClicked: blocklistPopup.open();
             }
         }
     }
