@@ -11,5 +11,7 @@ Blocklist::Blocklist(const QString &name) {
 }
 
 const bool Blocklist::applyBlocks() {
-    return ExtensionIntegration::instance()->sendBlocklist(m_websiteList.split('\n'));
+    QStringList list = m_websiteList.split('\n');
+    list.removeAll(QString(""));
+    return ExtensionIntegration::instance()->sendBlocklist(list);
 }
