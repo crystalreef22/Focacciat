@@ -1,13 +1,16 @@
 #include "blocklistlistmodel.h"
+#include <QDebug>
 
 BlocklistListModel::BlocklistListModel(QObject *parent)
     : QAbstractListModel(parent)
-{}
+{
+    appendItem();
+}
 
 
 int BlocklistListModel::rowCount(const QModelIndex &parent) const
 {
-    if (!parent.isValid())
+    if (parent.isValid())
         return 0;
 
     return m_blocklists.length();
@@ -51,5 +54,35 @@ QHash<int, QByteArray> BlocklistListModel::roleNames() const {
     names[NameRole] = "name";
     names[ItemRole] = "item";
     return names;
+}
+
+void BlocklistListModel::appendItem() {
+    appendItem(new Blocklist{"Blocklist " + QString::number(m_blocklists.length()+1)});
+}
+void BlocklistListModel::appendItem(Blocklist *blocklist) {
+    const int index = m_blocklists.size();
+    beginInsertRows(QModelIndex{}, index, index);
+    m_blocklists.append(blocklist);
+    endInsertRows();
+}
+bool BlocklistListModel::removeItem(const QModelIndex &index) {
+    if (!index.isValid()) return false;
+    removeItem(index.row());
+    return true;
+}
+bool BlocklistListModel::removeItem(int i) {
+    if (i < 0 || i >= m_blocklists.length()) return false;
+    if (m_blocklists.length() == 1) {
+        beginResetModel();
+        m_blocklists.at(0)->deleteLater();
+        m_blocklists[0] = new Blocklist{"Blocklist 1"};
+        endResetModel();
+        return true;
+    }
+    beginRemoveRows(QModelIndex{}, i, i);
+    m_blocklists.at(i)->deleteLater();
+    m_blocklists.removeAt(i);
+    endRemoveRows();
+    return true;
 }
 

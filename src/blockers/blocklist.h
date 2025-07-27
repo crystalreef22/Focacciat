@@ -7,10 +7,10 @@
 class Blocklist : public QObject
 {
     Q_OBJECT
-    QML_ELEMENT
     Q_PROPERTY(QString websiteList MEMBER m_websiteList NOTIFY websiteListChanged FINAL)
 public:
     explicit Blocklist(QObject *parent = nullptr);
+    Blocklist(const QString &name);
 
     QString name; // holds the name of the blocklist, optional
 
@@ -18,6 +18,7 @@ signals:
     void websiteListChanged();
 
 public slots:
+    const bool applyBlocks();
 
 private:
     QString m_websiteList;

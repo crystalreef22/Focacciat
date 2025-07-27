@@ -4,10 +4,15 @@
 #include <QDebug>
 #include <QLocalServer>
 #include <QLocalSocket>
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QJsonObject>
 
 ExtensionIntegration::ExtensionIntegration(QObject *parent)
     : QObject{parent}
 {
+    ExtensionIntegration::m_pThis = this;
+
     m_firefoxNMManifestDir = QDir::homePath() + "/Library/Application Support/Mozilla/NativeMessagingHosts";
 
     qWarning() << "see https://doc.qt.io/qt-6/qlocalserver.html#removeServer";
@@ -18,6 +23,15 @@ ExtensionIntegration::ExtensionIntegration(QObject *parent)
 
     qInfo() << "listening on " << m_server.fullServerName();
     connect(&m_server, &QLocalServer::newConnection, this, &ExtensionIntegration::connectNextSocket);
+}
+
+ExtensionIntegration* ExtensionIntegration::instance() {
+    if (m_pThis == nullptr) // avoid creation of new instances
+        m_pThis = new ExtensionIntegration;
+    return ExtensionIntegration::m_pThis;
+}
+ExtensionIntegration* ExtensionIntegration::create(QQmlEngine *engine, QJSEngine *scriptEngine) {
+    return ExtensionIntegration::instance();
 }
 
 void ExtensionIntegration::connectNextSocket() {
@@ -53,15 +67,25 @@ void ExtensionIntegration::readMessage(QLocalSocket* conn) {
     qInfo() << "recieved: " << data;
 }
 
-bool ExtensionIntegration::send(const QString& data) {
+bool ExtensionIntegration::sendBlocklist(const QStringList& blocklist) {
+    QJsonDocument obj {
+        QJsonObject{
+            {"type", "blocklist"},
+            {"data", QJsonArray::fromStringList(blocklist)}
+        }
+    };
+    return sendRaw(obj.toJson(QJsonDocument::Compact));
+}
+
+bool ExtensionIntegration::sendPing() {
+    return sendRaw("{\"type\":\"ping\"}");
+}
+
+bool ExtensionIntegration::sendRaw(const QByteArray& bytes) {
     bool success{false};
-    QByteArray bytes = data.toUtf8();
     uint32_t header = bytes.size();
     for (QLocalSocket* client: std::as_const(m_clients)) {
         success |= (client->write(reinterpret_cast<char*>(&header), sizeof(header)) == sizeof(header));
-        QByteArray test = QByteArray::fromRawData(reinterpret_cast<char*>(&header),4);
-        qInfo() << header;
-        qInfo() << test.toHex();
         success |= (client->write(bytes) == bytes.length());
     }
     if (!success) qInfo() << "did not write to any clients";

@@ -32,9 +32,12 @@ public:
 
     virtual QHash<int, QByteArray> roleNames() const override;
 
-    bool appendItem();
+public slots:
+    void appendItem();
+    void appendItem(Blocklist* blocklist);
 
     bool removeItem(const QModelIndex &index);
+    bool removeItem(int i);
 
 private:
     QVector<Blocklist*> m_blocklists;
