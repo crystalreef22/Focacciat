@@ -49,6 +49,7 @@ void TodoItem::setBlocklist(Blocklist* value) {
         });
         if (_watching) _blocklist->setWatching(true);
     }
+    if (_watching) applyBlocklist();
     emit blocklistChanged();
 }
 
@@ -79,6 +80,7 @@ bool TodoItem::timerExpired() {
 
 bool TodoItem::applyBlocklist() {
     if (_blocklist== nullptr) {
+        Blocklist::removeAllBlocks();
         return false;
     }
     _blocklist->applyBlocks();
