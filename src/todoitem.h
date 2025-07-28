@@ -2,7 +2,7 @@
 #define TODOITEM_H
 
 #include <QObject>
-#include <QModelIndex>
+#include <QPointer>
 #include <blocklist.h>
 
 class TodoItem : public QObject {
@@ -13,7 +13,7 @@ class TodoItem : public QObject {
     Q_PROPERTY(long long timeElapsed READ timeElapsed WRITE setTimeElapsed NOTIFY timeElapsedChanged FINAL)
     Q_PROPERTY(long long timeRemaining READ timeRemaining NOTIFY timeRemainingChanged FINAL)
     Q_PROPERTY(bool timerExpired READ timerExpired NOTIFY timerExpiredChanged FINAL)
-    Q_PROPERTY(QPersistentModelIndex blocklistIndex READ blocklistIndex WRITE setBlocklistIndex NOTIFY blocklistIndexChanged FINAL)
+    Q_PROPERTY(QPointer<Blocklist> blocklist MEMBER _blocklist FINAL)
 public:
     explicit TodoItem(QObject *parent = nullptr);
 
@@ -23,13 +23,11 @@ public:
     long long timeElapsed() const;
     long long timeRemaining() const;
     bool timerExpired();
-    QPersistentModelIndex blocklistIndex();
 
     void setDone(bool value);
     void setDescription(QString value);
     void setTimeEstimate(long long value);
     void setTimeElapsed(long long value);
-    void setBlocklistIndex(QPersistentModelIndex index);
 
 signals:
     void doneChanged();
@@ -38,7 +36,6 @@ signals:
     void timeElapsedChanged();
     void timeRemainingChanged();
     void timerExpiredChanged();
-    void blocklistIndexChanged();
 
 public slots:
     void updateTimer();
@@ -54,7 +51,7 @@ private:
 
     bool _timerExpired;
 
-    QPersistentModelIndex _blocklistIndex; //AAAAAAAAAAAAAA
+    QPointer<Blocklist> _blocklist;
 };
 
 #endif // TODOITEM_H
