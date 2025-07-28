@@ -55,8 +55,8 @@ bool TodoItem::timerExpired() {
 }
 
 bool TodoItem::applyBlocklist() {
-    if (_blocklist.isNull()) {
+    if (!_blocklistIndex.isValid()) {
         return false;
     }
-    return _blocklist->applyBlocks();
+    return static_cast<Blocklist*>(_blocklistIndex.internalPointer())->applyBlocks();
 }

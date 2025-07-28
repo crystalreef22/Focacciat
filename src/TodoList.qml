@@ -13,7 +13,7 @@ import FocusAssist9
 
 ColumnLayout {
     property string labelText: ""
-    property BlocklistListModel blocklists
+    property BlocklistListModel blocklists;
 
     MediaPlayer {
         id: expiredNotifier;
@@ -71,6 +71,13 @@ ColumnLayout {
             text: todoModel.activeItem ? FormatUtils.msToTime(todoModel.activeItem.timeRemaining) : "xx:xx:xx"
             font.features: { "tnum": true }
         }
+        ComboBox {
+            enabled: todoModel.activeItem
+            model: blocklists
+            textRole: "name"
+            // todo: make a filter model overlayed on top, that can create a custom per-todoitem thing
+            currentIndex: todoModel.activeItem?.item.blocklistIndex.valid ? todoModel.activeItem.item.blocklistIndex : -1;
+        }
     }
 
     Frame {
@@ -88,7 +95,9 @@ ColumnLayout {
                 }
 
                 delegate: RowLayout {
+                    id: todoListViewDelegate
                     width: todoListView.width
+                    required property var model
                     CheckBox {
                         checked: model.active
                         onClicked: model.active = checked
@@ -114,6 +123,12 @@ ColumnLayout {
                     Label {
                         text: FormatUtils.msToTime(model.item.timeRemaining)
                         font.features: { "tnum": true }
+                    }
+                    ComboBox {
+                        model: blocklists
+                        textRole: "name"
+                        // todo: make a filter model overlayed on top, that can create a custom per-todoitem thing
+                        currentIndex: todoListViewDelegate.model.item.blocklistIndex.valid ? todoListViewDelegate.model.item.blocklistIndex : -1  // AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
                     }
                 }
             }
