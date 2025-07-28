@@ -53,3 +53,10 @@ bool TodoItem::timerExpired() {
     if (oldTimerExpired != _timerExpired) emit timerExpiredChanged();
     return _timerExpired;
 }
+
+bool TodoItem::applyBlocklist() {
+    if (_blocklist.isNull()) {
+        return false;
+    }
+    return _blocklist->applyBlocks();
+}

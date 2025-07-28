@@ -2,6 +2,8 @@
 #define TODOITEM_H
 
 #include <QObject>
+#include <QPointer>
+#include <blocklist.h>
 
 class TodoItem : public QObject {
     Q_OBJECT
@@ -11,6 +13,7 @@ class TodoItem : public QObject {
     Q_PROPERTY(long long timeElapsed READ timeElapsed WRITE setTimeElapsed NOTIFY timeElapsedChanged FINAL)
     Q_PROPERTY(long long timeRemaining READ timeRemaining NOTIFY timeRemainingChanged FINAL)
     Q_PROPERTY(bool timerExpired READ timerExpired NOTIFY timerExpiredChanged FINAL)
+    Q_PROPERTY(QPointer<Blocklist> blocklist MEMBER _blocklist FINAL)
 public:
     explicit TodoItem(QObject *parent = nullptr);
 
@@ -37,7 +40,7 @@ signals:
 public slots:
     void updateTimer();
     void resetTimer();
-
+    bool applyBlocklist();
 
 private:
     bool _done;
@@ -47,6 +50,8 @@ private:
     long long _lastResetTime;
 
     bool _timerExpired;
+
+    QPointer<Blocklist> _blocklist;
 };
 
 #endif // TODOITEM_H

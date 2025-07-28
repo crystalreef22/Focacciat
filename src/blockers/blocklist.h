@@ -10,7 +10,7 @@ class Blocklist : public QObject
     Q_PROPERTY(QString websiteList MEMBER m_websiteList NOTIFY websiteListChanged FINAL)
 public:
     explicit Blocklist(QObject *parent = nullptr);
-    Blocklist(const QString &name);
+    Blocklist(const QString &name, QObject *parent = nullptr);
 
     QString name; // holds the name of the blocklist, optional
 
@@ -19,6 +19,7 @@ signals:
 
 public slots:
     const bool applyBlocks();
+    static const bool removeAllBlocks();
 
 private:
     QString m_websiteList;

@@ -6,12 +6,14 @@ import QtMultimedia
 import "components" as MyComponents
 
 import Todo 1.0
+import FocusAssist9
 
 // https://github.com/rohanrajpal/QtToDoList
 // https://www.youtube.com/watch?v=9BcAYDlpuT8
 
 ColumnLayout {
     property string labelText: ""
+    property BlocklistListModel blocklists
 
     MediaPlayer {
         id: expiredNotifier;

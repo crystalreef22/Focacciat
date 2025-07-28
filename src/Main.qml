@@ -32,6 +32,7 @@ ApplicationWindow {
 
             TodoList {
                 labelText: "today's tasks"
+                blocklists: blocklists
             }
             RowLayout {
                 Button {
@@ -49,10 +50,13 @@ ApplicationWindow {
                 text: "Ping extension"
                 onClicked: ExtensionIntegration.sendPing();
             }
+            BlocklistListModel {
+                id: blocklists
+            }
 
             BlocklistPopup {
                 id: blocklistPopup
-                blocklists: BlocklistListModel{}
+                blocklists: blocklists
             }
 
             Button {

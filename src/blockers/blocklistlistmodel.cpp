@@ -7,7 +7,6 @@ BlocklistListModel::BlocklistListModel(QObject *parent)
     appendItem();
 }
 
-
 int BlocklistListModel::rowCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
@@ -57,12 +56,9 @@ QHash<int, QByteArray> BlocklistListModel::roleNames() const {
 }
 
 void BlocklistListModel::appendItem() {
-    appendItem(new Blocklist{"Blocklist " + QString::number(m_blocklists.length()+1)});
-}
-void BlocklistListModel::appendItem(Blocklist *blocklist) {
     const int index = m_blocklists.size();
     beginInsertRows(QModelIndex{}, index, index);
-    m_blocklists.append(blocklist);
+    m_blocklists.append(new Blocklist("Blocklist " + QString::number(m_blocklists.length()+1), this));
     endInsertRows();
 }
 bool BlocklistListModel::removeItem(const QModelIndex &index) {
@@ -75,7 +71,7 @@ bool BlocklistListModel::removeItem(int i) {
     if (m_blocklists.length() == 1) {
         beginResetModel();
         m_blocklists.at(0)->deleteLater();
-        m_blocklists[0] = new Blocklist{"Blocklist 1"};
+        m_blocklists[0] = new Blocklist("Blocklist 1", this);
         endResetModel();
         return true;
     }

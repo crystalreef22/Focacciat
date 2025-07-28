@@ -3,6 +3,7 @@
 
 #include <QAbstractListModel>
 #include <QtQmlIntegration/qqmlintegration.h>
+#include <QPointer>
 #include "blocklist.h"
 
 class BlocklistListModel : public QAbstractListModel
@@ -12,6 +13,8 @@ class BlocklistListModel : public QAbstractListModel
 
 public:
     explicit BlocklistListModel(QObject *parent = nullptr);
+    BlocklistListModel (const BlocklistListModel&) = delete;
+    BlocklistListModel& operator=(const BlocklistListModel&) = delete;
 
     enum Roles {
         NameRole = Qt::UserRole,
@@ -34,7 +37,6 @@ public:
 
 public slots:
     void appendItem();
-    void appendItem(Blocklist* blocklist);
 
     bool removeItem(const QModelIndex &index);
     bool removeItem(int i);

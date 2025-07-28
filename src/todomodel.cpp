@@ -75,7 +75,7 @@ QHash<int, QByteArray> TodoModel::roleNames() const {
 void TodoModel::appendItem() {
     const int index = _list.size();
     beginInsertRows(QModelIndex{}, index, index);
-    _list.append(new TodoItem{});
+    _list.append(new TodoItem(this));
     endInsertRows();
 }
 

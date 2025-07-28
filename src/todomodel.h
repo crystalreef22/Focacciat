@@ -15,6 +15,10 @@ class TodoModel : public QAbstractListModel {
 public:
     explicit TodoModel(QObject *parent = nullptr);
 
+    // delete copy constuctor: TodoItems will be in a weird linked unsafe state
+    TodoModel (const TodoModel&) = delete;
+    TodoModel& operator= (const TodoModel&) = delete;
+
     enum Roles {
         ItemRole = Qt::UserRole,
         ActiveRole
@@ -47,7 +51,7 @@ public slots:
 
 
 private:
-    QVector<TodoItem *> _list;
+    QVector<TodoItem *> _list; // TodoItems are parented so no destructor needed
     QModelIndex _activeIndex;
     QTimer _timer;
 };
