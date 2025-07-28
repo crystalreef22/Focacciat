@@ -23,7 +23,7 @@ QVariant BlocklistListModel::data(const QModelIndex &index, int role) const
     Blocklist* const item = m_blocklists.at(index.row());
     switch (role) {
     case NameRole:
-        return QVariant(item->name);
+        return QVariant(item->name());
     case ItemRole:
         return QVariant::fromValue(item);
     }
@@ -34,7 +34,7 @@ QVariant BlocklistListModel::data(const QModelIndex &index, int role) const
 bool BlocklistListModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     if (role == NameRole && index.isValid() && data(index, role) != value) {
-        m_blocklists.at(index.row())->name = value.toString();
+        m_blocklists.at(index.row())->setName(value.toString());
         emit dataChanged(index, index, {role});
         return true;
     }

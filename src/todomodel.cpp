@@ -41,11 +41,11 @@ bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int rol
     case ActiveRole:
         _timer.disconnect();
         if (_activeIndex == index) {
-            _activeIndex = QModelIndex{};
+            _activeIndex = QPersistentModelIndex{};
             emit activeItemChanged();
             return true;
         }
-        const auto oldIndex = _activeIndex;
+        const QModelIndex oldIndex = _activeIndex;
         _activeIndex = index;
         item->resetTimer();
         connect(&_timer, &QTimer::timeout, item, &TodoItem::updateTimer);
@@ -82,7 +82,7 @@ void TodoModel::appendItem() {
 void TodoModel::removeCompletedItems() {
     // make sure to clear active index if removed
     if (_activeIndex.isValid() && _list.at(_activeIndex.row())->done()) {
-        _activeIndex = QModelIndex{};
+        _activeIndex = QPersistentModelIndex{};
         emit activeItemChanged();
     }
 

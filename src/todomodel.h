@@ -52,7 +52,7 @@ public slots:
 
 private:
     QVector<TodoItem *> _list; // TodoItems are parented so no destructor needed
-    QModelIndex _activeIndex;
+    QPersistentModelIndex _activeIndex;
     QTimer _timer;
 };
 

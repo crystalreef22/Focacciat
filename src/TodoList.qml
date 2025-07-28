@@ -88,6 +88,8 @@ ColumnLayout {
                 }
 
                 delegate: RowLayout {
+                    id: todoListViewDelegate
+                    required property var model
                     width: todoListView.width
                     CheckBox {
                         checked: model.active
@@ -114,6 +116,30 @@ ColumnLayout {
                     Label {
                         text: FormatUtils.msToTime(model.item.timeRemaining)
                         font.features: { "tnum": true }
+                    }
+                    ComboBox {
+                        displayText: todoListViewDelegate.model.item.blocklist ? todoListViewDelegate.model.item.blocklist.name : "None"
+                        focusPolicy: Qt.TabFocus
+                        popup: Menu {
+                            id: todoListViewComboboxPopup
+                            popupType: Popup.Native
+                            MenuItem {
+                                text: "None"
+                                onTriggered: todoListViewDelegate.model.item.blocklist = null;
+                            }
+                            MenuSeparator{}
+                            Instantiator {
+                                id: todoListViewComboboxPopupInstantiator
+                                model: blocklists
+                                delegate: MenuItem {
+                                    text: model.name
+                                    checked: todoListViewDelegate.model.item.blocklist === model.item
+                                    onTriggered: todoListViewDelegate.model.item.blocklist = model.item
+                                }
+                                onObjectAdded: (index, object) => todoListViewComboboxPopup.insertItem(index+2, object) // index 1 is None, 2 is seperator
+                                onObjectRemoved: (index, object) => todoListViewComboboxPopup.removeItem(object)
+                            }
+                        }
                     }
                 }
             }

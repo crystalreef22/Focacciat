@@ -12,13 +12,14 @@ QString TodoItem::description() const { return _description; }
 long long TodoItem::timeEstimate() const { return _timeEstimate; }
 long long TodoItem::timeElapsed() const { return _timeElapsed; }
 long long TodoItem::timeRemaining() const { return _timeEstimate - _timeElapsed; }
+Blocklist* TodoItem::blocklist() const {return _blocklist;}
 
 void TodoItem::setDone(bool value) {
     _done = value;
     emit doneChanged();
 }
 
-void TodoItem::setDescription(QString value){
+void TodoItem::setDescription(const QString &value){
     _description = value;
     emit descriptionChanged();
 }
@@ -34,6 +35,19 @@ void TodoItem::setTimeElapsed(long long value){
     resetTimer();
     emit timeElapsedChanged();
     emit timeRemainingChanged();
+}
+void TodoItem::setBlocklist(Blocklist* value) {
+    if (_blocklist) {
+        _blocklist->disconnect(this);
+    }
+    _blocklist = value;
+    if (_blocklist) {
+        connect(_blocklist, &Blocklist::destroyed, this, [this]{
+            _blocklist = nullptr;
+            emit blocklistChanged();
+        });
+    }
+    emit blocklistChanged();
 }
 
 void TodoItem::resetTimer() {
@@ -55,8 +69,10 @@ bool TodoItem::timerExpired() {
 }
 
 bool TodoItem::applyBlocklist() {
-    if (_blocklist.isNull()) {
+    if (_blocklist== nullptr) {
         return false;
     }
     return _blocklist->applyBlocks();
 }
+
+
