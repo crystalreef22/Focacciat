@@ -39,6 +39,7 @@ void TodoItem::setTimeElapsed(long long value){
 void TodoItem::setBlocklist(Blocklist* value) {
     if (_blocklist) {
         _blocklist->disconnect(this);
+        if (_watching) _blocklist->setWatching(false);
     }
     _blocklist = value;
     if (_blocklist) {
@@ -46,8 +47,16 @@ void TodoItem::setBlocklist(Blocklist* value) {
             _blocklist = nullptr;
             emit blocklistChanged();
         });
+        if (_watching) _blocklist->setWatching(true);
     }
     emit blocklistChanged();
+}
+
+void TodoItem::setWatching(bool value) {
+    _watching = value;
+    if (_blocklist) {
+        _blocklist->setWatching(value);
+    }
 }
 
 void TodoItem::resetTimer() {
@@ -72,7 +81,8 @@ bool TodoItem::applyBlocklist() {
     if (_blocklist== nullptr) {
         return false;
     }
-    return _blocklist->applyBlocks();
+    _blocklist->applyBlocks();
+    return true;
 }
 
 

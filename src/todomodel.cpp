@@ -1,5 +1,6 @@
 #include "todomodel.h"
 #include <QDebug>
+#include "blocklist.h"
 
 TodoModel::TodoModel(QObject *parent)
     : QAbstractListModel(parent)
@@ -40,14 +41,19 @@ bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int rol
         return false;
     case ActiveRole:
         _timer.disconnect();
+        TodoItem* oldItem = activeItem();
+        if (oldItem) oldItem->setWatching(false);
         if (_activeIndex == index) {
             _activeIndex = QPersistentModelIndex{};
             emit activeItemChanged();
+            Blocklist::removeAllBlocks();
             return true;
         }
         const QModelIndex oldIndex = _activeIndex;
         _activeIndex = index;
         item->resetTimer();
+        item->applyBlocklist();
+        item->setWatching(true);
         connect(&_timer, &QTimer::timeout, item, &TodoItem::updateTimer);
         emit activeItemChanged();
         emit dataChanged(oldIndex, oldIndex, {ActiveRole});

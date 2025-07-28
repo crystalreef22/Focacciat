@@ -30,6 +30,7 @@ public:
     void setTimeEstimate(long long value);
     void setTimeElapsed(long long value);
     void setBlocklist(Blocklist* value);
+    void setWatching(bool value);
 
 signals:
     void doneChanged();
@@ -54,7 +55,9 @@ private:
 
     bool _timerExpired;
 
-    Blocklist* _blocklist;
+    bool _watching; // resets blocklist watching when changing _blocklist
+
+    Blocklist* _blocklist{nullptr};
 };
 
 #endif // TODOITEM_H

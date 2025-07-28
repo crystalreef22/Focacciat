@@ -64,14 +64,37 @@ void ExtensionIntegration::socketDisconnected() {
 void ExtensionIntegration::readMessage(QLocalSocket* conn) {
     // header is taken care of by extensionhost
     QByteArray data{conn->readAll()};
-    qInfo() << "recieved: " << data;
+    QJsonDocument doc = QJsonDocument::fromJson(data);
+    if (doc.isNull() || !doc.isObject()) {
+        qWarning() << "recieved errored data: " << data;
+    } else {
+        QJsonObject obj = doc.object();
+        QJsonObject request = obj.value("request").toObject();
+        if (!request.empty()) {
+            QString type = request.value("type").toString();
+            if (type == "blocklist") {
+                qInfo() << "Sending blocklist";
+                sendBlocklist();
+            } else {
+                qWarning() << "Recieved unknown request for " << type;
+            }
+        }
+    }
 }
 
-bool ExtensionIntegration::sendBlocklist(const QStringList& blocklist) {
+void ExtensionIntegration::setBlocklist(const QStringList& blocklist, const QString &name = "") {
+    m_blocklist = blocklist;
+    m_blocklistName = name;
+    sendBlocklist();
+}
+bool ExtensionIntegration::sendBlocklist() {
     QJsonDocument obj {
         QJsonObject{
-            {"type", "blocklist"},
-            {"data", QJsonArray::fromStringList(blocklist)}
+            {"response", QJsonObject{
+                {"type", "blocklist"},
+                {"name", m_blocklistName},
+                {"data", QJsonArray::fromStringList(m_blocklist)}
+            }}
         }
     };
     return sendRaw(obj.toJson(QJsonDocument::Compact));

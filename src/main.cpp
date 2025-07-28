@@ -6,6 +6,7 @@
 
 #include "todomodel.h"
 #include "components/timeinput.h"
+#include "blocklist.h"
 
 int main(int argc, char *argv[]) {
     QGuiApplication app(argc, argv);
@@ -29,5 +30,6 @@ int main(int argc, char *argv[]) {
         Qt::QueuedConnection);
     engine.loadFromModule("FocusAssist9", "Main");
 
+    QObject::connect(&app, &QGuiApplication::aboutToQuit, &app, []{Blocklist::removeAllBlocks();}); // remove all blocks
     return app.exec();
 }

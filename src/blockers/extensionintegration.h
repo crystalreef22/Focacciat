@@ -29,7 +29,7 @@ signals:
 
 public slots:
     bool sendPing();
-    bool sendBlocklist(const QStringList& blocklist);
+    void setBlocklist(const QStringList& blocklist, const QString& name);
 
 private:
     explicit ExtensionIntegration(QObject *parent = nullptr);
@@ -38,7 +38,10 @@ private:
     void readMessage(QLocalSocket* conn);
     void socketDisconnected();
     bool sendRaw(const QByteArray& bytes);
+    bool sendBlocklist();
 
+    QStringList m_blocklist;
+    QString m_blocklistName{"None"};
     bool m_firefoxEnabled;
     QString m_firefoxNMManifestDir;
     QLocalServer m_server;
