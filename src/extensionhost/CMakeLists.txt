@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.21)
 
 project(extensionhost VERSION 0.1 LANGUAGES CXX)
 # project(extensionhost-test VERSION 0.1 LANGUAGES CXX)

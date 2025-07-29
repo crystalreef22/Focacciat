@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.21)
 
 project(Focacciat VERSION 0.1 LANGUAGES CXX)
 
@@ -62,25 +62,24 @@ target_link_libraries(Focacciat PRIVATE Qt6::Core)
 target_link_libraries(Focacciat PRIVATE Qt6::Network)
 target_link_libraries(Focacciat PRIVATE Qt6::Core)
 
-# include(GNUInstallDirs) # nothing outside of bundle
-install(TARGETS Focacciat extensionhost
+include(GNUInstallDirs)
+install(TARGETS Focacciat
     BUNDLE DESTINATION .
-    # LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    # RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
-# The extension host should be inserted into the app
+if(APPLE)
+install(TARGETS extensionhost
+        RUNTIME DESTINATION ./Focacciat.app/Contents/MacOS)
+endif()
 
-# if(APPLE)
-#     add_custom_command(TARGET Focacciat POST_BUILD
-#         COMMAND ${CMAKE_COMMAND} -E copy extensionhost/extensionhost Focacciat.app/Contents/MacOS
-#     )
-# endif()
 
 # Now generate the deployment script
 
 qt_generate_deploy_qml_app_script(
     TARGET Focacciat
     OUTPUT_SCRIPT deploy_script
+    NO_TRANSLATIONS
 )
 install(SCRIPT ${deploy_script})
