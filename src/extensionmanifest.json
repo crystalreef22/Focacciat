@@ -1,7 +1,7 @@
 {
-  "name": "FocusAssist9",
+  "name": "Focacciat",
   "description": "Example host for native messaging",
-  "path": "/Applications/FocusAssist9.app/Contents/MacOS/extensionhost",
+  "path": "/Applications/Focacciat.app/Contents/MacOS/extensionhost",
   "type": "stdio",
   "allowed_extensions": ["{8a01c744-0cd5-4c48-9be1-9f17ddc1aec3}"]
 }

@@ -116,7 +116,7 @@ bool ExtensionIntegration::sendRaw(const QByteArray& bytes) {
 }
 
 bool ExtensionIntegration::checkFirefoxEnabled() {
-    m_firefoxEnabled = QFile::exists(m_firefoxNMManifestDir + "/FocusAssist9.json");
+    m_firefoxEnabled = QFile::exists(m_firefoxNMManifestDir + "/Focacciat.json");
     emit firefoxEnabledChanged();
     return m_firefoxEnabled;
 }
@@ -131,19 +131,19 @@ bool ExtensionIntegration::setFirefoxEnabled(bool b) {
             qWarning() << "ExtensionIntegration: Firefox might not exist";
             return false;
         }
-        QFile f = QFile(":/qt/qml/FocusAssist9/extensionmanifest.json");
+        QFile f = QFile(":/qt/qml/Focacciat/extensionmanifest.json");
         if (!f.exists()) {
             qWarning() << "ExtensionIntegration: Internal error HELPTHISPROGRAMISNTWORKINGWHEREISTHERESOURCE";
             return false;
         }
         qInfo() << "other file exists";
-        if (!f.copy(m_firefoxNMManifestDir + "/FocusAssist9.json")) {
+        if (!f.copy(m_firefoxNMManifestDir + "/Focacciat.json")) {
             qWarning() << "ExtensionIntegration: Error: Manifest copy failed";
         }
         m_firefoxEnabled = true;
         emit firefoxEnabledChanged();
     } else {
-        QFile f = QFile(m_firefoxNMManifestDir + "/FocusAssist9.json");
+        QFile f = QFile(m_firefoxNMManifestDir + "/Focacciat.json");
         if (!f.exists()) {
             qWarning() << "ExtensionIntegration: It's already disabled.";
             return false;

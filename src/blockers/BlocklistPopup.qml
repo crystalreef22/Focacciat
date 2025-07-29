@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
-import FocusAssist9 1.0
+import Focacciat 1.0
 
 Popup {
     id: popup

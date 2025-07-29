@@ -3,7 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 
 import "components" as MyComponents
-import FocusAssist9 1.0
+import Focacciat 1.0
 
 ApplicationWindow {
     id: root
@@ -27,11 +27,11 @@ ApplicationWindow {
         Column {
             width: parent.width
             Label {
-                text: "FocusAssist9";
+                text: "Focacciat";
                 font.pointSize: 100;
             }
             Label {
-                text: "Debug view. Dark mode will be glitchy. Make sure to open FocusAssist9 before opening Firefox, and install the extension so that blocking will work."
+                text: "Debug view. Dark mode will be glitchy. Make sure to open Focacciat before opening Firefox, and install the extension so that blocking will work."
                 width: parent.width
                 wrapMode: Text.Wrap
                 bottomPadding: 10

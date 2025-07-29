@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(FocusAssist9 VERSION 0.1 LANGUAGES CXX)
+project(Focacciat VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -13,14 +13,14 @@ qt_standard_project_setup(REQUIRES 6.5)
 
 add_subdirectory(extensionhost)
 
-qt_add_executable(FocusAssist9
+qt_add_executable(Focacciat
     main.cpp
 )
 
 
-target_include_directories(FocusAssist9 PRIVATE blockers)
-qt_add_qml_module(FocusAssist9
-    URI FocusAssist9
+target_include_directories(Focacciat PRIVATE blockers)
+qt_add_qml_module(Focacciat
+    URI Focacciat
     VERSION 1.0
     QML_FILES
         Main.qml
@@ -49,21 +49,21 @@ qt_add_qml_module(FocusAssist9
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.
-set_target_properties(FocusAssist9 PROPERTIES
-#    MACOSX_BUNDLE_GUI_IDENTIFIER com.example.FocusAssist9
+set_target_properties(Focacciat PROPERTIES
+#    MACOSX_BUNDLE_GUI_IDENTIFIER com.example.Focacciat
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
     MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
 )
 
-target_link_libraries(FocusAssist9 PRIVATE Qt6::Quick)
-target_link_libraries(FocusAssist9 PRIVATE Qt6::Core)
-target_link_libraries(FocusAssist9 PRIVATE Qt6::Network)
-target_link_libraries(FocusAssist9 PRIVATE Qt6::Core)
+target_link_libraries(Focacciat PRIVATE Qt6::Quick)
+target_link_libraries(Focacciat PRIVATE Qt6::Core)
+target_link_libraries(Focacciat PRIVATE Qt6::Network)
+target_link_libraries(Focacciat PRIVATE Qt6::Core)
 
 # include(GNUInstallDirs) # nothing outside of bundle
-install(TARGETS FocusAssist9 extensionhost
+install(TARGETS Focacciat extensionhost
     BUNDLE DESTINATION .
     # LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     # RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
@@ -72,15 +72,15 @@ install(TARGETS FocusAssist9 extensionhost
 # The extension host should be inserted into the app
 
 # if(APPLE)
-#     add_custom_command(TARGET FocusAssist9 POST_BUILD
-#         COMMAND ${CMAKE_COMMAND} -E copy extensionhost/extensionhost FocusAssist9.app/Contents/MacOS
+#     add_custom_command(TARGET Focacciat POST_BUILD
+#         COMMAND ${CMAKE_COMMAND} -E copy extensionhost/extensionhost Focacciat.app/Contents/MacOS
 #     )
 # endif()
 
 # Now generate the deployment script
 
 qt_generate_deploy_qml_app_script(
-    TARGET FocusAssist9
+    TARGET Focacciat
     OUTPUT_SCRIPT deploy_script
 )
 install(SCRIPT ${deploy_script})

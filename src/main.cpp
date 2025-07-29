@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
         &app,
         []() { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
-    engine.loadFromModule("FocusAssist9", "Main");
+    engine.loadFromModule("Focacciat", "Main");
 
     QObject::connect(&app, &QGuiApplication::aboutToQuit, &app, []{Blocklist::removeAllBlocks();}); // remove all blocks
     return app.exec();

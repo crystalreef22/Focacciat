@@ -47,7 +47,7 @@ int main() {
 
     // get tmpdir
     const size_t sunPathLimit = sizeof(addr.sun_path);
-    constexpr char socketName[] = "focusassist9_nmhostpipe";
+    constexpr char socketName[] = "focacciat_nmhostpipe";
     constexpr size_t socketNameLen = sizeof(socketName)/sizeof(char)-1;
     // subtract 1 for null character
     const size_t confstrMaxSize = sunPathLimit - 1 - socketNameLen;

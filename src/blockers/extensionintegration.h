@@ -46,7 +46,7 @@ private:
     QString m_firefoxNMManifestDir;
     QLocalServer m_server;
     QVector<QLocalSocket*> m_clients; // clients are automatically children of server, so are deleted
-    static constexpr char m_serverName[] = "focusassist9_nmhostpipe";
+    static constexpr char m_serverName[] = "focacciat_nmhostpipe";
 
     inline static ExtensionIntegration* m_pThis;
 };
