@@ -23,7 +23,7 @@ else()
 endif()
 
 set_target_properties(extensionhost PROPERTIES
-    MACOSX_BUNDLE TRUE
-    WIN32_EXECUTABLE TRUE
+    MACOSX_BUNDLE FALSE
+    WIN32_EXECUTABLE FALSE
 )
 # set_target_properties(extensionhost-test PROPERTIES MACOSX_BUNDLE FALSE WIN32_EXECUTABLE TRUE )
