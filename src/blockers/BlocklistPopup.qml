@@ -72,7 +72,7 @@ Popup {
                 delegate: Item {
                     ColumnLayout {
                         anchors.fill: parent;
-                        TextInput {
+                        TextField {
                             text: model.name
                             onTextEdited: model.name = text
                         }

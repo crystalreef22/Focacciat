@@ -13,7 +13,7 @@ import FocusAssist9
 
 ColumnLayout {
     property string labelText: ""
-    property BlocklistListModel blocklists
+    required property BlocklistListModel blocklists
 
     MediaPlayer {
         id: expiredNotifier;
