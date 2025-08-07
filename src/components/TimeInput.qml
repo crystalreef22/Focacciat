@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Controls
-import components 1.0
+import Focacciat 1.0
 
 FocusScope {
     id: scope
@@ -12,6 +12,8 @@ FocusScope {
     property int margin: 5
     property alias font: text.font
     property alias time: timeInput.time
+    property alias editorFlags: timeInput.editorFlags
+
     signal editingFinished;
     activeFocusOnTab: true
 
@@ -23,6 +25,7 @@ FocusScope {
         id: timeInput
         focus: scope.activeFocus
         onEditingFinished: scope.editingFinished();
+        editorFlags: TimeInput.None;
     }
 
     Keys.onPressed: (event)=> {

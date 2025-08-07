@@ -3,33 +3,42 @@
 #include <QKeyEvent>
 #include <QGUIApplication>
 #include <QClipboard>
+#include <QFlags>
 
 TimeInput::TimeInput(QObject *parent)
     : QObject{parent}
 {}
 
-int TimeInput::timeToValue(int t) {
+int TimeInput::timeToValue(int t) const {
     int val;
+    t = qAbs(t);
 
+    if (m_editorFlags & NoSeconds) {
+        t /= 60;
+    }
     val = t % 60; // secs
     t /= 60;
     val += (t % 60) * 100; // mins
     t /= 60;
-    val += (t % 60) * 10000; // hours
+    val += t * 10000; // hours
     return val;
 }
 
-int TimeInput::valueToTime(int v) {
+int TimeInput::valueToTime(int v) const {
+    if (m_editorFlags & NoSeconds) {
+        v *= 100;
+    }
     return (v / 10000  ) * 3600  // hours
          + ((v / 100) % 100) * 60    // mins
          +  v % 100                    // secs
     ;
 }
 
-int TimeInput::stringToTime(QString s) {
-    int smhd[4] = {};
+int TimeInput::stringToPositiveTime(QString s) {
+    int smhd[3] = {};
     size_t smhdI = 0;
     int place = 1;
+    if (s.length() == 0) return -1;
     for (qsizetype i = s.length() - 1; i >= 0; i--) {
         QChar c = s.at(i);
         if (c.isDigit()) {
@@ -38,7 +47,7 @@ int TimeInput::stringToTime(QString s) {
         } else {
             if (c == QChar(':') || c == QChar('\t')) {
                 smhdI++;
-                if (smhdI >= 4) return -1;
+                if (smhdI >= 3) return -1;
                 place = 1;
             } else if (QSet<QChar>({' ', '\r', '\n', ','}).contains(c)) {
             } else if (c == QChar('.')) {
@@ -46,28 +55,30 @@ int TimeInput::stringToTime(QString s) {
             } else return -1;
         }
     }
-    return smhd[0] + (smhd[1] + (smhd[2] + smhd[3] * 24) * 60) * 60;
+    return smhd[0] + (smhd[1] + (smhd[2]) * 60) * 60;
 }
 
 bool TimeInput::setFromString(QString s) {
-    int t = stringToTime(s);
-    if (t == -1) return false;
+    int t = stringToPositiveTime(s);
+    if (s.length() == 0 || t == -1) return false;
     if (t > 86400) t = 86400;
-    _internalValue = timeToValue(t);
+    m_internalValue = timeToValue(t);
+    if (m_editorFlags & AllowNegative) m_internalNegative = s.at(0) == "-";
     emit displayTextChanged();
     return true;
 }
 
-bool TimeInput::focus() const { return _focus; }
-bool TimeInput::selected() const { return _selected; }
+bool TimeInput::focus() const { return m_focus; }
+bool TimeInput::selected() const { return m_selected; }
+TimeInput::EditorFlags TimeInput::editorFlags() const { return m_editorFlags; }
 
 void TimeInput::setSelected(bool selected) {
-    _selected = selected;
+    m_selected = selected;
     emit selectedChanged();
 }
 
 void TimeInput::setFocus(bool focus) {
-    _focus = focus;
+    m_focus = focus;
     if (!focus) {
         commit();
         setSelected(false);
@@ -77,34 +88,64 @@ void TimeInput::setFocus(bool focus) {
     emit focusChanged();
 }
 
+void TimeInput::setEditorFlags(TimeInput::EditorFlags value) {
+    if ((m_editorFlags & NoSeconds) != (value & NoSeconds)) {
+        if (value & NoSeconds) {
+            m_committedValue /= 100;
+            m_internalValue /= 100;
+            emit timeChanged();
+        } else {
+            m_committedValue *= 100;
+            m_internalValue *= 100;
+        }
+    }
+    if (!(value & AllowNegative)) {
+        m_internalNegative = m_committedNegative = false;
+    }
+    m_editorFlags = value;
+    emit editorFlagsChanged();
+    emit displayTextChanged();
+}
+
 void TimeInput::commit() {
-    _internalValue = timeToValue(std::clamp(valueToTime(_internalValue),0,86400));
-    _committedValue = _internalValue;
+    m_internalValue = timeToValue(std::clamp(valueToTime(m_internalValue),0,86400));
+    m_committedValue = m_internalValue;
+    m_committedNegative = m_internalNegative;
     emit timeChanged();
     emit displayTextChanged();
     emit editingFinished();
 }
 
 QString TimeInput::displayText() const {
-    return QString("%1:%2:%3")
-        .arg(( _internalValue / 10000   )      , 2, 10, QChar('0')) // hours
-        .arg(( _internalValue / 100     ) % 100, 2, 10, QChar('0')) // mins
-        .arg(( _internalValue / 1       ) % 100, 2, 10, QChar('0'));// secs
+    const QString negative = m_internalNegative ? "-" : "";
+    if (m_editorFlags & NoSeconds) {
+        return negative + QString("%1:%2")
+            .arg(( m_internalValue / 100     )      , 2, 10, QChar('0')) // hours
+            .arg(( m_internalValue / 1       ) % 100, 2, 10, QChar('0'));// mins
+    }
+    else {
+        return negative + QString("%1:%2:%3")
+            .arg(( m_internalValue / 10000   )      , 2, 10, QChar('0')) // hours
+            .arg(( m_internalValue / 100     ) % 100, 2, 10, QChar('0')) // mins
+            .arg(( m_internalValue / 1       ) % 100, 2, 10, QChar('0'));// secs
+    }
 }
 
 int TimeInput::time() const {
-    return valueToTime(_committedValue);
+    return valueToTime(m_committedValue) * (m_committedNegative ? -1 : 1);
 }
 
 bool TimeInput::setTime(int secs) {
-    if (secs < 0) {
+    if (secs < 0 && !(m_editorFlags & AllowNegative)) {
         qWarning() << "timeinput.h: tried to set negative time";
         return false;
     }
-    _internalValue = timeToValue(secs);
+    m_internalValue = qAbs(timeToValue(secs));
+    m_internalNegative = secs < 0;
     emit timeChanged();
-    if (!_focus) {
-        _committedValue = _internalValue;
+    if (!m_focus) {
+        m_committedValue = m_internalValue;
+        m_committedNegative = m_internalNegative;
         emit displayTextChanged();
     }
     return true;
@@ -115,7 +156,8 @@ bool TimeInput::handleKeyPress(int key, int modifiers) {
         switch (key) {
         case Qt::Key_Delete:
         case Qt::Key_Backspace:
-            _internalValue = 0;
+            m_internalValue = 0;
+            m_internalNegative = false;
             emit displayTextChanged();
             break;
         case Qt::Key_A:
@@ -137,24 +179,27 @@ bool TimeInput::handleKeyPress(int key, int modifiers) {
     }
 
     if (key >= Qt::Key_0 && key <= Qt::Key_9) {
-        if (_selected) {
-            _internalValue = 0;
+        if (m_selected) {
+            m_internalValue = 0;
             setSelected(false);
         }
-        if (_internalValue > 99999) {
+        if (m_editorFlags & NoSeconds && m_internalValue > 999) {
+            return false;
+        } if (m_internalValue > 99999) {
             return false;
         }
-        _internalValue = _internalValue * 10 + key - Qt::Key_0; // append
+
+        m_internalValue = m_internalValue * 10 + key - Qt::Key_0; // append
         emit displayTextChanged();
         return true;
     }
     switch (key) {
     case Qt::Key_Delete:
     case Qt::Key_Backspace:
-        if (_selected) {
-            _internalValue = 0;
+        if (m_selected) {
+            m_internalValue = 0;
         } else {
-            _internalValue /= 10;
+            m_internalValue /= 10;
         }
         emit displayTextChanged();
         break;
@@ -164,14 +209,19 @@ bool TimeInput::handleKeyPress(int key, int modifiers) {
         commit();
         break;
     case Qt::Key_Escape:
-        if (_selected) {
+        if (m_selected) {
             setSelected(false);
         } else {
             setSelected(true);
-            _internalValue = _committedValue;
+            m_internalValue = m_committedValue;
+            m_internalNegative = m_committedNegative;
             emit selectedChanged();
             emit displayTextChanged();
         }
+        break;
+    case Qt::Key_Minus:
+        if (m_editorFlags & AllowNegative) m_internalNegative = !m_internalNegative;
+        emit displayTextChanged();
         break;
     default:
         return false;

@@ -5,14 +5,12 @@
 #include <QQmlContext>
 
 #include "todomodel.h"
-#include "components/timeinput.h"
 #include "blocklist.h"
 
 int main(int argc, char *argv[]) {
     QGuiApplication app(argc, argv);
 
     qmlRegisterType<TodoModel>("Todo", 1, 0, "TodoModel");
-    qmlRegisterType<TimeInput>("components", 1, 0, "TimeInput");
 
     QQmlApplicationEngine engine;
 

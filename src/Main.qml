@@ -70,6 +70,23 @@ ApplicationWindow {
                 text: "edit blocklist"
                 onClicked: blocklistPopup.open();
             }
+            Row {
+                MyComponents.TimeInput {
+                    id: debugTimeInput1
+                    editorFlags: (debugTimeInput1AllowNegative.checked ? TimeInput.AllowNegative : TimeInput.None) | (debugTimeInput1NoSeconds.checked ? TimeInput.NoSeconds : TimeInput.None)
+                }
+                Label {
+                    text: FormatUtils.msToTime(debugTimeInput1.time*1000)
+                }
+            }
+            CheckBox {
+                id: debugTimeInput1AllowNegative
+                text: "allow negative"
+            }
+            CheckBox {
+                id: debugTimeInput1NoSeconds
+                text: "no seconds"
+            }
         }
     }
 

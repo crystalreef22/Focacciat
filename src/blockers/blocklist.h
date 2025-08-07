@@ -2,7 +2,6 @@
 #define BLOCKLIST_H
 
 #include <QObject>
-#include <QtQmlIntegration/qqmlintegration.h>
 
 class Blocklist : public QObject
 {
