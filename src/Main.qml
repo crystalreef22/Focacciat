@@ -37,7 +37,7 @@ ApplicationWindow {
                 bottomPadding: 10
             }
 
-            TodoList {
+            TodoView {
                 labelText: "today's tasks"
                 blocklists: blocklists
             }
