@@ -4,11 +4,19 @@
 
 #include <QQmlContext>
 
+#include <QCommandLineParser>
+
 #include "todomodel.h"
 #include "blocklist.h"
 
 int main(int argc, char *argv[]) {
     QGuiApplication app(argc, argv);
+
+    QCommandLineParser parser;
+    parser.addHelpOption();
+    parser.addVersionOption();
+    parser.addOption({"debugwindow", "Show debug window instead of main"}); // Boolean option
+    parser.process(app);
 
     qmlRegisterType<TodoModel>("Todo", 1, 0, "TodoModel");
 
@@ -26,7 +34,11 @@ int main(int argc, char *argv[]) {
         &app,
         []() { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
-    engine.loadFromModule("Focacciat", "Main");
+    if (parser.isSet("debugwindow")) {
+        engine.loadFromModule("Focacciat", "DebugView");
+    } else {
+        engine.loadFromModule("Focacciat", "Main");
+    }
 
     QObject::connect(&app, &QGuiApplication::aboutToQuit, &app, []{Blocklist::removeAllBlocks();}); // remove all blocks
     return app.exec();

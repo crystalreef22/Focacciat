@@ -60,6 +60,7 @@ void TodoItem::setWatching(bool value) {
     }
 }
 
+// Call before connecting the timer
 void TodoItem::resetTimer() {
     _lastResetTime = QDateTime::currentMSecsSinceEpoch() - _timeElapsed;
 }

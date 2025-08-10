@@ -28,7 +28,7 @@ qt_add_qml_module(Focacciat
     URI Focacciat
     VERSION 1.0
     QML_FILES
-        Main.qml
+    DebugView.qml
         SOURCES
         SOURCES
         QML_FILES
@@ -54,6 +54,7 @@ qt_add_qml_module(Focacciat
         SOURCES
         SOURCES projectprogressmodel.h projectprogressmodel.cpp
         QML_FILES ProjectView.qml
+        QML_FILES Main.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

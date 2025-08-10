@@ -14,24 +14,38 @@ import Focacciat
 ColumnLayout {
     property string labelText: ""
     required property BlocklistListModel blocklists
+    required property TodoModel todoModel
 
     MediaPlayer {
         id: expiredNotifier;
+        property bool muted
+        property bool expired
         audioOutput: AudioOutput { device: mediaDevices.defaultAudioOutput; }
         source: "media/alm_focus.mp3";
         loops: MediaPlayer.Infinite;
-        function setPlayStatus(b) {
-            if (b) {
-                expiredNotifier.play();
+        onExpiredChanged: ()=>{
+            if (!muted) {
+                if (expired) {
+                    play();
+                } else {
+                    stop();
+                }
+            }
+        }
+        onMutedChanged: () => {
+            if (muted) {
+                stop();
             } else {
-                expiredNotifier.stop();
+                if (expired) {
+                    play();
+                }
             }
         }
     }
     MediaDevices { id: mediaDevices }
 
     Connections { target: todoModel.activeItem; function onTimerExpiredChanged() {
-        expiredNotifier.setPlayStatus(todoModel.activeItem.timerExpired)
+        expiredNotifier.expired = todoModel.activeItem.timerExpired;
     }}
     Connections { target: todoModel; function onActiveItemChanged() {
         expiredNotifier.setPlayStatus(todoModel.activeItem && todoModel.activeItem.timerExpired)
@@ -40,6 +54,42 @@ ColumnLayout {
     Label {
         text: labelText
     }
+
+    Switch {
+        text: "mute"
+        onClicked: expiredNotifier.muted = checked;
+    }
+
+    Rectangle {
+        id: indicator;
+        width: 100;
+        height: 50;
+
+        color: "green"
+        SequentialAnimation {
+            id: flash
+            loops: Animation.Infinite
+            running: todoModel.paused;
+
+            PropertyAnimation {
+                target: indicator
+                property: "color"
+                to: "black"
+                duration: 250
+                easing {type: Easing.Linear}
+            }
+            PropertyAnimation {
+                target: indicator
+                property: "color"
+                to: "red"
+                duration: 250
+                easing {type: Easing.Linear}
+            }
+            onStarted: indicator.color = "red"
+            onStopped: indicator.color = "green"
+        }
+    }
+
     RowLayout {
         width: todoListView.width
 
@@ -82,10 +132,7 @@ ColumnLayout {
             clip: true;
             ListView {
                 id: todoListView
-                model: TodoModel {
-                    id: todoModel
-                    //list: todoList // todoList defined in main.cpp
-                }
+                model: todoModel
 
                 delegate: RowLayout {
                     id: todoListViewDelegate

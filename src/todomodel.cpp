@@ -43,6 +43,8 @@ bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int rol
         _timer.disconnect();
         TodoItem* oldItem = activeItem();
         if (oldItem) oldItem->setWatching(false);
+        _paused = false;
+        emit pausedChanged();
         if (_activeIndex == index) {
             _activeIndex = QPersistentModelIndex{};
             emit activeItemChanged();
@@ -110,4 +112,23 @@ TodoItem* TodoModel::activeItem() const {
         return _list.at(_activeIndex.row());
     else
         return nullptr;
+}
+
+bool TodoModel::paused() const { return _paused; }
+
+bool TodoModel::setPaused(bool value) {
+    if (_paused == value) return false;
+    TodoItem* item = activeItem();
+    if (!item) return false;
+
+    _paused = value;
+    if (_paused) {
+        _timer.disconnect();
+    } else {
+        item->resetTimer();
+        connect(&_timer, &QTimer::timeout, item, &TodoItem::updateTimer);
+    }
+    emit pausedChanged();
+
+    return true;
 }
