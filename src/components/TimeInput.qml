@@ -1,5 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Controls
+import QtQuick.Effects
 import Focacciat 1.0
 
 FocusScope {
@@ -39,7 +40,8 @@ FocusScope {
         width: text.width + padding
         height: text.height + padding
         border.width: scope.activeFocus ? borderWidth : 0
-        border.color: myPalette.accent
+        border.color: Qt.rgba(myPalette.accent.r, myPalette.accent.g, myPalette.accent.b, 0.5)
+        radius: 1
 
         Label {
             anchors.centerIn: parent;
@@ -53,6 +55,17 @@ FocusScope {
         }
 
 
+    }
+
+    MultiEffect {
+        source: rectangle
+        anchors.fill: rectangle
+        shadowBlur: 0.08
+        shadowEnabled: true
+        shadowColor: "black"
+        shadowOpacity: 0.23
+        shadowVerticalOffset: 1
+        shadowHorizontalOffset: 0
     }
     MouseArea {
         anchors.fill: parent
