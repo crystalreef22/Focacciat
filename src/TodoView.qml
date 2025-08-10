@@ -48,7 +48,7 @@ ColumnLayout {
         expiredNotifier.expired = todoModel.activeItem.timerExpired;
     }}
     Connections { target: todoModel; function onActiveItemChanged() {
-        expiredNotifier.setPlayStatus(todoModel.activeItem && todoModel.activeItem.timerExpired)
+        expiredNotifier.expired = todoModel.activeItem && todoModel.activeItem.timerExpired
     }}
 
     Label {
@@ -88,6 +88,12 @@ ColumnLayout {
             onStarted: indicator.color = "red"
             onStopped: indicator.color = "green"
         }
+    }
+
+    Label {
+        text: ( todoModel.paused ? "Paused for " : "Last paused " )
+              + FormatUtils.msToTime(todoModel.pausedTime)
+              + (todoModel.paused ? "" : " ago");
     }
 
     RowLayout {

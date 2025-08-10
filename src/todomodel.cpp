@@ -1,13 +1,16 @@
 #include "todomodel.h"
 #include <QDebug>
 #include "blocklist.h"
+#include <QDateTime>
 
 TodoModel::TodoModel(QObject *parent)
     : QAbstractListModel(parent)
 {
-    _timer.setInterval(100);
-    _timer.setTimerType(Qt::TimerType::PreciseTimer);
-    _timer.start();
+    m_timer.setInterval(100);
+    m_timer.setTimerType(Qt::TimerType::PreciseTimer);
+    m_timer.start();
+    resetPausedTime();
+    connect(&m_timer, &QTimer::timeout, this, &TodoModel::updatePausedTime);
 }
 
 int TodoModel::rowCount(const QModelIndex &parent) const {
@@ -16,47 +19,50 @@ int TodoModel::rowCount(const QModelIndex &parent) const {
     if (parent.isValid())
         return 0;
 
-    return _list.size();
+    return m_list.size();
 }
 
 QVariant TodoModel::data(const QModelIndex &index, int role) const {
     if (!index.isValid())
         return QVariant();
 
-    TodoItem* const item = _list.at(index.row());
+    TodoItem* const item = m_list.at(index.row());
     switch (role) {
     case ItemRole:
         return QVariant::fromValue(item);
     case ActiveRole:
-        return _activeIndex == index;
+        return m_activeIndex == index;
     }
 
     return QVariant();
 }
 
 bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int role) {
-    TodoItem*const item = _list.at(index.row());
+    TodoItem*const item = m_list.at(index.row());
     switch (role) {
     case ItemRole:
         return false;
     case ActiveRole:
-        _timer.disconnect();
         TodoItem* oldItem = activeItem();
-        if (oldItem) oldItem->setWatching(false);
-        _paused = false;
+        if (oldItem) {
+            oldItem->setWatching(false);
+            m_timer.disconnect(oldItem);
+        }
+        m_paused = false;
         emit pausedChanged();
-        if (_activeIndex == index) {
-            _activeIndex = QPersistentModelIndex{};
+        resetPausedTime();
+        if (m_activeIndex == index) {
+            m_activeIndex = QPersistentModelIndex{};
             emit activeItemChanged();
             Blocklist::removeAllBlocks();
             return true;
         }
-        const QModelIndex oldIndex = _activeIndex;
-        _activeIndex = index;
+        const QModelIndex oldIndex = m_activeIndex;
+        m_activeIndex = index;
         item->resetTimer();
         item->applyBlocklist();
         item->setWatching(true);
-        connect(&_timer, &QTimer::timeout, item, &TodoItem::updateTimer);
+        connect(&m_timer, &QTimer::timeout, item, &TodoItem::updateTimer);
         emit activeItemChanged();
         emit dataChanged(oldIndex, oldIndex, {ActiveRole});
         emit dataChanged(index, index, {ActiveRole});
@@ -81,24 +87,28 @@ QHash<int, QByteArray> TodoModel::roleNames() const {
 }
 
 void TodoModel::appendItem() {
-    const int index = _list.size();
+    const int index = m_list.size();
     beginInsertRows(QModelIndex{}, index, index);
-    _list.append(new TodoItem(this));
+    m_list.append(new TodoItem(this));
     endInsertRows();
 }
 
 void TodoModel::removeCompletedItems() {
     // make sure to clear active index if removed
-    if (_activeIndex.isValid() && _list.at(_activeIndex.row())->done()) {
-        _activeIndex = QPersistentModelIndex{};
+    if (m_activeIndex.isValid() && m_list.at(m_activeIndex.row())->done()) {
+        m_activeIndex = QPersistentModelIndex{};
+        resetPausedTime();
+        m_paused = false;
+        emit pausedChanged();
         emit activeItemChanged();
+        Blocklist::removeAllBlocks();
     }
 
-    for (qsizetype i = 0; i < _list.size();) {
-        if (_list.at(i)->done()) {
+    for (qsizetype i = 0; i < m_list.size();) {
+        if (m_list.at(i)->done()) {
             beginRemoveRows(QModelIndex{}, i, i);
-            _list.at(i)->deleteLater();
-            _list.removeAt(i);
+            m_list.at(i)->deleteLater();
+            m_list.removeAt(i);
             endRemoveRows();
         }
         else {
@@ -107,26 +117,41 @@ void TodoModel::removeCompletedItems() {
     }
 }
 
+
+long long TodoModel::pausedTime() { return m_pausedTime; }
+void TodoModel::updatePausedTime() {
+    m_pausedTime = QDateTime::currentMSecsSinceEpoch() - m_pausedLastResetTime;
+    emit pausedTimeChanged();
+}
+
+void TodoModel::resetPausedTime() {
+    m_pausedLastResetTime = QDateTime::currentMSecsSinceEpoch();
+    m_pausedTime = 0;
+    emit pausedTimeChanged();
+}
+
 TodoItem* TodoModel::activeItem() const {
-    if (_activeIndex.isValid())
-        return _list.at(_activeIndex.row());
+    if (m_activeIndex.isValid())
+        return m_list.at(m_activeIndex.row());
     else
         return nullptr;
 }
 
-bool TodoModel::paused() const { return _paused; }
+bool TodoModel::paused() const { return m_paused; }
 
 bool TodoModel::setPaused(bool value) {
-    if (_paused == value) return false;
+    if (m_paused == value) return false;
     TodoItem* item = activeItem();
     if (!item) return false;
 
-    _paused = value;
-    if (_paused) {
-        _timer.disconnect();
+    m_paused = value;
+    if (m_paused) {
+        m_timer.disconnect(item);
+        resetPausedTime();
     } else {
         item->resetTimer();
-        connect(&_timer, &QTimer::timeout, item, &TodoItem::updateTimer);
+        resetPausedTime();
+        connect(&m_timer, &QTimer::timeout, item, &TodoItem::updateTimer);
     }
     emit pausedChanged();
 

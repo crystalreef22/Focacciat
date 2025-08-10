@@ -12,6 +12,7 @@ class TodoModel : public QAbstractListModel {
     Q_OBJECT
     Q_PROPERTY(TodoItem* activeItem READ activeItem NOTIFY activeItemChanged FINAL)
     Q_PROPERTY(bool paused READ paused WRITE setPaused NOTIFY pausedChanged FINAL)
+    Q_PROPERTY(long long pausedTime READ pausedTime NOTIFY pausedTimeChanged FINAL)
 
 public:
     explicit TodoModel(QObject *parent = nullptr);
@@ -42,10 +43,12 @@ public:
     TodoItem* activeItem() const;
     bool paused() const;
     bool setPaused(bool value);
+    long long pausedTime();
 
 signals:
     void activeItemChanged();
     void pausedChanged();
+    void pausedTimeChanged();
 
 public slots:
     void appendItem();
@@ -55,10 +58,15 @@ public slots:
 
 
 private:
-    QVector<TodoItem *> _list; // TodoItems are parented so no destructor needed
-    QPersistentModelIndex _activeIndex;
-    QTimer _timer;
-    bool _paused;
+    QVector<TodoItem *> m_list; // TodoItems are parented so no destructor needed
+    QPersistentModelIndex m_activeIndex;
+    QTimer m_timer;
+    bool m_paused;
+    long long m_pausedTime;
+    long long m_pausedLastResetTime;
+
+    void updatePausedTime();
+    void resetPausedTime();
 };
 
 #endif // TODOMODEL_H
