@@ -51,6 +51,9 @@ qt_add_qml_module(Focacciat
         QML_FILES blockers/BlocklistPopup.qml
         SOURCES projectitem.h projectitem.cpp
         SOURCES projectmodel.h projectmodel.cpp
+        SOURCES
+        SOURCES projectprogressmodel.h projectprogressmodel.cpp
+        QML_FILES ProjectView.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

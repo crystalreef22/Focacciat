@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QDateTime>
 
+#include "projectprogressmodel.h"
+
 class ProjectItem : public QObject
 {
     Q_OBJECT
@@ -23,7 +25,7 @@ private:
     QString m_description;
     QDateTime m_dueDate;
     QDateTime m_startDate;
-    //TodoTemplateModel m_todoTemplateModel;
+    ProjectProgressModel dailyProjectProgress;
 };
 
 #endif // PROJECTITEM_H

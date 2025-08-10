@@ -28,7 +28,13 @@ Qt::ItemFlags ProjectModel::flags(const QModelIndex &index) const
     if (!index.isValid())
         return Qt::NoItemFlags;
 
-    return QAbstractItemModel::flags(index) | Qt::ItemIsEditable; // FIXME: Implement me!
+    return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
+}
+
+QHash<int, QByteArray> ProjectModel::roleNames() const {
+    QHash<int, QByteArray> names;
+    names[ItemRole] = "item";
+    return names;
 }
 
 void ProjectModel::appendItem()
