@@ -9,7 +9,7 @@ import Todo 1.0
 ApplicationWindow {
     id: root
     width: 640
-    height: 640
+    height: 900
     visible: true
     title: qsTr("Focus Assist 9??")
 

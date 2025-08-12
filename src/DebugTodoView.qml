@@ -144,6 +144,15 @@ ColumnLayout {
                     id: todoListViewDelegate
                     required property var model
                     width: todoListView.width
+                    Button {
+                        text: "mvTo"
+                        onClicked: moveAmt.text = todoModel.moveItem(model.index, parseInt(moveAmt.text)) ? "" : "Failed!";
+                    }
+                    TextField {
+                        id: moveAmt
+                        Layout.preferredWidth: 15
+                    }
+
                     CheckBox {
                         checked: model.active
                         onClicked: model.active = checked

@@ -117,6 +117,15 @@ void TodoModel::removeCompletedItems() {
     }
 }
 
+bool TodoModel::moveItem(int fromIndex, int toIndex) {
+    if (fromIndex >= m_list.length() || toIndex >= m_list.length() || fromIndex < 0 || toIndex < 0 || fromIndex == toIndex) return false;
+    beginMoveRows(QModelIndex{}, fromIndex, fromIndex, QModelIndex{}, toIndex + (toIndex > fromIndex));
+    // see https://doc.qt.io/qt-6/qabstractitemmodel.html#beginMoveRows ~~~~~~~ ^
+    m_list.move(fromIndex, toIndex);
+    endMoveRows();
+    return true;
+}
+
 
 long long TodoModel::pausedTime() { return m_pausedTime; }
 void TodoModel::updatePausedTime() {

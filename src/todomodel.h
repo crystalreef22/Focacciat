@@ -53,6 +53,7 @@ signals:
 public slots:
     void appendItem();
     void removeCompletedItems();
+    bool moveItem(int fromIndex, int toIndex);
 
 
 
