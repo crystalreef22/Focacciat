@@ -9,6 +9,7 @@ find_package(Qt6 REQUIRED COMPONENTS Core)
 find_package(Qt6 REQUIRED COMPONENTS Network)
 find_package(Qt6 REQUIRED COMPONENTS Core)
 find_package(Qt6 REQUIRED COMPONENTS Core)
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
@@ -57,6 +58,7 @@ qt_add_qml_module(Focacciat
         QML_FILES ProjectView.qml
         QML_FILES Main.qml
         QML_FILES TodoView.qml
+        SOURCES maskedapplicationwindow.h maskedapplicationwindow.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -75,6 +77,7 @@ target_link_libraries(Focacciat PRIVATE Qt6::Core)
 target_link_libraries(Focacciat PRIVATE Qt6::Network)
 target_link_libraries(Focacciat PRIVATE Qt6::Core)
 target_link_libraries(Focacciat PRIVATE Qt6::Core)
+target_link_libraries(Focacciat PRIVATE Qt6::Core Qt6::Widgets)
 
 include(GNUInstallDirs)
 install(TARGETS Focacciat

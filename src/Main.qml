@@ -8,11 +8,10 @@ import "components" as MyComponents
 import Focacciat 1.0
 import Todo 1.0
 
-ApplicationWindow {
+MaskedApplicationWindow {
     id: root
     width: 170
     height: 250
-    //maximumWidth: width; maximumHeight: height; minimumWidth: width; minimumHeight: height;
     flags: Qt.WindowStaysOnTopHint | Qt.WA_TranslucentBackground | Qt.FramelessWindowHint
     color: "#00000000" // Note: for translucency, use a rectangle with color instead because blending is broken on MacOS
 
@@ -24,10 +23,11 @@ ApplicationWindow {
     MouseArea {
         id: defaultFocus
         anchors.fill: parent
+        acceptedButtons: Qt.LeftButton
         onClicked: defaultFocus.forceActiveFocus();
-        drag.onActiveChanged: if (drag.active) root.startSystemMove();
-        drag.target: defaultFocus
+        onPressed: root.startSystemMove();
     }
+    // RESIZE mousearea is at bottom
 
     visible: true
 
@@ -183,6 +183,43 @@ ApplicationWindow {
             blocklists: BlocklistListModel{}
         }
 
+    }
+    MouseArea {
+        id: resizeArea
+        anchors.fill: parent
+        anchors.topMargin: progressCircle.height/2
+        hoverEnabled: Qt.platform.os === "osx" // if Qt 7, change to "macos". MacOS enables resizing by default even for those windows.
+        acceptedButtons: Qt.LeftButton
+
+        property int edges: 0;
+        property int edgeOffest: 5;
+
+        function setEdges(x, y) {
+            edges = 0;
+            if(Qt.platform.os === "osx") return;
+            if(x < edgeOffest) edges |= Qt.LeftEdge;
+            if(x > (width - edgeOffest))  edges |= Qt.RightEdge;
+            //if(y < edgeOffest) edges |= Qt.TopEdge;
+            if(y > (height - edgeOffest)) edges |= Qt.BottomEdge;
+        }
+
+        cursorShape: {
+            return !containsMouse ? Qt.ArrowCursor:
+                   edges == 3 || edges == 12 ? Qt.SizeFDiagCursor :
+                   edges == 5 || edges == 10 ? Qt.SizeBDiagCursor :
+                   edges & 9 ? Qt.SizeVerCursor :
+                   edges & 6 ? Qt.SizeHorCursor : Qt.ArrowCursor;
+        }
+
+        onPositionChanged: setEdges(mouseX, mouseY);
+        onPressed: (mouse)=>{
+            setEdges(mouseX, mouseY);
+            if(edges && containsMouse) {
+                startSystemResize(edges);
+            } else {
+                mouse.accepted = false;
+            }
+        }
     }
 
 }
