@@ -75,6 +75,8 @@ FocusScope {
             }
             scope.forceActiveFocus()
         }
+        cursorShape: Qt.IBeamCursor
+        hoverEnabled: true
     }
 
 }

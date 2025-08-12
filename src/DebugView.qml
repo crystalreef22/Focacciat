@@ -45,7 +45,7 @@ ApplicationWindow {
                 onClicked: todoModel.paused = !todoModel.paused;
             }
 
-            TodoView {
+            DebugTodoView {
                 labelText: "today's tasks"
                 blocklists: blocklists
                 todoModel: TodoModel{id: todoModel}

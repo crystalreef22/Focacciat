@@ -32,7 +32,7 @@ qt_add_qml_module(Focacciat
         SOURCES
         SOURCES
         QML_FILES
-        QML_FILES TodoView.qml
+        QML_FILES DebugTodoView.qml
         SOURCES
         SOURCES
         SOURCES todomodel.h todomodel.cpp
@@ -56,6 +56,7 @@ qt_add_qml_module(Focacciat
         SOURCES projectprogressmodel.h projectprogressmodel.cpp
         QML_FILES ProjectView.qml
         QML_FILES Main.qml
+        QML_FILES TodoView.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
