@@ -166,8 +166,8 @@ MaskedApplicationWindow {
                 visible: progressCircle.width > 100
                 anchors.horizontalCenter: parent.horizontalCenter
                 editorFlags: TimeInput.NoSeconds
-                time: todoModel.activeItem.timeEstimate
-                onEditingFinished: todoModel.activeItem.timeEstimate = time
+                time: todoModel.activeItem.timeEstimate / 1000
+                onEditingFinished: todoModel.activeItem.timeEstimate = time * 1000
             }
         }
     }
