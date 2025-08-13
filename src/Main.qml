@@ -14,6 +14,7 @@ MaskedApplicationWindow {
     height: 250
     flags: Qt.WindowStaysOnTopHint | Qt.WA_TranslucentBackground | Qt.FramelessWindowHint
     color: "#00000000" // Note: for translucency, use a rectangle with color instead because blending is broken on MacOS
+    //opacity: 0.5
 
     TodoModel{id: todoModel}
 
