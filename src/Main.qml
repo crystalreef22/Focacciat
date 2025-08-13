@@ -1,6 +1,7 @@
 
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Controls.impl
 import QtQuick.Layouts
 import QtQuick.Shapes
 
@@ -112,9 +113,10 @@ MaskedApplicationWindow {
                 }
                 Rectangle {
                     width: 24; height: 24
-                    Image {
-                        source: "media/edit_24.png"
-                        width: 24; height: 24
+                    IconLabel {
+                        icon.name: "mail-message-new"
+                        icon.width: 24; icon.height: 24
+                        icon.color: "black";
                     }
                     color: "white"
                     radius: 5

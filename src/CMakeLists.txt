@@ -42,7 +42,7 @@ qt_add_qml_module(Focacciat
         SOURCES formatutils.h formatutils.cpp
         SOURCES todoitem.h todoitem.cpp
         RESOURCES media/alm_focus.mp3
-        RESOURCES media/edit_24.png
+        RESOURCES
         QML_FILES components/TimeInput.qml
         SOURCES components/timeinput.h components/timeinput.cpp
         SOURCES

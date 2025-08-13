@@ -29,10 +29,35 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.fillHeight: true
         clip: true;
+        acceptedButtons: Qt.NoButton // disable flicking
 
         ScrollBar.vertical: ScrollBar {
+            id: scrollbar
             policy: ScrollBar.AsNeeded
-            active: false
+            background: null
+            opacity: 0
+            states: [
+                State {
+                    name: "active"
+                    when: scrollbar.active
+                    PropertyChanges { target: scrollbar; opacity: 1}
+                },
+                State {
+                    name: "inactive"
+                    when: !scrollbar.active
+                    PropertyChanges { target: scrollbar; opacity: 0 }
+                }
+            ]
+
+            transitions: [
+                Transition {
+                    from: "active"
+                    to: "inactive"
+                    OpacityAnimator {
+                        duration: 500
+                    }
+                }
+            ]
         }
 
         delegate: Rectangle {
@@ -42,10 +67,16 @@ ColumnLayout {
             height: 32
             color: model.active ? myPalette.highlight : myPalette.dark
 
+            DragHandler {
+            }
             RowLayout {
                 id: todoDelegateLayout
                 width: parent.width - 15
                 anchors.centerIn: parent
+
+                Button {
+                    icon.name: "go-up"
+                }
 
                 CheckBox {
                     checked: model.item.done
