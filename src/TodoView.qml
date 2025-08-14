@@ -29,7 +29,12 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.fillHeight: true
         clip: true;
+        spacing: 2
         acceptedButtons: Qt.NoButton // disable flicking
+
+        MouseArea {
+            onClicked: forceActiveFocus()
+        }
 
         ScrollBar.vertical: ScrollBar {
             id: scrollbar
@@ -67,16 +72,15 @@ ColumnLayout {
             height: 32
             color: model.active ? myPalette.highlight : myPalette.dark
 
-            DragHandler {
+            DragHandler { }
+            MouseArea {
+                onClicked: forceActiveFocus()
+                anchors.fill: parent
             }
             RowLayout {
                 id: todoDelegateLayout
                 width: parent.width - 15
                 anchors.centerIn: parent
-
-                Button {
-                    icon.name: "go-up"
-                }
 
                 CheckBox {
                     checked: model.item.done
@@ -124,6 +128,12 @@ ColumnLayout {
                     }
                 }
             }
+            MouseArea {
+                acceptedButtons: Qt.RightButton
+                anchors.fill: parent
+                onClicked: model.active = !model.active
+            }
+
         }
     }
 

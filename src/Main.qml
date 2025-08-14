@@ -12,7 +12,7 @@ import Todo 1.0
 MaskedApplicationWindow {
     id: root
     width: 170
-    height: 250
+    height: 300
     flags: Qt.WindowStaysOnTopHint | Qt.WA_TranslucentBackground | Qt.FramelessWindowHint
     color: "#00000000" // Note: for translucency, use a rectangle with color instead because blending is broken on MacOS
     //opacity: 0.5

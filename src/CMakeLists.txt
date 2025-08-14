@@ -59,6 +59,8 @@ qt_add_qml_module(Focacciat
         QML_FILES Main.qml
         QML_FILES TodoView.qml
         SOURCES maskedapplicationwindow.h maskedapplicationwindow.cpp
+        QML_FILES
+        QML_FILES
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
