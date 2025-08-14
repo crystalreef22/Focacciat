@@ -4,6 +4,7 @@ import QtQuick.Controls
 import QtQuick.Controls.impl
 import QtQuick.Layouts
 import QtQuick.Shapes
+import QtQuick.Effects
 
 import "components" as MyComponents
 import Focacciat 1.0
@@ -72,106 +73,127 @@ MaskedApplicationWindow {
             }
         }
     }
+    Component{
+    id: circleMask
+    MultiEffect {
+        source: progressContent
+        maskEnabled: true
+        maskSource: progressCircle
+        anchors.fill: progressCircle
+    }
+    }
+
     Item {
-        height: progressCircle.height
+        layer.enabled: true
+        layer.effect: circleMask
+        id: progressContent
         width: progressCircle.width
+        height: progressCircle.height
         Column {
-            anchors.centerIn: parent;
-            Label {
-                anchors.horizontalCenter: parent.horizontalCenter
-                text: FormatUtils.msToTime(todoModel.activeItem.timeRemaining)
-                font.features: {"tnum": 1}
-                font.pixelSize: 24;
-            }
+            y: -30
             Item {
-                width: timerLabelText.width
-                height: timerLabelText.height
-                id: timerLabel
-                visible: progressCircle.width > 150;
-                state: "DISPLAY"
-                Label {
-                    id: timerLabelText
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    topPadding: 4
-                    bottomPadding: topPadding
-                    text: todoModel.activeItem.description
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    font.pixelSize: 14;
-                    fontSizeMode: Text.HorizontalFit
-                    wrapMode: Text.Wrap
-                    elide: Text.ElideRight
-                    width: progressCircle.width - 40
-                    maximumLineCount: 2
-                    MouseArea{
-                        id: timerLabelArea
-                        anchors.fill: parent
-                        onClicked: timerLabel.state = "EDITING"
-                        hoverEnabled: true
-                        cursorShape: Qt.IBeamCursor
-                    }
-                }
-                Rectangle {
-                    width: 24; height: 24
-                    IconLabel {
-                        icon.name: "mail-message-new"
-                        icon.width: 24; icon.height: 24
-                        icon.color: "black";
-                    }
-                    color: "white"
-                    radius: 5
+                width: progressCircle.width
+                height: progressCircle.height
+                Column {
                     anchors.centerIn: parent
-                    visible: timerLabelArea.containsMouse
-                }
+                    Label {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        text: FormatUtils.msToTime(todoModel.activeItem.timeRemaining)
+                        font.features: {"tnum": 1}
+                        font.pixelSize: 24;
+                    }
+                    Item {
+                        width: timerLabelText.width
+                        height: timerLabelText.height
+                        id: timerLabel
+                        visible: progressCircle.width > 150;
+                        state: "DISPLAY"
+                        Label {
+                            id: timerLabelText
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            topPadding: 4
+                            bottomPadding: topPadding
+                            text: todoModel.activeItem.description
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            font.pixelSize: 14;
+                            fontSizeMode: Text.HorizontalFit
+                            wrapMode: Text.Wrap
+                            elide: Text.ElideRight
+                            width: progressCircle.width - 40
+                            maximumLineCount: 2
+                            MouseArea{
+                                id: timerLabelArea
+                                anchors.fill: parent
+                                onClicked: timerLabel.state = "EDITING"
+                                hoverEnabled: true
+                                cursorShape: Qt.IBeamCursor
+                            }
+                        }
+                        Rectangle {
+                            width: 24; height: 24
+                            IconLabel {
+                                icon.name: "mail-message-new"
+                                icon.width: 24; icon.height: 24
+                                icon.color: "black";
+                            }
+                            color: "white"
+                            radius: 5
+                            anchors.centerIn: parent
+                            visible: timerLabelArea.containsMouse
+                        }
 
-                TextField {
-                    id: timerLabelEdit
-                    visible: false
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    text: todoModel.activeItem.description
-                    onEditingFinished: () => {
-                        todoModel.activeItem.description = text
-                        timerLabel.state = "DISPLAY"
+                        TextField {
+                            id: timerLabelEdit
+                            visible: false
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            text: todoModel.activeItem.description
+                            onEditingFinished: () => {
+                                todoModel.activeItem.description = text
+                                timerLabel.state = "DISPLAY"
+                            }
+                        }
+                        states: [
+                            State {
+                                name: "DISPLAY"
+                                PropertyChanges {
+                                    target: timerLabelText
+                                    visible: true
+                                }
+                                PropertyChanges {
+                                    target: timerLabelEdit
+                                    visible: false
+                                }
+                            },
+                            State {
+                                name: "EDITING"
+                                PropertyChanges {
+                                    target: timerLabelText
+                                    visible: false
+                                }
+                                PropertyChanges {
+                                    target: timerLabelEdit
+                                    visible: true
+                                }
+                                StateChangeScript {
+                                    script: timerLabelEdit.forceActiveFocus();
+                                }
+                            }
+                        ]
+                    }
+
+                    MyComponents.TimeInput {
+                        visible: progressCircle.width > 100
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        editorFlags: TimeInput.NoSeconds
+                        time: todoModel.activeItem.timeEstimate / 1000
+                        onEditingFinished: todoModel.activeItem.timeEstimate = time * 1000
                     }
                 }
-                states: [
-                    State {
-                        name: "DISPLAY"
-                        PropertyChanges {
-                            target: timerLabelText
-                            visible: true
-                        }
-                        PropertyChanges {
-                            target: timerLabelEdit
-                            visible: false
-                        }
-                    },
-                    State {
-                        name: "EDITING"
-                        PropertyChanges {
-                            target: timerLabelText
-                            visible: false
-                        }
-                        PropertyChanges {
-                            target: timerLabelEdit
-                            visible: true
-                        }
-                        StateChangeScript {
-                            script: timerLabelEdit.forceActiveFocus();
-                        }
-                    }
-                ]
             }
-
-            MyComponents.TimeInput {
-                visible: progressCircle.width > 100
-                anchors.horizontalCenter: parent.horizontalCenter
-                editorFlags: TimeInput.NoSeconds
-                time: todoModel.activeItem.timeEstimate / 1000
-                onEditingFinished: todoModel.activeItem.timeEstimate = time * 1000
-            }
+            Rectangle { color: "yellow"; height: 50; width: progressCircle.width}
         }
     }
     ColumnLayout {

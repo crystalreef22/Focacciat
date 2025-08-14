@@ -13,5 +13,5 @@ void MaskedApplicationWindow::resizeEvent(QResizeEvent *ev) {
     // slightly bigger to allow for anti aliasing within the shape
     QRegion region = QRegion(-1, -1, size.width()+2, size.width()+2, QRegion::Ellipse)
                     .united({0, size.width()/2, size.width(), size.height(), QRegion::Rectangle});
-    setMask(region);
+    //setMask(region);
 }
