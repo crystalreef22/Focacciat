@@ -90,7 +90,7 @@ MaskedApplicationWindow {
                     Label {
                         anchors.horizontalCenter: parent.horizontalCenter
                         horizontalAlignment: Text.AlignHCenter
-                        text: FormatUtils.msToTime(todoModel.activeItem.timeRemaining)
+                        text: FormatUtils.msToTime(todoModel.activeItem?.timeRemaining)
                         font.features: {"tnum": 1}
                         font.pixelSize: 24;
                         //width: circleSliceLength(mapToItem(progressCircle, 0, y).y) - 20
@@ -106,7 +106,7 @@ MaskedApplicationWindow {
                         anchors.horizontalCenter: parent.horizontalCenter
                         topPadding: 4
                         bottomPadding: topPadding
-                        text: todoModel.activeItem.description
+                        text: todoModel.activeItem?.description ?? ""
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         font.pixelSize: 14;
@@ -144,9 +144,9 @@ MaskedApplicationWindow {
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.horizontalCenter: parent.horizontalCenter
                         width: timerLabelText.width
-                        text: todoModel.activeItem.description
+                        text: todoModel.activeItem?.description ?? ""
                         onEditingFinished: () => {
-                            todoModel.activeItem.description = text
+                            if(todoModel.activeItem) {todoModel.activeItem.description = text}
                             timerLabel.state = "DISPLAY"
                         }
                     }
@@ -183,8 +183,8 @@ MaskedApplicationWindow {
                     visible: timerViewerWrapper.height > 100
                     anchors.horizontalCenter: parent.horizontalCenter
                     editorFlags: TimeInput.NoSeconds
-                    time: todoModel.activeItem.timeEstimate / 1000
-                    onEditingFinished: todoModel.activeItem.timeEstimate = time * 1000
+                    time: todoModel.activeItem?.timeEstimate / 1000
+                    onEditingFinished: ()=>{ if(todoModel.activeItem) {todoModel.activeItem.timeEstimate = time * 1000} }
                 }
             }
         }
