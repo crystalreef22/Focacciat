@@ -72,7 +72,7 @@ ColumnLayout {
             height: 32
             color: model.active ? myPalette.highlight : myPalette.dark
 
-            DragHandler { }
+            //DragHandler { }
             MouseArea {
                 onClicked: forceActiveFocus()
                 anchors.fill: parent
@@ -88,6 +88,7 @@ ColumnLayout {
                 }
                 TextInput {
                     Layout.fillWidth: true
+                    clip: true
                     onEditingFinished: model.item.description = text
                     text: model.item.description
                 }
