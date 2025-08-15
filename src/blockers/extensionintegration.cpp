@@ -11,6 +11,7 @@
 ExtensionIntegration::ExtensionIntegration(QObject *parent)
     : QObject{parent}
 {
+    return;
     ExtensionIntegration::m_pThis = this;
 
     m_firefoxNMManifestDir = QDir::homePath() + "/Library/Application Support/Mozilla/NativeMessagingHosts";
