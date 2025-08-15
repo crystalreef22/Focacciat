@@ -132,7 +132,7 @@ ColumnLayout {
             MouseArea {
                 acceptedButtons: Qt.RightButton
                 anchors.fill: parent
-                onClicked: model.active = !model.active
+                onClicked: ()=>{model.active = !model.active; forceActiveFocus()}
             }
 
         }

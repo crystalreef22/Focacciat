@@ -14,6 +14,8 @@ MaskedApplicationWindow {
     id: root
     width: 170
     height: 300
+    minimumWidth: 150
+    minimumHeight: 150
     flags: Qt.WindowStaysOnTopHint | Qt.WA_TranslucentBackground | Qt.FramelessWindowHint
     color: "#00000000" // Note: for translucency, use a rectangle with color instead because blending is broken on MacOS
     //opacity: 0.5
@@ -127,7 +129,8 @@ MaskedApplicationWindow {
                         fontSizeMode: Text.HorizontalFit
                         wrapMode: Text.Wrap
                         elide: Text.ElideRight
-                        width: circleSliceLength(mapToItem(progressCircle, 0, y).y) - 20
+                        width: circleSliceLength(mapToItem(progressCircle, 0, y + timerViewerWrapper.height * 0).y) - 20
+                                                                                // ^ update width when this changes
 
                         maximumLineCount: 2
                         MouseArea{
@@ -217,6 +220,12 @@ MaskedApplicationWindow {
                     id: pvInfo
                     font.pixelSize: 18;
                 }
+                Text {
+                    Layout.alignment: Qt.AlignHCenter
+                    id: pvInfoTaskselTip
+                    text: "(right click a task to select)"
+                    visible: false
+                }
 
             }
         }
@@ -253,6 +262,10 @@ MaskedApplicationWindow {
                     text: "No task selected"
                     Layout.topMargin: 10
                 }
+                PropertyChanges {
+                    target: pvInfoTaskselTip
+                    visible: true
+                }
             }
         ]
         transitions: Transition {
@@ -266,15 +279,18 @@ MaskedApplicationWindow {
             }
         }
     }
+    Button {
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: progressCircle.bottom
+        text: todoModel.paused ? "resume" : "pause"
+        onClicked: todoModel.paused = !todoModel.paused
+        visible: todoModel.activeItem
+    }
+
     ColumnLayout {
         anchors.top: progressCircle.bottom
         anchors.bottom: parent.bottom
         width: progressCircle.width
-        Button {
-            text: "pause"
-            onClicked: todoModel.paused = !todoModel.paused
-            checked: todoModel.paused
-        }
 
         TodoView {
             labelText: "Tasks"
