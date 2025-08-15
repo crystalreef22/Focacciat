@@ -43,8 +43,6 @@ MaskedApplicationWindow {
     }
     Shape {
         id: progressCircle
-        property int barMargin: 2
-        property real progress: todoModel.activeItem.timeElapsed / todoModel.activeItem.timeEstimate
         anchors.left: parent.left; anchors.right: parent.right;
         height: width
         // anti alias
@@ -60,20 +58,6 @@ MaskedApplicationWindow {
             }
         }
 
-        ShapePath {
-            id: pcpath
-            fillColor: "#00000000"
-            strokeColor: myPalette.accent
-            strokeWidth: 8
-            capStyle: ShapePath.RoundCap
-
-            PathAngleArc {
-                centerX: progressCircle.width/2; centerY: centerX
-                radiusX: centerX-pcpath.strokeWidth/2 - progressCircle.barMargin; radiusY: radiusX
-                startAngle: -90
-                sweepAngle: progressCircle.progress * 360
-            }
-        }
     }
     function circleSliceLength(x) {
         return 2*Math.sqrt(progressCircle.width*x-x**2) // 2\sqrt{2rs-s^{2}}
@@ -276,6 +260,29 @@ MaskedApplicationWindow {
                 property: "height"
                 duration: 800
                 easing.type: Easing.OutQuart
+            }
+        }
+    }
+    Shape {
+        id: progressCircleProgress
+        property int barMargin: 2
+        property real progress: todoModel.activeItem ? (todoModel.activeItem.timeElapsed / todoModel.activeItem.timeEstimate) : 0
+        anchors.fill: progressCircle
+        // anti alias
+        layer.enabled: true
+        layer.samples: 4
+        ShapePath {
+            id: pcpath
+            strokeColor: myPalette.accent
+            fillColor: "#00000000"
+            strokeWidth: 8
+            capStyle: ShapePath.RoundCap
+
+            PathAngleArc {
+                centerX: progressCircleProgress.width/2; centerY: centerX
+                radiusX: centerX-pcpath.strokeWidth/2 - progressCircleProgress.barMargin; radiusY: radiusX
+                startAngle: -90
+                sweepAngle: progressCircleProgress.progress * 360
             }
         }
     }
