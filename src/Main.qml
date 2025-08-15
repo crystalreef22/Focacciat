@@ -15,10 +15,9 @@ MaskedApplicationWindow {
     width: 170
     height: 300
     minimumWidth: 150
-    minimumHeight: 150
+    minimumHeight: progressCircle.height + 5
     flags: Qt.WindowStaysOnTopHint | Qt.WA_TranslucentBackground | Qt.FramelessWindowHint
     color: "#00000000" // Note: for translucency, use a rectangle with color instead because blending is broken on MacOS
-    //opacity: 0.5
 
     TodoModel{id: todoModel}
 
@@ -37,6 +36,7 @@ MaskedApplicationWindow {
     visible: true
 
     Rectangle {
+        id: windowBG
         anchors.fill: parent
         anchors.topMargin: progressCircle.height/2
         color: myPalette.window
@@ -57,7 +57,6 @@ MaskedApplicationWindow {
                 sweepAngle: 360
             }
         }
-
     }
     function circleSliceLength(x) {
         return 2*Math.sqrt(progressCircle.width*x-x**2) // 2\sqrt{2rs-s^{2}}
