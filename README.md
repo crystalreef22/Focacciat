@@ -13,3 +13,4 @@ This is a program I've been working on to reduce my procrastination. Features in
 - [ ] an interface for writing plugins
 - [ ] and more!
 
+Follow development of this project on [my Discord server](https://discord.gg/whEy3EMDac)!
