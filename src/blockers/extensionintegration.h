@@ -42,13 +42,13 @@ private:
 
     QStringList m_blocklist;
     QString m_blocklistName{"None"};
-    bool m_firefoxEnabled;
+    bool m_firefoxEnabled{false};
     QString m_firefoxNMManifestDir;
     QLocalServer m_server;
     QVector<QLocalSocket*> m_clients; // clients are automatically children of server, so are deleted
     static constexpr char m_serverName[] = "focacciat_nmhostpipe";
 
-    inline static ExtensionIntegration* m_pThis;
+    inline static ExtensionIntegration* m_pThis{nullptr};
 };
 
 #endif // EXTENSIONINTEGRATION_H

@@ -11,9 +11,7 @@ class ProjectModel : public QAbstractListModel
 public:
     explicit ProjectModel(QObject *parent = nullptr);
 
-    enum Roles {
-        ItemRole = Qt::UserRole
-    };
+    enum Roles { ItemRole = Qt::UserRole };
     Q_ENUM(Roles)
 
     // Basic functionality:
@@ -30,7 +28,7 @@ public slots:
     void removeItem(int i);
 
 private:
-    QVector<ProjectItem*> m_projectItems;
+    QVector<ProjectItem *> m_projectItems;
 };
 
 #endif // PROJECTMODEL_H

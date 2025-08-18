@@ -10,6 +10,7 @@ class MaskedApplicationWindow : public QQuickWindow
     QML_ELEMENT
 public:
     explicit MaskedApplicationWindow(QWindow *parent = nullptr);
+
 protected:
     void resizeEvent(QResizeEvent *) override;
 

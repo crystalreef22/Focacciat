@@ -1,15 +1,16 @@
-#include <QGuiApplication>
 #include <QFontDatabase>
+#include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
 #include <QQmlContext>
 
 #include <QCommandLineParser>
 
-#include "todomodel.h"
 #include "blocklist.h"
+#include "todomodel.h"
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     QGuiApplication app(argc, argv);
 
     QCommandLineParser parser;
@@ -40,6 +41,8 @@ int main(int argc, char *argv[]) {
         engine.loadFromModule("Focacciat", "Main");
     }
 
-    QObject::connect(&app, &QGuiApplication::aboutToQuit, &app, []{Blocklist::removeAllBlocks();}); // remove all blocks
+    QObject::connect(&app, &QGuiApplication::aboutToQuit, &app, [] {
+        Blocklist::removeAllBlocks();
+    }); // remove all blocks
     return app.exec();
 }

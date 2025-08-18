@@ -4,7 +4,8 @@
 #include <QObject>
 #include <QtQmlIntegration/qqmlintegration.h>
 
-class FormatUtils : public QObject {
+class FormatUtils : public QObject
+{
     Q_OBJECT
     QML_ELEMENT
     QML_SINGLETON
