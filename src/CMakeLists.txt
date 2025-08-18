@@ -13,7 +13,7 @@ find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
-add_subdirectory(extensionhost)
+#add_subdirectory(extensionhost)
 
 qt_add_executable(Focacciat
     main.cpp
@@ -89,8 +89,8 @@ install(TARGETS Focacciat
 )
 
 if(APPLE)
-install(TARGETS extensionhost
-        RUNTIME DESTINATION ./Focacciat.app/Contents/MacOS)
+#install(TARGETS extensionhost
+        #RUNTIME DESTINATION ./Focacciat.app/Contents/MacOS)
 endif()
 
 
