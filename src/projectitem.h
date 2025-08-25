@@ -1,8 +1,8 @@
 #ifndef PROJECTITEM_H
 #define PROJECTITEM_H
 
-#include <QObject>
 #include <QDateTime>
+#include <QObject>
 
 #include "projectprogressmodel.h"
 

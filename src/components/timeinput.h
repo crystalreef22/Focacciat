@@ -56,12 +56,12 @@ public slots:
 private:
     EditorFlags m_editorFlags{None};
 
-    int m_internalValue;
-    int m_committedValue;
+    int m_internalValue{0};
+    int m_committedValue{0};
     bool m_internalNegative{false};
     bool m_committedNegative{false};
-    bool m_focus;
-    bool m_selected;
+    bool m_focus{false};
+    bool m_selected{false};
     int timeToValue(int t) const;
     int valueToTime(int v) const;
     static int stringToPositiveTime(QString s);

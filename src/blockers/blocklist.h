@@ -39,7 +39,7 @@ public slots:
 private:
     QString m_websiteList;
     QString m_name;
-    bool m_watching;
+    bool m_watching{false};
 };
 
 #endif // BLOCKLIST_H

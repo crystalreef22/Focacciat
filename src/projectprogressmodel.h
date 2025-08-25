@@ -4,7 +4,8 @@
 #include <QAbstractListModel>
 #include <QDateTime>
 
-struct ProgressItem {
+struct ProgressItem
+{
     QDateTime timestamp;
     int progress;
 };
@@ -22,7 +23,7 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
 private:
-    QVector<ProgressItem*> progress;
+    QVector<ProgressItem *> progress;
 };
 
 #endif // PROJECTPROGRESSMODEL_H

@@ -31,7 +31,8 @@ Qt::ItemFlags ProjectModel::flags(const QModelIndex &index) const
     return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
 }
 
-QHash<int, QByteArray> ProjectModel::roleNames() const {
+QHash<int, QByteArray> ProjectModel::roleNames() const
+{
     QHash<int, QByteArray> names;
     names[ItemRole] = "item";
     return names;
