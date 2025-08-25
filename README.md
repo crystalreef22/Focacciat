@@ -8,7 +8,7 @@ This is a program I've been working on to reduce my procrastination. Features in
 - [ ] website and app blocker
 - [x] always-on-top timers
   - [ ] optionally, the Pomodoro technique
-- [x] project manager
+- [ ] project manager
 - [ ] simple bookmark/note manager
 - [ ] an interface for writing plugins
 - [ ] and more!
