@@ -285,13 +285,25 @@ MaskedApplicationWindow {
             }
         }
     }
-    Button {
+    Row {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: progressCircle.bottom
-        text: todoModel.paused ? "resume" : "pause"
-        onClicked: todoModel.paused = !todoModel.paused
         visible: todoModel.activeItem
+        Button {
+            text: todoModel.paused ? "\u25b6\ufe0f" : "\u23f8\ufe0f"
+            onClicked: todoModel.paused = !todoModel.paused
+            visible: todoModel.activeItem
+        }
+        Button {
+            text: "\u23f9\ufe0f"
+            onClicked: () => {
+                todoModel.activeItem.timeElapsed = 0
+                todoModel.paused = true;
+            };
+            visible: todoModel.activeItem
+        }
     }
+
 
     ColumnLayout {
         anchors.top: progressCircle.bottom
