@@ -61,6 +61,7 @@ qt_add_qml_module(Focacciat
         SOURCES maskedapplicationwindow.h maskedapplicationwindow.cpp
         QML_FILES
         QML_FILES
+        QML_FILES TimerCircle.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
