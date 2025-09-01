@@ -3,15 +3,11 @@
 
 #include <QAbstractListModel>
 #include <QModelIndex>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 #include <QTimer>
 
-#include <QtQmlIntegration/qqmlintegration.h>
-
 #include "todoitem.h"
-
-class QQmlEngine;
-class QJSEngine;
 
 class TodoModel : public QAbstractListModel
 {
@@ -19,12 +15,10 @@ class TodoModel : public QAbstractListModel
     Q_PROPERTY(TodoItem *activeItem READ activeItem NOTIFY activeItemChanged FINAL)
     Q_PROPERTY(bool paused READ paused WRITE setPaused NOTIFY pausedChanged FINAL)
     Q_PROPERTY(long long pausedTime READ pausedTime NOTIFY pausedTimeChanged FINAL)
-
     QML_ELEMENT
-    QML_SINGLETON
+
 public:
-    static TodoModel* instance();
-    static TodoModel* create(QQmlEngine *engine, QJSEngine *scriptEngine);
+    explicit TodoModel(QObject *parent = nullptr);
 
     // delete copy constuctor: TodoItems will be in a weird linked unsafe state
     TodoModel(const TodoModel &) = delete;
@@ -61,8 +55,6 @@ public slots:
     bool moveItem(int fromIndex, int toIndex);
 
 private:
-    explicit TodoModel(QObject *parent = nullptr);
-
     QVector<TodoItem *> m_list; // TodoItems are parented so no destructor needed
     QPersistentModelIndex m_activeIndex;
     QTimer m_timer;
@@ -72,8 +64,6 @@ private:
 
     void updatePausedTime();
     void resetPausedTime();
-
-    inline static TodoModel* m_pThis;
 };
 
 #endif // TODOMODEL_H

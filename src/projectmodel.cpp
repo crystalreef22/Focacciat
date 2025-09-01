@@ -4,15 +4,6 @@ ProjectModel::ProjectModel(QObject *parent)
     : QAbstractListModel(parent)
 {}
 
-ProjectModel* ProjectModel::instance() {
-    if (m_pThis == nullptr) // avoid creation of new instances
-        m_pThis = new ProjectModel;
-    return ProjectModel::m_pThis;
-}
-ProjectModel* ProjectModel::create(QQmlEngine *engine, QJSEngine *scriptEngine) {
-    return ProjectModel::instance();
-}
-
 int ProjectModel::rowCount(const QModelIndex &parent) const
 {
     // For list models only the root node (an invalid parent) should return the list's size. For all

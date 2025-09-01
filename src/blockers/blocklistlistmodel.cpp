@@ -6,15 +6,6 @@ BlocklistListModel::BlocklistListModel(QObject *parent)
 {
     appendItem();
 }
-BlocklistListModel* BlocklistListModel::instance() {
-    if (m_pThis == nullptr) // avoid creation of new instances
-        m_pThis = new BlocklistListModel;
-    return BlocklistListModel::m_pThis;
-}
-BlocklistListModel* BlocklistListModel::create(QQmlEngine *engine, QJSEngine *scriptEngine) {
-    return BlocklistListModel::instance();
-}
-
 
 int BlocklistListModel::rowCount(const QModelIndex &parent) const
 {

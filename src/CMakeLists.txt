@@ -10,6 +10,7 @@ find_package(Qt6 REQUIRED COMPONENTS Network)
 find_package(Qt6 REQUIRED COMPONENTS Core)
 find_package(Qt6 REQUIRED COMPONENTS Core)
 find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Core)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
@@ -62,6 +63,7 @@ qt_add_qml_module(Focacciat
         QML_FILES
         QML_FILES
         QML_FILES TimerCircle.qml
+        SOURCES globalstate.h globalstate.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -81,6 +83,7 @@ target_link_libraries(Focacciat PRIVATE Qt6::Network)
 target_link_libraries(Focacciat PRIVATE Qt6::Core)
 target_link_libraries(Focacciat PRIVATE Qt6::Core)
 target_link_libraries(Focacciat PRIVATE Qt6::Core Qt6::Widgets)
+target_link_libraries(Focacciat PRIVATE Qt6::Core)
 
 include(GNUInstallDirs)
 install(TARGETS Focacciat
