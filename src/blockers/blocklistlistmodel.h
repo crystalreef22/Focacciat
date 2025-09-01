@@ -10,6 +10,7 @@ class BlocklistListModel : public QAbstractListModel
 {
     Q_OBJECT
     QML_ELEMENT
+    QML_UNCREATABLE("Managed by GlobalState.h")
 
 public:
     explicit BlocklistListModel(QObject *parent = nullptr);

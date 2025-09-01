@@ -16,6 +16,7 @@ class TodoModel : public QAbstractListModel
     Q_PROPERTY(bool paused READ paused WRITE setPaused NOTIFY pausedChanged FINAL)
     Q_PROPERTY(long long pausedTime READ pausedTime NOTIFY pausedTimeChanged FINAL)
     QML_ELEMENT
+    QML_UNCREATABLE("Managed by GlobalState.h")
 
 public:
     explicit TodoModel(QObject *parent = nullptr);

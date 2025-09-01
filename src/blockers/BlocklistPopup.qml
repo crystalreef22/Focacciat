@@ -30,7 +30,7 @@ Popup {
             spacing: 2
             Repeater {
                 id: tabbarRepeater
-                model: BlocklistListModel
+                model: GlobalState.blocklistListModel
                 onItemAdded: (index, item)=>{
                     item.checked = true
                     tabbar.currentIndex = index
@@ -51,7 +51,7 @@ Popup {
             }
             TabButton {
                 text: "+"
-                onToggled: BlocklistListModel.appendItem()
+                onToggled: GlobalState.blocklistListModel.appendItem()
             }
 
             Component.onCompleted: () => {
@@ -66,7 +66,7 @@ Popup {
             Layout.fillWidth: true
             Layout.fillHeight: true
             Repeater {
-                model: BlocklistListModel
+                model: GlobalState.blocklistListModel
                 delegate: Item {
                     ColumnLayout {
                         anchors.fill: parent;
@@ -76,7 +76,7 @@ Popup {
                         }
                         Button {
                             text: "delete"
-                            onClicked: BlocklistListModel.removeItem(index)
+                            onClicked: GlobalState.blocklistListModel.removeItem(index)
                         }
 
                         ScrollView {

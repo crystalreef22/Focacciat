@@ -113,7 +113,7 @@ ColumnLayout {
                         MenuSeparator{}
                         Instantiator {
                             id: todoListViewComboboxPopupInstantiator
-                            model: BlocklistListModel
+                            model: GlobalState.blocklistListModel;
                             delegate: MenuItem {
                                 text: model.name
                                 checked: todoListViewDelegate.model.item.blocklist === model.item
@@ -138,12 +138,12 @@ ColumnLayout {
         Layout.alignment: Qt.AlignBottom
         Button {
             text: qsTr("Add")
-            onClicked: TodoModel.appendItem()
+            onClicked: GlobalState.todoModel.appendItem()
             Layout.fillWidth: true
         }
         Button {
             text: qsTr("Remove checked")
-            onClicked: TodoModel.removeCompletedItems()
+            onClicked: GlobalState.todoModel.removeCompletedItems()
             Layout.fillWidth: true
         }
     }

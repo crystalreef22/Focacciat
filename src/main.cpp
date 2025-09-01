@@ -20,18 +20,13 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
-    /*
-    // set monospaced font
-    const QFont monospacedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
-    engine.rootContext()->setContextProperty("monospacedFont", monospacedFont);
-    */
-
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreationFailed,
         &app,
         []() { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
+
     if (parser.isSet("debugwindow")) {
         engine.loadFromModule("Focacciat", "DebugView");
     } else {

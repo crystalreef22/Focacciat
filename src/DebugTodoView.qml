@@ -41,11 +41,11 @@ ColumnLayout {
     }
     MediaDevices { id: mediaDevices }
 
-    Connections { target: TodoModel.activeItem; function onTimerExpiredChanged() {
-        expiredNotifier.expired = TodoModel.activeItem.timerExpired;
+    Connections { target: GlobalState.todoModel.activeItem; function onTimerExpiredChanged() {
+        expiredNotifier.expired = GlobalState.todoModel.activeItem.timerExpired;
     }}
-    Connections { target: TodoModel; function onActiveItemChanged() {
-        expiredNotifier.expired = TodoModel.activeItem && TodoModel.activeItem.timerExpired
+    Connections { target: GlobalState.todoModel; function onActiveItemChanged() {
+        expiredNotifier.expired = GlobalState.todoModel.activeItem && GlobalState.todoModel.activeItem.timerExpired
     }}
 
     Label {
@@ -66,7 +66,7 @@ ColumnLayout {
         SequentialAnimation {
             id: flash
             loops: Animation.Infinite
-            running: TodoModel.paused;
+            running: GlobalState.todoModel.paused;
 
             PropertyAnimation {
                 target: indicator
@@ -88,40 +88,40 @@ ColumnLayout {
     }
 
     Label {
-        text: ( TodoModel.paused ? "Paused for " : "Last paused " )
-              + FormatUtils.msToTime(TodoModel.pausedTime)
-              + (TodoModel.paused ? "" : " ago");
+        text: ( GlobalState.todoModel.paused ? "Paused for " : "Last paused " )
+              + FormatUtils.msToTime(GlobalState.todoModel.pausedTime)
+              + (GlobalState.todoModel.paused ? "" : " ago");
     }
 
     RowLayout {
         width: todoListView.width
 
         Label {
-            text: TodoModel.activeItem ? "Active" : "Inactive"
+            text: GlobalState.todoModel.activeItem ? "Active" : "Inactive"
         }
 
         CheckBox {
-            checked: TodoModel.activeItem ? TodoModel.activeItem.done : false;
-            onClicked: TodoModel.activeItem.done = checked
-            enabled: TodoModel.activeItem
+            checked: GlobalState.todoModel.activeItem ? GlobalState.todoModel.activeItem.done : false;
+            onClicked: GlobalState.todoModel.activeItem.done = checked
+            enabled: GlobalState.todoModel.activeItem
         }
         TextField {
             Layout.fillWidth: true
-            onEditingFinished: TodoModel.activeItem.description = text
-            text: TodoModel.activeItem ? TodoModel.activeItem.description : ""
-            enabled: TodoModel.activeItem
+            onEditingFinished: GlobalState.todoModel.activeItem.description = text
+            text: GlobalState.todoModel.activeItem ? GlobalState.todoModel.activeItem.description : ""
+            enabled: GlobalState.todoModel.activeItem
         }
         MyComponents.TimeInput {
-            time: TodoModel.activeItem ? TodoModel.activeItem.timeEstimate/1000 : "0"
-            onEditingFinished: TodoModel.activeItem.timeEstimate = time*1000
-            enabled: TodoModel.activeItem
+            time: GlobalState.todoModel.activeItem ? GlobalState.todoModel.activeItem.timeEstimate/1000 : "0"
+            onEditingFinished: GlobalState.todoModel.activeItem.timeEstimate = time*1000
+            enabled: GlobalState.todoModel.activeItem
             implicitWidth: 80;
         }
         Label {
             text: "time left"
         }
         Label {
-            text: TodoModel.activeItem ? FormatUtils.msToTime(TodoModel.activeItem.timeRemaining) : "xx:xx:xx"
+            text: GlobalState.todoModel.activeItem ? FormatUtils.msToTime(GlobalState.todoModel.activeItem.timeRemaining) : "xx:xx:xx"
             font.features: { "tnum": true }
         }
     }
@@ -135,7 +135,7 @@ ColumnLayout {
             clip: true;
             ListView {
                 id: todoListView
-                model: TodoModel
+                model: GlobalState.todoModel
 
                 delegate: RowLayout {
                     id: todoListViewDelegate
@@ -143,7 +143,7 @@ ColumnLayout {
                     width: todoListView.width
                     Button {
                         text: "mvTo"
-                        onClicked: moveAmt.text = TodoModel.moveItem(model.index, parseInt(moveAmt.text)) ? "" : "Failed!";
+                        onClicked: moveAmt.text = GlobalState.todoModel.moveItem(model.index, parseInt(moveAmt.text)) ? "" : "Failed!";
                     }
                     TextField {
                         id: moveAmt
@@ -208,12 +208,12 @@ ColumnLayout {
     RowLayout {
         Button {
             text: qsTr("Add")
-            onClicked: TodoModel.appendItem()
+            onClicked: GlobalState.todoModel.appendItem()
             Layout.fillWidth: true
         }
         Button {
             text: qsTr("Remove completed")
-            onClicked: TodoModel.removeCompletedItems()
+            onClicked: GlobalState.todoModel.removeCompletedItems()
             Layout.fillWidth: true
         }
     }

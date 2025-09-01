@@ -7,9 +7,6 @@ import QtQuick.Controls.impl
 import "components" as MyComponents
 
 Item {
-    required property var activeItem;
-    required property bool paused;
-    required property int pausedTime;
     height: width;
     Shape {
         id: progressCircle
@@ -47,7 +44,7 @@ Item {
         id: progressContent
         width: progressCircle.width
         height: progressCircle.height
-        state: activeItem ? (paused ? "PAUSED" : "TIMER") : "STOPPED"
+        state: GlobalState.todoModel.activeItem ? (GlobalState.todoModel.paused ? "PAUSED" : "TIMER") : "STOPPED"
         Item {
             id: timerViewerWrapper
             anchors.top: parent.top
@@ -58,7 +55,7 @@ Item {
                     Label {
                         anchors.horizontalCenter: parent.horizontalCenter
                         horizontalAlignment: Text.AlignHCenter
-                        text: FormatUtils.msToTime(activeItem?.timeRemaining)
+                        text: FormatUtils.msToTime(GlobalState.todoModel.activeItem?.timeRemaining)
                         font.features: {"tnum": 1}
                         font.pixelSize: 24;
                         //width: circleSliceLength(mapToItem(progressCircle, 0, y).y) - 20
@@ -74,7 +71,7 @@ Item {
                         anchors.horizontalCenter: parent.horizontalCenter
                         topPadding: 4
                         bottomPadding: topPadding
-                        text: activeItem?.description ?? ""
+                        text: GlobalState.todoModel.activeItem?.description ?? ""
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         font.pixelSize: 14;
@@ -112,9 +109,9 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.horizontalCenter: parent.horizontalCenter
                         width: timerLabelText.width
-                        text: activeItem?.description ?? ""
+                        text: GlobalState.todoModel.activeItem?.description ?? ""
                         onEditingFinished: () => {
-                            if(activeItem) {activeItem.description = text}
+                            if(GlobalState.todoModel.activeItem) {GlobalState.todoModel.activeItem.description = text}
                             timerLabel.state = "DISPLAY"
                         }
                     }
@@ -151,8 +148,8 @@ Item {
                     visible: timerViewerWrapper.height > 100
                     anchors.horizontalCenter: parent.horizontalCenter
                     editorFlags: TimeInput.NoSeconds
-                    time: activeItem?.timeEstimate / 1000
-                    onEditingFinished: ()=>{ if(activeItem) {activeItem.timeEstimate = time * 1000} }
+                    time: GlobalState.todoModel.activeItem?.timeEstimate / 1000
+                    onEditingFinished: ()=>{ if(GlobalState.todoModel.activeItem) {GlobalState.todoModel.activeItem.timeEstimate = time * 1000} }
                 }
             }
         }
@@ -165,7 +162,7 @@ Item {
                 width: parent.width
                 Text {
                     Layout.alignment: Qt.AlignHCenter
-                    text: FormatUtils.msToTime(pausedTime)
+                    text: FormatUtils.msToTime(GlobalState.todoModel.pausedTime)
                 }
                 Text {
                     Layout.alignment: Qt.AlignHCenter
@@ -234,7 +231,7 @@ Item {
     Shape {
         id: progressCircleProgress
         property int barMargin: 2
-        property real progress: activeItem ? (activeItem.timeElapsed / activeItem.timeEstimate) : 0
+        property real progress: GlobalState.todoModel.activeItem ? (GlobalState.todoModel.activeItem.timeElapsed / GlobalState.todoModel.activeItem.timeEstimate) : 0
         anchors.fill: progressCircle
         // anti alias
         layer.enabled: true
@@ -257,19 +254,19 @@ Item {
     Row {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: progressCircle.bottom
-        visible: activeItem
+        visible: GlobalState.todoModel.activeItem
         Button {
-            text: paused ? "\u25b6\ufe0f" : "\u23f8\ufe0f"
-            onClicked: paused = !paused
-            visible: activeItem
+            text: GlobalState.todoModel.paused ? "\u25b6\ufe0f" : "\u23f8\ufe0f"
+            onClicked: GlobalState.todoModel.paused = !GlobalState.todoModel.paused
+            visible: GlobalState.todoModel.activeItem
         }
         Button {
             text: "\u23f9\ufe0f"
             onClicked: () => {
-                activeItem.timeElapsed = 0
-                paused = true;
+                GlobalState.todoModel.activeItem.timeElapsed = 0
+                GlobalState.todoModel.paused = true;
             };
-            visible: activeItem
+            visible: GlobalState.todoModel.activeItem
         }
     }
 }

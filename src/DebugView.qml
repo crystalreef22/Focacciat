@@ -39,9 +39,9 @@ ApplicationWindow {
 
             Button {
                 id: pauseButton
-                text: TodoModel.paused ? "resume" : "pause"
-                checked: TodoModel.paused;
-                onClicked: TodoModel.paused = !TodoModel.paused;
+                text: GlobalState.todoModel.paused ? "resume" : "pause"
+                checked: GlobalState.todoModel.paused;
+                onClicked: GlobalState.todoModel.paused = !GlobalState.todoModel.paused;
             }
 
             DebugTodoView {
