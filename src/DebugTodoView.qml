@@ -5,7 +5,6 @@ import QtMultimedia
 
 import "components" as MyComponents
 
-import Todo 1.0
 import Focacciat
 
 // https://github.com/rohanrajpal/QtToDoList
@@ -13,15 +12,13 @@ import Focacciat
 
 ColumnLayout {
     property string labelText: ""
-    required property BlocklistListModel blocklists
-    required property TodoModel todoModel
 
     MediaPlayer {
         id: expiredNotifier;
         property bool muted
         property bool expired
         audioOutput: AudioOutput { device: mediaDevices.defaultAudioOutput; }
-        source: "media/alm_focus.mp3";
+        source: "media/alm_focus.mp3"
         loops: MediaPlayer.Infinite;
         onExpiredChanged: ()=>{
             if (!muted) {
@@ -44,11 +41,11 @@ ColumnLayout {
     }
     MediaDevices { id: mediaDevices }
 
-    Connections { target: todoModel.activeItem; function onTimerExpiredChanged() {
-        expiredNotifier.expired = todoModel.activeItem.timerExpired;
+    Connections { target: TodoModel.activeItem; function onTimerExpiredChanged() {
+        expiredNotifier.expired = TodoModel.activeItem.timerExpired;
     }}
-    Connections { target: todoModel; function onActiveItemChanged() {
-        expiredNotifier.expired = todoModel.activeItem && todoModel.activeItem.timerExpired
+    Connections { target: TodoModel; function onActiveItemChanged() {
+        expiredNotifier.expired = TodoModel.activeItem && TodoModel.activeItem.timerExpired
     }}
 
     Label {
@@ -69,7 +66,7 @@ ColumnLayout {
         SequentialAnimation {
             id: flash
             loops: Animation.Infinite
-            running: todoModel.paused;
+            running: TodoModel.paused;
 
             PropertyAnimation {
                 target: indicator
@@ -91,40 +88,40 @@ ColumnLayout {
     }
 
     Label {
-        text: ( todoModel.paused ? "Paused for " : "Last paused " )
-              + FormatUtils.msToTime(todoModel.pausedTime)
-              + (todoModel.paused ? "" : " ago");
+        text: ( TodoModel.paused ? "Paused for " : "Last paused " )
+              + FormatUtils.msToTime(TodoModel.pausedTime)
+              + (TodoModel.paused ? "" : " ago");
     }
 
     RowLayout {
         width: todoListView.width
 
         Label {
-            text: todoModel.activeItem ? "Active" : "Inactive"
+            text: TodoModel.activeItem ? "Active" : "Inactive"
         }
 
         CheckBox {
-            checked: todoModel.activeItem ? todoModel.activeItem.done : false;
-            onClicked: todoModel.activeItem.done = checked
-            enabled: todoModel.activeItem
+            checked: TodoModel.activeItem ? TodoModel.activeItem.done : false;
+            onClicked: TodoModel.activeItem.done = checked
+            enabled: TodoModel.activeItem
         }
         TextField {
             Layout.fillWidth: true
-            onEditingFinished: todoModel.activeItem.description = text
-            text: todoModel.activeItem ? todoModel.activeItem.description : ""
-            enabled: todoModel.activeItem
+            onEditingFinished: TodoModel.activeItem.description = text
+            text: TodoModel.activeItem ? TodoModel.activeItem.description : ""
+            enabled: TodoModel.activeItem
         }
         MyComponents.TimeInput {
-            time: todoModel.activeItem ? todoModel.activeItem.timeEstimate/1000 : "0"
-            onEditingFinished: todoModel.activeItem.timeEstimate = time*1000
-            enabled: todoModel.activeItem
+            time: TodoModel.activeItem ? TodoModel.activeItem.timeEstimate/1000 : "0"
+            onEditingFinished: TodoModel.activeItem.timeEstimate = time*1000
+            enabled: TodoModel.activeItem
             implicitWidth: 80;
         }
         Label {
             text: "time left"
         }
         Label {
-            text: todoModel.activeItem ? FormatUtils.msToTime(todoModel.activeItem.timeRemaining) : "xx:xx:xx"
+            text: TodoModel.activeItem ? FormatUtils.msToTime(TodoModel.activeItem.timeRemaining) : "xx:xx:xx"
             font.features: { "tnum": true }
         }
     }
@@ -138,7 +135,7 @@ ColumnLayout {
             clip: true;
             ListView {
                 id: todoListView
-                model: todoModel
+                model: TodoModel
 
                 delegate: RowLayout {
                     id: todoListViewDelegate
@@ -146,7 +143,7 @@ ColumnLayout {
                     width: todoListView.width
                     Button {
                         text: "mvTo"
-                        onClicked: moveAmt.text = todoModel.moveItem(model.index, parseInt(moveAmt.text)) ? "" : "Failed!";
+                        onClicked: moveAmt.text = TodoModel.moveItem(model.index, parseInt(moveAmt.text)) ? "" : "Failed!";
                     }
                     TextField {
                         id: moveAmt
@@ -192,7 +189,7 @@ ColumnLayout {
                             MenuSeparator{}
                             Instantiator {
                                 id: todoListViewComboboxPopupInstantiator
-                                model: blocklists
+                                model: BlocklistListModel
                                 delegate: MenuItem {
                                     text: model.name
                                     checked: todoListViewDelegate.model.item.blocklist === model.item
@@ -211,12 +208,12 @@ ColumnLayout {
     RowLayout {
         Button {
             text: qsTr("Add")
-            onClicked: todoModel.appendItem()
+            onClicked: TodoModel.appendItem()
             Layout.fillWidth: true
         }
         Button {
             text: qsTr("Remove completed")
-            onClicked: todoModel.removeCompletedItems()
+            onClicked: TodoModel.removeCompletedItems()
             Layout.fillWidth: true
         }
     }

@@ -12,6 +12,14 @@ TodoModel::TodoModel(QObject *parent)
     resetPausedTime();
     connect(&m_timer, &QTimer::timeout, this, &TodoModel::updatePausedTime);
 }
+TodoModel* TodoModel::instance() {
+    if (m_pThis == nullptr) // avoid creation of new instances
+        m_pThis = new TodoModel;
+    return TodoModel::m_pThis;
+}
+TodoModel* TodoModel::create(QQmlEngine *engine, QJSEngine *scriptEngine) {
+    return TodoModel::instance();
+}
 
 int TodoModel::rowCount(const QModelIndex &parent) const
 {

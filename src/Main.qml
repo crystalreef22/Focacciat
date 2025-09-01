@@ -8,7 +8,6 @@ import QtQuick.Effects
 
 import "components" as MyComponents
 import Focacciat 1.0
-import Todo 1.0
 
 MaskedApplicationWindow {
     id: root
@@ -18,8 +17,6 @@ MaskedApplicationWindow {
     minimumHeight: timerCircle.height + 5
     flags: Qt.WindowStaysOnTopHint | Qt.WA_TranslucentBackground | Qt.FramelessWindowHint
     color: "#00000000" // Note: for translucency, use a rectangle with color instead because blending is broken on MacOS
-
-    TodoModel{id: todoModel}
 
     SystemPalette {
         id: myPalette;
@@ -44,9 +41,6 @@ MaskedApplicationWindow {
     TimerCircle {
         id: timerCircle
         anchors.left: parent.left; anchors.right: parent.right;
-        activeItem: todoModel.activeItem
-        paused: todoModel.paused
-        pausedTime: todoModel.pausedTime
     }
 
 
@@ -60,8 +54,6 @@ MaskedApplicationWindow {
             labelText: "Tasks"
             Layout.fillWidth: true
             Layout.fillHeight: true
-            todoModel: todoModel
-            blocklists: BlocklistListModel{}
         }
 
     }

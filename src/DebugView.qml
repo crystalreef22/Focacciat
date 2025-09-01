@@ -4,7 +4,6 @@ import QtQuick.Layouts
 
 import "components" as MyComponents
 import Focacciat 1.0
-import Todo 1.0
 
 ApplicationWindow {
     id: root
@@ -40,15 +39,13 @@ ApplicationWindow {
 
             Button {
                 id: pauseButton
-                text: todoModel.paused ? "resume" : "pause"
-                checked: todoModel.paused;
-                onClicked: todoModel.paused = !todoModel.paused;
+                text: TodoModel.paused ? "resume" : "pause"
+                checked: TodoModel.paused;
+                onClicked: TodoModel.paused = !TodoModel.paused;
             }
 
             DebugTodoView {
                 labelText: "today's tasks"
-                blocklists: blocklists
-                todoModel: TodoModel{id: todoModel}
             }
             RowLayout {
                 Button {
@@ -66,13 +63,9 @@ ApplicationWindow {
                 text: "Ping extension"
                 onClicked: ExtensionIntegration.sendPing();
             }
-            BlocklistListModel {
-                id: blocklists
-            }
 
             BlocklistPopup {
                 id: blocklistPopup
-                blocklists: blocklists
             }
 
             Button {

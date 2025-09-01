@@ -14,8 +14,6 @@ Popup {
     popupType: Popup.Item
     closePolicy: Popup.NoAutoClose
 
-    property BlocklistListModel blocklists;
-
 
     MouseArea {
         id: clickToUnfocus
@@ -32,7 +30,7 @@ Popup {
             spacing: 2
             Repeater {
                 id: tabbarRepeater
-                model: blocklists
+                model: BlocklistListModel
                 onItemAdded: (index, item)=>{
                     item.checked = true
                     tabbar.currentIndex = index
@@ -53,7 +51,7 @@ Popup {
             }
             TabButton {
                 text: "+"
-                onToggled: blocklists.appendItem()
+                onToggled: BlocklistListModel.appendItem()
             }
 
             Component.onCompleted: () => {
@@ -68,7 +66,7 @@ Popup {
             Layout.fillWidth: true
             Layout.fillHeight: true
             Repeater {
-                model: blocklists
+                model: BlocklistListModel
                 delegate: Item {
                     ColumnLayout {
                         anchors.fill: parent;
@@ -78,7 +76,7 @@ Popup {
                         }
                         Button {
                             text: "delete"
-                            onClicked: blocklists.removeItem(index)
+                            onClicked: BlocklistListModel.removeItem(index)
                         }
 
                         ScrollView {

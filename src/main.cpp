@@ -7,7 +7,6 @@
 #include <QCommandLineParser>
 
 #include "blocklist.h"
-#include "todomodel.h"
 
 int main(int argc, char *argv[])
 {
@@ -18,8 +17,6 @@ int main(int argc, char *argv[])
     parser.addVersionOption();
     parser.addOption({"debugwindow", "Show debug window instead of main"}); // Boolean option
     parser.process(app);
-
-    qmlRegisterType<TodoModel>("Todo", 1, 0, "TodoModel");
 
     QQmlApplicationEngine engine;
 

@@ -6,15 +6,18 @@
 #include <QPointer>
 #include "blocklist.h"
 
+class QQmlEngine;
+class QJSEngine;
+
 class BlocklistListModel : public QAbstractListModel
 {
     Q_OBJECT
     QML_ELEMENT
+    QML_SINGLETON
 
 public:
-    explicit BlocklistListModel(QObject *parent = nullptr);
-    BlocklistListModel (const BlocklistListModel&) = delete;
-    BlocklistListModel& operator=(const BlocklistListModel&) = delete;
+    static BlocklistListModel* instance();
+    static BlocklistListModel* create(QQmlEngine *engine, QJSEngine *scriptEngine);
 
     enum Roles {
         NameRole = Qt::UserRole,
@@ -42,7 +45,10 @@ public slots:
     bool removeItem(int i);
 
 private:
+    explicit BlocklistListModel(QObject *parent = nullptr);
     QVector<Blocklist*> m_blocklists;
+
+    inline static BlocklistListModel* m_pThis{nullptr};
 };
 
 #endif // BLOCKLISTLISTMODEL_H

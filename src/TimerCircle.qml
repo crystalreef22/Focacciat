@@ -4,7 +4,6 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Effects
 import QtQuick.Controls.impl
-import Todo 1.0
 import "components" as MyComponents
 
 Item {

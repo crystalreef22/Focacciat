@@ -5,7 +5,6 @@ import QtMultimedia
 
 import "components" as MyComponents
 
-import Todo 1.0
 import Focacciat
 
 // https://github.com/rohanrajpal/QtToDoList
@@ -13,8 +12,6 @@ import Focacciat
 
 ColumnLayout {
     property string labelText: ""
-    required property BlocklistListModel blocklists
-    required property TodoModel todoModel
 
     Label {
         text: labelText
@@ -25,7 +22,6 @@ ColumnLayout {
 
     ListView {
         id: todoListView
-        model: todoModel
         Layout.fillWidth: true
         Layout.fillHeight: true
         clip: true;
@@ -117,7 +113,7 @@ ColumnLayout {
                         MenuSeparator{}
                         Instantiator {
                             id: todoListViewComboboxPopupInstantiator
-                            model: blocklists
+                            model: BlocklistListModel
                             delegate: MenuItem {
                                 text: model.name
                                 checked: todoListViewDelegate.model.item.blocklist === model.item
@@ -142,12 +138,12 @@ ColumnLayout {
         Layout.alignment: Qt.AlignBottom
         Button {
             text: qsTr("Add")
-            onClicked: todoModel.appendItem()
+            onClicked: TodoModel.appendItem()
             Layout.fillWidth: true
         }
         Button {
             text: qsTr("Remove checked")
-            onClicked: todoModel.removeCompletedItems()
+            onClicked: TodoModel.removeCompletedItems()
             Layout.fillWidth: true
         }
     }

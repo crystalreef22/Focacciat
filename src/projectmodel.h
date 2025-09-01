@@ -2,14 +2,21 @@
 #define PROJECTMODEL_H
 
 #include <QAbstractListModel>
+#include <QtQmlIntegration/qqmlintegration.h>
 #include "projectitem.h"
+
+class QQmlEngine;
+class QJSEngine;
 
 class ProjectModel : public QAbstractListModel
 {
     Q_OBJECT
+    QML_ELEMENT
+    QML_SINGLETON
 
 public:
-    explicit ProjectModel(QObject *parent = nullptr);
+    static ProjectModel* instance();
+    static ProjectModel* create(QQmlEngine *engine, QJSEngine *scriptEngine);
 
     enum Roles { ItemRole = Qt::UserRole };
     Q_ENUM(Roles)
@@ -28,7 +35,10 @@ public slots:
     void removeItem(int i);
 
 private:
+    explicit ProjectModel(QObject *parent = nullptr);
     QVector<ProjectItem *> m_projectItems;
+
+    inline static ProjectModel* m_pThis{nullptr};
 };
 
 #endif // PROJECTMODEL_H
