@@ -158,11 +158,12 @@ QJsonObject TodoModel::serialize() const {
     return result;
 }
 void TodoModel::deserialize(const QJsonObject& json) {
-    m_timer.disconnect();
     TodoItem* item = activeItem();
     Blocklist::removeAllBlocks();
     if (item) {
         item->setWatching(false);
+        // may not be needed, but
+        m_timer.disconnect(item);
     }
     const QJsonArray& todoItemsJson(json["todoItems"].toArray());
     // FIXME: does not check if json is proper
