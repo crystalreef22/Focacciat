@@ -33,6 +33,7 @@ private:
     ProjectModel* m_projectModel;
     BlocklistListModel* m_blocklistListModel;
     inline static GlobalState* m_pThis{nullptr};
+    // TODO: autosave
 };
 
 #endif // GLOBALSTATE_H

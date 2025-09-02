@@ -7,6 +7,7 @@
 #include <QCommandLineParser>
 
 #include "blocklist.h"
+#include "globalstate.h"
 
 int main(int argc, char *argv[])
 {
@@ -27,14 +28,18 @@ int main(int argc, char *argv[])
         []() { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
 
+    auto globalState = engine.singletonInstance<GlobalState *>("Focacciat", "GlobalState");
+    globalState->deserializeFromFile();
+
     if (parser.isSet("debugwindow")) {
         engine.loadFromModule("Focacciat", "DebugView");
     } else {
         engine.loadFromModule("Focacciat", "Main");
     }
 
-    QObject::connect(&app, &QGuiApplication::aboutToQuit, &app, [] {
+    QObject::connect(&app, &QGuiApplication::aboutToQuit, &app, [=] {
         Blocklist::removeAllBlocks();
+        globalState->serializeToFile();
     }); // remove all blocks
     return app.exec();
 }
