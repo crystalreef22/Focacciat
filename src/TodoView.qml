@@ -27,6 +27,7 @@ ColumnLayout {
         clip: true;
         spacing: 2
         acceptedButtons: Qt.NoButton // disable flicking
+        model: GlobalState.todoModel
 
         MouseArea {
             onClicked: forceActiveFocus()
