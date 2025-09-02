@@ -5,7 +5,7 @@
 #include <QQmlEngine>
 #include <todomodel.h>
 #include <projectmodel.h>
-#include <blocklistlistmodel.h>
+#include <blockers/blocklistlistmodel.h>
 #include <QFile>
 
 class QQmlEngine;

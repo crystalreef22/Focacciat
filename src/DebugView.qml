@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
-import "components" as MyComponents
 import Focacciat 1.0
 
 ApplicationWindow {
@@ -84,7 +83,7 @@ ApplicationWindow {
                 onClicked: blocklistPopup.open();
             }
             Row {
-                MyComponents.TimeInput {
+                TimeInput {
                     id: debugTimeInput1
                     editorFlags: (debugTimeInput1AllowNegative.checked ? TimeInput.AllowNegative : TimeInput.None) | (debugTimeInput1NoSeconds.checked ? TimeInput.NoSeconds : TimeInput.None)
                 }

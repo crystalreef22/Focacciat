@@ -93,7 +93,7 @@ ColumnLayout {
                     visible: todoDelegateLayout.width > 175
                     time: model.item.timeEstimate / 1000
                     onEditingFinished: model.item.timeEstimate = time * 1000
-                    editorFlags: TimeInput.NoSeconds
+                    editorFlags: AbstractTimeInput.NoSeconds
                 }
                 Label {
                     visible: todoDelegateLayout.width > 230

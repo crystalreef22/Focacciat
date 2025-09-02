@@ -167,7 +167,7 @@ ColumnLayout {
                     MyComponents.TimeInput {
                         time: model.item.timeEstimate / 1000
                         onEditingFinished: model.item.timeEstimate = time * 1000
-                        editorFlags: TimeInput.NoSeconds
+                        editorFlags: AbstractTimeInput.NoSeconds
                     }
                     Label {
                         text: "time left"

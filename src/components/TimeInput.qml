@@ -22,11 +22,11 @@ FocusScope {
         id: myPalette;
     }
 
-    TimeInput {
+    AbstractTimeInput {
         id: timeInput
         focus: scope.activeFocus
         onEditingFinished: scope.editingFinished();
-        editorFlags: TimeInput.None;
+        editorFlags: AbstractTimeInput.None;
     }
 
     Keys.onPressed: (event)=> {

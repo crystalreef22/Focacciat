@@ -1,5 +1,5 @@
-#ifndef TIMEINPUT_H
-#define TIMEINPUT_H
+#ifndef ABSTRACTTIMEINPUT_H
+#define ABSTRACTTIMEINPUT_H
 
 // todo: flags to allow negatives and disallow seconds
 
@@ -9,17 +9,16 @@
 
 #include <QtQmlIntegration/qqmlintegration.h>
 
-class TimeInput : public QObject
-{
+class AbstractTimeInput : public QObject { // TODO: inherit from control or smth
     Q_OBJECT
     QML_ELEMENT
     Q_PROPERTY(QString displayText READ displayText NOTIFY displayTextChanged FINAL)
     Q_PROPERTY(int time READ time WRITE setTime NOTIFY timeChanged FINAL)
     Q_PROPERTY(bool focus READ focus WRITE setFocus NOTIFY focusChanged FINAL)
     Q_PROPERTY(bool selected READ selected WRITE setSelected NOTIFY selectedChanged FINAL)
-    Q_PROPERTY(TimeInput::EditorFlags editorFlags READ editorFlags WRITE setEditorFlags NOTIFY editorFlagsChanged FINAL)
+    Q_PROPERTY(AbstractTimeInput::EditorFlags editorFlags READ editorFlags WRITE setEditorFlags NOTIFY editorFlagsChanged FINAL)
 public:
-    explicit TimeInput(QObject *parent = nullptr);
+    explicit AbstractTimeInput(QObject *parent = nullptr);
 
     enum EditorFlag {
         None = 0,
@@ -68,6 +67,6 @@ private:
     void commit();
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(TimeInput::EditorFlags)
+Q_DECLARE_OPERATORS_FOR_FLAGS(AbstractTimeInput::EditorFlags)
 
-#endif // TIMEINPUT_H
+#endif // ABSTRACTTIMEINPUT_H

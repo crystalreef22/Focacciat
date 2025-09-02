@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QPointer>
-#include <blocklist.h>
+#include <blockers/blocklist.h>
 #include <QJsonObject>
 
 class TodoItem : public QObject

@@ -6,7 +6,6 @@ import QtQuick.Layouts
 import QtQuick.Shapes
 import QtQuick.Effects
 
-import "components" as MyComponents
 import Focacciat 1.0
 
 MaskedApplicationWindow {

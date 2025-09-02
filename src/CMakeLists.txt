@@ -4,66 +4,54 @@ project(Focacciat VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Quick)
-find_package(Qt6 REQUIRED COMPONENTS Core)
-find_package(Qt6 REQUIRED COMPONENTS Network)
-find_package(Qt6 REQUIRED COMPONENTS Core)
-find_package(Qt6 REQUIRED COMPONENTS Core)
-find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
-find_package(Qt6 REQUIRED COMPONENTS Core)
+find_package(Qt6 REQUIRED COMPONENTS Core Quick Network Widgets)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
-#add_subdirectory(extensionhost)
+qt_policy(SET QTP0004 NEW)
+
+#add_subdirectory(extensionhost)  # FIXME: extensionintegration
 
 qt_add_executable(Focacciat
     main.cpp
 )
 
 
+# Required for QML integration
 target_include_directories(Focacciat
     PRIVATE
         blockers
         components
 )
+
 qt_add_qml_module(Focacciat
     URI Focacciat
     VERSION 1.0
     QML_FILES
-    DebugView.qml
-        SOURCES
-        SOURCES
-        QML_FILES
-        QML_FILES DebugTodoView.qml
-        SOURCES
-        SOURCES
-        SOURCES todomodel.h todomodel.cpp
-        SOURCES
-        SOURCES
-        SOURCES formatutils.h formatutils.cpp
-        SOURCES todoitem.h todoitem.cpp
-        RESOURCES media/alm_focus.mp3
-        RESOURCES
-        QML_FILES components/TimeInput.qml
-        SOURCES components/timeinput.h components/timeinput.cpp
-        SOURCES
-        SOURCES blockers/extensionintegration.h blockers/extensionintegration.cpp
-        RESOURCES extensionmanifest.json
-        SOURCES blockers/blocklist.h blockers/blocklist.cpp
-        SOURCES blockers/blocklistlistmodel.h blockers/blocklistlistmodel.cpp
-        QML_FILES blockers/BlocklistPopup.qml
-        SOURCES projectitem.h projectitem.cpp
-        SOURCES projectmodel.h projectmodel.cpp
-        SOURCES
-        SOURCES projectprogressmodel.h projectprogressmodel.cpp
-        QML_FILES ProjectView.qml
-        QML_FILES Main.qml
-        QML_FILES TodoView.qml
-        SOURCES maskedapplicationwindow.h maskedapplicationwindow.cpp
-        QML_FILES
-        QML_FILES
-        QML_FILES TimerCircle.qml
-        SOURCES globalstate.h globalstate.cpp
+        DebugTodoView.qml
+        DebugView.qml
+        Main.qml
+        ProjectView.qml
+        TimerCircle.qml
+        TodoView.qml
+        blockers/BlocklistPopup.qml
+        components/TimeInput.qml
+    SOURCES
+        blockers/blocklist.h blockers/blocklist.cpp
+        blockers/blocklistlistmodel.h blockers/blocklistlistmodel.cpp
+        blockers/extensionintegration.h blockers/extensionintegration.cpp
+        components/abstracttimeinput.h components/abstracttimeinput.cpp
+        formatutils.h formatutils.cpp
+        globalstate.h globalstate.cpp
+        maskedapplicationwindow.h maskedapplicationwindow.cpp
+        projectitem.h projectitem.cpp
+        projectmodel.h projectmodel.cpp
+        projectprogressmodel.h projectprogressmodel.cpp
+        todoitem.h todoitem.cpp
+        todomodel.h todomodel.cpp
+    RESOURCES
+        extensionmanifest.json
+        media/alm_focus.mp3
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -95,6 +83,7 @@ install(TARGETS Focacciat
 if(APPLE)
 #install(TARGETS extensionhost
         #RUNTIME DESTINATION ./Focacciat.app/Contents/MacOS)
+        # FIXME: extensionintegration
 endif()
 
 

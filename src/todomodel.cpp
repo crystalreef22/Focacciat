@@ -3,7 +3,7 @@
 #include <QDebug>
 #include <QJsonArray>
 #include <QJsonObject>
-#include "blocklist.h"
+#include "blockers/blocklist.h"
 
 TodoModel::TodoModel(QObject *parent)
     : QAbstractListModel(parent)
@@ -168,6 +168,7 @@ void TodoModel::deserialize(const QJsonObject& json) {
     // FIXME: does not check if json is proper
     // clear all list items
     m_activeIndex = QModelIndex{};
+    emit activeItemChanged();
     setPaused(false);
     resetPausedTime();
     beginResetModel();

@@ -6,7 +6,7 @@
 
 #include <QCommandLineParser>
 
-#include "blocklist.h"
+#include "blockers/blocklist.h"
 #include "globalstate.h"
 
 int main(int argc, char *argv[])

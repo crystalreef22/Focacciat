@@ -4,7 +4,6 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Effects
 import QtQuick.Controls.impl
-import "components" as MyComponents
 
 Item {
     height: width;
@@ -144,10 +143,10 @@ Item {
                     ]
                 }
 
-                MyComponents.TimeInput {
+                TimeInput {
                     visible: timerViewerWrapper.height > 100
                     anchors.horizontalCenter: parent.horizontalCenter
-                    editorFlags: TimeInput.NoSeconds
+                    editorFlags: AbstractTimeInput.NoSeconds
                     time: GlobalState.todoModel.activeItem?.timeEstimate / 1000
                     onEditingFinished: ()=>{ if(GlobalState.todoModel.activeItem) {GlobalState.todoModel.activeItem.timeEstimate = time * 1000} }
                 }
