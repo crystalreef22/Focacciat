@@ -33,7 +33,8 @@ bool GlobalState::serializeToFile() {
 
     QJsonDocument appdata(QJsonObject {
         {"version", 0},
-        {"todoEntries", m_todoModel->serialize()}
+        {"todoEntries", m_todoModel->serialize()},
+        {"blocklists", m_blocklistListModel->serialize()}
     });
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -62,8 +63,10 @@ bool GlobalState::deserializeFromFile() {
     }
 
     const QJsonObject& todoEntries = json["todoEntries"].toObject();
+    const QJsonObject& blocklists = json["blocklists"].toObject();
 
     m_todoModel->deserialize(todoEntries);
+    m_blocklistListModel->deserialize(blocklists);
 
     return true;
 }

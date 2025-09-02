@@ -1,5 +1,6 @@
 #include "blocklist.h"
 #include "extensionintegration.h"
+#include <QJsonObject>
 
 Blocklist::Blocklist(QObject *parent)
     : QObject{parent}
@@ -63,6 +64,20 @@ void Blocklist::setWebsiteList(const QString& websiteList) {
     if (m_watching) {
         applyBlocks();
     }
+}
+
+QJsonObject Blocklist::serialize() const {
+    return QJsonObject{
+        {"name", m_name},
+        {"websiteList", m_websiteList}
+    };
+}
+
+Blocklist *Blocklist::deserialize(const QJsonObject& json, QObject* parent) {
+    Blocklist* bl = new Blocklist(parent);
+    bl->m_name = json.find("name")->toString();
+    bl->m_websiteList = json.find("websiteList")->toString();
+    return bl;
 }
 
 void Blocklist::applyBlocks() {

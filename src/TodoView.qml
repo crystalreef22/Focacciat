@@ -3,8 +3,6 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtMultimedia
 
-import "components" as MyComponents
-
 import Focacciat
 
 // https://github.com/rohanrajpal/QtToDoList
@@ -88,8 +86,9 @@ ColumnLayout {
                     clip: true
                     onEditingFinished: model.item.description = text
                     text: model.item.description
+                    focusPolicy: Qt.StrongFocus
                 }
-                MyComponents.TimeInput {
+                TimeInput {
                     visible: todoDelegateLayout.width > 175
                     time: model.item.timeEstimate / 1000
                     onEditingFinished: model.item.timeEstimate = time * 1000

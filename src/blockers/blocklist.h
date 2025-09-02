@@ -3,6 +3,7 @@
 
 #include <QObject>
 
+class QJsonObject;
 class Blocklist : public QObject
 {
     Q_OBJECT
@@ -26,6 +27,9 @@ public:
     void setName(const QString& value);
     void setWatching(bool value);
     void setWebsiteList(const QString& value);
+
+    QJsonObject serialize() const;
+    static Blocklist* deserialize(const QJsonObject& json, QObject* parent);
 
 signals:
     void websiteListChanged();

@@ -36,6 +36,9 @@ public:
 
     virtual QHash<int, QByteArray> roleNames() const override;
 
+    QJsonObject serialize() const;
+    void deserialize(const QJsonObject& json);
+
 public slots:
     void appendItem();
 

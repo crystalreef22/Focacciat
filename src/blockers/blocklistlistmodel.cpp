@@ -1,5 +1,7 @@
 #include "blocklistlistmodel.h"
 #include <QDebug>
+#include <QJsonObject>
+#include <QJsonArray>
 
 BlocklistListModel::BlocklistListModel(QObject *parent)
     : QAbstractListModel(parent)
@@ -54,6 +56,34 @@ QHash<int, QByteArray> BlocklistListModel::roleNames() const {
     names[ItemRole] = "item";
     return names;
 }
+
+QJsonObject BlocklistListModel::serialize() const {
+    QJsonArray items{};
+    for (Blocklist* bl : std::as_const(m_blocklists)) {
+        items.append(bl->serialize());
+    }
+
+    return QJsonObject{
+        {"items", items}
+    };
+}
+
+void BlocklistListModel::deserialize(const QJsonObject &json) {
+    const QJsonArray& items = json.value("items").toArray();
+    beginResetModel();
+    for (auto item : std::as_const(m_blocklists)) {
+        item->deleteLater();
+    }
+    m_blocklists = {};
+    m_blocklists.reserve(items.size());
+    for (const QJsonValue& value : items) {
+        m_blocklists.append(Blocklist::deserialize(value.toObject(), this));
+    }
+    endResetModel();
+
+}
+
+
 
 void BlocklistListModel::appendItem() {
     const int index = m_blocklists.size();
