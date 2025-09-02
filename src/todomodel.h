@@ -45,6 +45,10 @@ public:
     bool setPaused(bool value);
     long long pausedTime();
 
+
+    QJsonObject serialize() const;
+    void deserialize(const QJsonObject& json);
+
 signals:
     void activeItemChanged();
     void pausedChanged();

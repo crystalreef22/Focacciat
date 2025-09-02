@@ -89,6 +89,16 @@ ApplicationWindow {
                 id: debugTimeInput1NoSeconds
                 text: "no seconds"
             }
+            Row {
+                Button {
+                    text: "load"
+                    onClicked: GlobalState.deserializeFromFile();
+                }
+                Button {
+                    text: "save"
+                    onClicked: GlobalState.serializeToFile();
+                }
+            }
         }
     }
 

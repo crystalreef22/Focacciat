@@ -1,6 +1,8 @@
 #include "todomodel.h"
 #include <QDateTime>
 #include <QDebug>
+#include <QJsonArray>
+#include <QJsonObject>
 #include "blocklist.h"
 
 TodoModel::TodoModel(QObject *parent)
@@ -143,6 +145,44 @@ long long TodoModel::pausedTime()
 {
     return m_pausedTime;
 }
+
+QJsonObject TodoModel::serialize() const {
+    QJsonArray todoItems{};
+    for (const TodoItem * item : std::as_const(m_list)) {
+        todoItems.append(item->serialize());
+    }
+    // TODO: serialize active index
+    QJsonObject result{
+        {"todoItems", todoItems}
+    };
+    return result;
+}
+void TodoModel::deserialize(const QJsonObject& json) {
+    m_timer.disconnect();
+    TodoItem* item = activeItem();
+    Blocklist::removeAllBlocks();
+    if (item) {
+        item->setWatching(false);
+    }
+    const QJsonArray& todoItemsJson(json["todoItems"].toArray());
+    // FIXME: does not check if json is proper
+    // clear all list items
+    m_activeIndex = QModelIndex{};
+    setPaused(false);
+    resetPausedTime();
+    beginResetModel();
+    for (TodoItem* listItem : std::as_const(m_list)) {
+        listItem->deleteLater();
+    }
+    m_list = {};
+    m_list.reserve(todoItemsJson.size());
+    for (const QJsonValue& todoItemJson : todoItemsJson) {
+        m_list.append(TodoItem::deserialize(todoItemJson.toObject(), this));
+    }
+    endResetModel();
+    // TODO: serialize active index
+}
+
 void TodoModel::updatePausedTime()
 {
     m_pausedTime = QDateTime::currentMSecsSinceEpoch() - m_pausedLastResetTime;

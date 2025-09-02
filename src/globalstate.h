@@ -6,6 +6,7 @@
 #include <todomodel.h>
 #include <projectmodel.h>
 #include <blocklistlistmodel.h>
+#include <QFile>
 
 class QQmlEngine;
 class QJSEngine;
@@ -24,6 +25,8 @@ public:
     TodoModel* todoModel();
     ProjectModel* projectModel();
     BlocklistListModel* blocklistListModel();
+    Q_INVOKABLE bool serializeToFile();
+    Q_INVOKABLE bool deserializeFromFile();
 private:
     explicit GlobalState();
     TodoModel* m_todoModel;

@@ -2,6 +2,7 @@
 #include <QDebug>
 
 #include "todoitem.h"
+#include <QJsonObject>
 
 TodoItem::TodoItem(QObject *parent)
     : QObject{parent}
@@ -85,6 +86,26 @@ void TodoItem::setWatching(bool value)
     if (_blocklist) {
         _blocklist->setWatching(value);
     }
+}
+
+QJsonObject TodoItem::serialize() const {
+    return QJsonObject{
+        { "done", _done },
+        { "description", _description },
+        { "timeEstimate", _timeEstimate },
+        { "timeElapsed", _timeElapsed },
+        // TODO: add UUID to blocklist { "blocklistUUID", _blocklist ? QJsonValue(_blocklist->UUID()) : QJsonValue(QJsonValue::Null) }
+    };
+}
+
+TodoItem* TodoItem::deserialize(const QJsonObject& json, QObject *parent) {
+    // WARNING: does not gracefully fail from errors
+    TodoItem* item = new TodoItem(parent);
+    item->_done = json.value("done").toBool();
+    item->_description = json.value("description").toString();
+    item->_timeEstimate = json.value("timeEstimate").toVariant().toLongLong();
+    item->_timeElapsed = json.value("timeElapsed").toVariant().toLongLong();
+    return item;
 }
 
 // Call before connecting the timer

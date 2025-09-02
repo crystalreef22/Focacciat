@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QPointer>
 #include <blocklist.h>
+#include <QJsonObject>
 
 class TodoItem : public QObject
 {
@@ -36,6 +37,9 @@ public:
     void setBlocklist(Blocklist *value);
     void setWatching(bool value);
 
+    QJsonObject serialize() const;
+    static TodoItem* deserialize(const QJsonObject& json, QObject *parent = nullptr);
+
 signals:
     void doneChanged();
     void descriptionChanged();
@@ -59,6 +63,7 @@ private:
 
     bool _timerExpired{false};
 
+    // WARNING: this is a bad idea
     bool _watching{false}; // resets blocklist watching when changing _blocklist
 
     Blocklist *_blocklist{nullptr};
