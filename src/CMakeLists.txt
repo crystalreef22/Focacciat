@@ -4,11 +4,12 @@ project(Focacciat VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(CMAKE_OSX_DEPLOYMENT_TARGET "12.0")
+
 find_package(Qt6 REQUIRED COMPONENTS Core Quick Network Widgets)
 
-qt_standard_project_setup(REQUIRES 6.5)
-
-qt_policy(SET QTP0004 NEW)
+qt_standard_project_setup(REQUIRES 6.9) # Older versions MAY work, but you would
+                                        # need to set necessary qt_policies
 
 #add_subdirectory(extensionhost)  # FIXME: extensionintegration
 
