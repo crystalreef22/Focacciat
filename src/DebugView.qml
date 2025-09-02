@@ -16,6 +16,11 @@ ApplicationWindow {
 
     SystemPalette { id: palette; colorGroup: SystemPalette.Active }
 
+    Main {
+        id: mainWindow
+        visible: true
+    }
+
     Rectangle {
         color: palette.window
         anchors.fill: parent
@@ -36,6 +41,12 @@ ApplicationWindow {
                 wrapMode: Text.Wrap
                 bottomPadding: 10
             }
+            CheckBox {
+                text: "show main window"
+                onCheckStateChanged: mainWindow.visible = checked;
+                checked: true;
+            }
+
 
             Button {
                 id: pauseButton
