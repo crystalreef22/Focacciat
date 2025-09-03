@@ -76,7 +76,7 @@ AbstractButton {
                 color: "red";
                 states: [
                     State {
-                        name: "pressed"; when: control.pressed;
+                        name: "pressed";
                         PropertyChanges {
                             target: bgindicator
                             anchors.topMargin: 0;
@@ -91,12 +91,20 @@ AbstractButton {
                     }
 
                 ]
+                Connections {
+                    target: control
+                    function onPressedChanged() {
+                        if (bgindicator.state !== "completed") {
+                            bgindicator.state = pressed ? "pressed" : "";
+                        }
+                    }
+                }
+
                 transitions: [
                     Transition {
                         from: "*"; to: "pressed";
                         SequentialAnimation {
                             NumberAnimation { property: "anchors.topMargin"; easing.type: Easing.Linear; duration: holdTime}
-                            ScriptAction { script: control.holdDone(); }
                             ScriptAction { script: bgindicator.state = "completed"; }
                         }
                     },
@@ -107,6 +115,7 @@ AbstractButton {
                     Transition {
                         from: "pressed"; to: "completed";
                         SequentialAnimation {
+                            ScriptAction { script: control.holdDone(); }
                             PropertyAnimation {property: "color"; easing.type: Easing.OutQuart; duration: 300}
                             NumberAnimation { property: "anchors.topMargin"; easing.type: Easing.OutQuart; duration: 100}
                             ScriptAction { script: bgindicator.state = ""; }
