@@ -48,19 +48,17 @@ MaskedApplicationWindow {
         anchors.top: timerCircle.bottom
         anchors.bottom: parent.bottom
         width: timerCircle.width
-
         TodoView {
             labelText: "Tasks"
             Layout.fillWidth: true
             Layout.fillHeight: true
         }
-
     }
     MouseArea {
         id: resizeArea
         anchors.fill: parent
         anchors.topMargin: timerCircle.height/2
-        hoverEnabled: Qt.platform.os === "osx" // if Qt 7, change to "macos". MacOS enables resizing by default even for those windows.
+        hoverEnabled: Qt.platform.os !== "osx" // if Qt 7, change to "macos". MacOS enables resizing by default even for those windows.
         acceptedButtons: Qt.LeftButton
 
         property int edges: 0;
@@ -83,7 +81,7 @@ MaskedApplicationWindow {
                    edges & 6 ? Qt.SizeHorCursor : Qt.ArrowCursor;
         }
 
-        onPositionChanged: setEdges(mouseX, mouseY);
+        onPositionChanged: (mouse)=>{setEdges(mouseX, mouseY); mouse.accepted = false};
         onPressed: (mouse)=>{
             setEdges(mouseX, mouseY);
             if(edges && containsMouse) {

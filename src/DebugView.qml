@@ -47,11 +47,17 @@ ApplicationWindow {
             }
 
 
-            Button {
+            FlatButton{
                 id: pauseButton
-                text: GlobalState.todoModel.paused ? "resume" : "pause"
-                checked: GlobalState.todoModel.paused;
+                icon.name: GlobalState.todoModel.paused ? "play" : "pause"
                 onClicked: GlobalState.todoModel.paused = !GlobalState.todoModel.paused;
+            }
+            FlatButton{
+                id: stopButton
+                icon.name: "stop"
+                holdable: true;
+                enabled: GlobalState.todoModel.activeItem.timeElapsed !== 0;
+                onHoldDone: ()=>{GlobalState.todoModel.paused=true;GlobalState.todoModel.activeItem.timeElapsed=0;}
             }
 
             DebugTodoView {

@@ -53,6 +53,7 @@ qt_add_qml_module(Focacciat
     RESOURCES
         extensionmanifest.json
         media/alm_focus.mp3
+        QML_FILES components/FlatButton.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

@@ -253,19 +253,24 @@ Item {
     Row {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: progressCircle.bottom
+        anchors.bottomMargin: 4
         visible: GlobalState.todoModel.activeItem
-        Button {
-            text: GlobalState.todoModel.paused ? "\u25b6\ufe0f" : "\u23f8\ufe0f"
-            onClicked: GlobalState.todoModel.paused = !GlobalState.todoModel.paused
-            visible: GlobalState.todoModel.activeItem
+        FlatButton{
+            id: pauseButton
+            icon.name: GlobalState.todoModel.paused ? "play" : "pause"
+            onClicked: GlobalState.todoModel.paused = !GlobalState.todoModel.paused;
+            margins: 2
         }
-        Button {
-            text: "\u23f9\ufe0f"
-            onClicked: () => {
+        FlatButton{
+            id: stopButton
+            enabled: GlobalState.todoModel.activeItem.timeElapsed !== 0;
+            icon.name: "stop"
+            holdable: true
+            onHoldDone: () => {
                 GlobalState.todoModel.activeItem.timeElapsed = 0
                 GlobalState.todoModel.paused = true;
             };
-            visible: GlobalState.todoModel.activeItem
+            margins: 2
         }
     }
 }
