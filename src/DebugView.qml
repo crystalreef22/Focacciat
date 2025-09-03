@@ -57,7 +57,11 @@ ApplicationWindow {
                 icon.name: "stop"
                 holdable: true;
                 enabled: GlobalState.todoModel.activeItem.timeElapsed !== 0;
-                onHoldDone: ()=>{GlobalState.todoModel.paused=true;GlobalState.todoModel.activeItem.timeElapsed=0;}
+                onHoldDone: ()=>{
+                    GlobalState.todoModel.paused = true;
+                    GlobalState.todoModel.pausedTime += GlobalState.todoModel.activeItem.timeElapsed;
+                    GlobalState.todoModel.activeItem.timeElapsed = 0;
+                }
             }
 
             DebugTodoView {

@@ -146,6 +146,12 @@ long long TodoModel::pausedTime()
     return m_pausedTime;
 }
 
+void TodoModel::setPausedTime(long long value) {
+    m_pausedTime = value;
+    m_pausedLastResetTime = QDateTime::currentMSecsSinceEpoch() - m_pausedTime;
+    emit pausedTimeChanged();
+}
+
 QJsonObject TodoModel::serialize() const {
     QJsonArray todoItems{};
     for (const TodoItem * item : std::as_const(m_list)) {

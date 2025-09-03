@@ -14,7 +14,7 @@ class TodoModel : public QAbstractListModel
     Q_OBJECT
     Q_PROPERTY(TodoItem *activeItem READ activeItem NOTIFY activeItemChanged FINAL)
     Q_PROPERTY(bool paused READ paused WRITE setPaused NOTIFY pausedChanged FINAL)
-    Q_PROPERTY(long long pausedTime READ pausedTime NOTIFY pausedTimeChanged FINAL)
+    Q_PROPERTY(long long pausedTime READ pausedTime WRITE setPausedTime NOTIFY pausedTimeChanged FINAL)
     QML_ELEMENT
     QML_UNCREATABLE("Managed by GlobalState.h")
 
@@ -44,6 +44,7 @@ public:
     bool paused() const;
     bool setPaused(bool value);
     long long pausedTime();
+    void setPausedTime(long long value);
 
 
     QJsonObject serialize() const;

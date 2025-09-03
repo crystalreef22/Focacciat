@@ -267,8 +267,9 @@ Item {
             icon.name: "stop"
             holdable: true
             onHoldDone: () => {
-                GlobalState.todoModel.activeItem.timeElapsed = 0
                 GlobalState.todoModel.paused = true;
+                GlobalState.todoModel.pausedTime += GlobalState.todoModel.activeItem.timeElapsed;
+                GlobalState.todoModel.activeItem.timeElapsed = 0;
             };
             margins: 2
         }
