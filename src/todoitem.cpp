@@ -99,13 +99,15 @@ QJsonObject TodoItem::serialize() const {
 }
 
 TodoItem* TodoItem::deserialize(const QJsonObject& json, QObject *parent) {
-    // WARNING: does not gracefully fail from errors
     TodoItem* item = new TodoItem(parent);
-    item->_done = json.value("done").toBool();
-    item->_description = json.value("description").toString();
+    item->_done = json.value("done").toBool(false);
+    item->_description = json.value("description").toString("");
     item->_timeEstimate = json.value("timeEstimate").toVariant().toLongLong();
     item->_timeElapsed = json.value("timeElapsed").toVariant().toLongLong();
-    item->setBlocklist(Blocklist::fromUUID(QUuid::fromString(json.value("blocklistUUID").toString())));
+    const auto blocklistUUID = QUuid::fromString(json.value("blocklistUUID").toString());
+    if (blocklistUUID.isNull()) {
+        item->setBlocklist(Blocklist::fromUUID(QUuid::fromString(json.value("blocklistUUID").toString())));
+    }
     return item;
 }
 

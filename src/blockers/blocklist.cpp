@@ -104,9 +104,9 @@ QJsonObject Blocklist::serialize() const {
 Blocklist *Blocklist::deserialize(const QJsonObject& json, QObject* parent) {
     QUuid id{QUuid::fromString(json.find("UUID")->toString())};
     if (id.isNull()) id = QUuid::createUuid();
-    Blocklist* bl = new Blocklist(QUuid::fromString(json.find("UUID")->toString()), parent);
-    bl->m_name = json.find("name")->toString();
-    bl->m_websiteList = json.find("websiteList")->toString();
+    Blocklist* bl = new Blocklist(id, parent);
+    bl->m_name = json.find("name")->toString("");
+    bl->m_websiteList = json.find("websiteList")->toString("");
     return bl;
 }
 
