@@ -32,7 +32,6 @@ Popup {
                 id: tabbarRepeater
                 model: GlobalState.blocklistListModel
                 onItemAdded: (index, item)=>{
-                    item.checked = true
                     tabbar.currentIndex = index
                 }
                 onItemRemoved: (index, item)=>{
@@ -47,15 +46,12 @@ Popup {
                 TabButton {
                     text: model.name
                     onToggled: tabbar.currentIndex = index;
+                    checked: tabbar.currentIndex === index;
                 }
             }
             TabButton {
                 text: "+"
                 onToggled: GlobalState.blocklistListModel.appendItem()
-            }
-
-            Component.onCompleted: () => {
-                tabbarRepeater.itemAt(0).checked = true;
             }
 
         }
