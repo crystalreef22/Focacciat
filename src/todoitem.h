@@ -66,7 +66,7 @@ private:
     // WARNING: this is a bad idea
     bool _watching{false}; // resets blocklist watching when changing _blocklist
 
-    Blocklist *_blocklist{nullptr};
+    QPointer<Blocklist> _blocklist{};
 };
 
 #endif // TODOITEM_H
