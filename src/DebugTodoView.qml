@@ -129,7 +129,7 @@ ColumnLayout {
     Frame {
         Layout.fillWidth: true
         ScrollView {
-            implicitWidth: 500
+            implicitWidth: 620
             implicitHeight: 250
             anchors.fill: parent
             clip: true;

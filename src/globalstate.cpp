@@ -62,11 +62,12 @@ bool GlobalState::deserializeFromFile() {
         return false;
     }
 
-    const QJsonObject& todoEntries = json["todoEntries"].toObject();
+    // IMPORTANT: initialize blocklists first as todoEntries requires blocklists to attach to
     const QJsonObject& blocklists = json["blocklists"].toObject();
+    const QJsonObject& todoEntries = json["todoEntries"].toObject();
 
-    m_todoModel->deserialize(todoEntries);
     m_blocklistListModel->deserialize(blocklists);
+    m_todoModel->deserialize(todoEntries);
 
     return true;
 }

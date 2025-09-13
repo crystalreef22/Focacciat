@@ -70,6 +70,10 @@ Popup {
                 delegate: Item {
                     ColumnLayout {
                         anchors.fill: parent;
+                        Label {
+                            text: model.item.UUID.toString()
+                        }
+
                         TextField {
                             text: model.name
                             onTextEdited: model.name = text

@@ -7,7 +7,7 @@ import Focacciat 1.0
 ApplicationWindow {
     id: root
     width: 640
-    height: 900
+    height: 1200
     visible: true
     title: qsTr("Focus Assist 9??")
 
