@@ -105,7 +105,7 @@ TodoItem* TodoItem::deserialize(const QJsonObject& json, QObject *parent) {
     item->_description = json.value("description").toString();
     item->_timeEstimate = json.value("timeEstimate").toVariant().toLongLong();
     item->_timeElapsed = json.value("timeElapsed").toVariant().toLongLong();
-    item->_blocklist = Blocklist::fromUUID(QUuid::fromString(json.value("blocklistUUID").toString()));
+    item->setBlocklist(Blocklist::fromUUID(QUuid::fromString(json.value("blocklistUUID").toString())));
     return item;
 }
 
