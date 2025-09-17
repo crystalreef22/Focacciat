@@ -5,6 +5,7 @@ import QtQuick.Controls.impl
 import QtQuick.Layouts
 import QtQuick.Shapes
 import QtQuick.Effects
+import Qt.labs.platform
 
 import Focacciat 1.0
 
@@ -88,6 +89,18 @@ MaskedApplicationWindow {
                 startSystemResize(edges);
             } else {
                 mouse.accepted = false;
+            }
+        }
+    }
+
+    SystemTrayIcon {
+        visible: true
+        icon.name: "clear"
+
+        menu: Menu {
+            MenuItem {
+                text: qsTr("Quit")
+                onTriggered: Qt.quit()
             }
         }
     }
