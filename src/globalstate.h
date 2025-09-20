@@ -33,7 +33,8 @@ private:
     ProjectModel* m_projectModel;
     BlocklistListModel* m_blocklistListModel;
     inline static GlobalState* m_pThis{nullptr};
-    // TODO: autosave
+    QTimer m_saveTimer;
+    // TODO: better autosave
 };
 
 #endif // GLOBALSTATE_H

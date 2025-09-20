@@ -9,6 +9,9 @@ GlobalState::GlobalState()
     m_todoModel = new TodoModel(this);
     m_projectModel = new ProjectModel(this);
     m_blocklistListModel = new BlocklistListModel(this);
+    m_saveTimer.setTimerType(Qt::VeryCoarseTimer);
+    m_saveTimer.setInterval(1000*60*3);
+    connect(&m_saveTimer, &QTimer::timeout, this, &GlobalState::serializeToFile);
 }
 
 GlobalState* GlobalState::instance() {
