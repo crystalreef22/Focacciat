@@ -70,6 +70,7 @@ private:
 
     void updatePausedTime();
     void resetPausedTime();
+    void updateTimer();
 };
 
 #endif // TODOMODEL_H

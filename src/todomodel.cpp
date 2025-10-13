@@ -12,7 +12,15 @@ TodoModel::TodoModel(QObject *parent)
     m_timer.setTimerType(Qt::TimerType::PreciseTimer);
     m_timer.start();
     resetPausedTime();
-    connect(&m_timer, &QTimer::timeout, this, &TodoModel::updatePausedTime);
+    connect(&m_timer, &QTimer::timeout, this, &TodoModel::updateTimer);
+}
+
+void TodoModel::updateTimer() {
+    if (m_activeIndex.isValid() && !m_paused) {
+        m_list.at(m_activeIndex.row())->updateTimer();
+    } else {
+        updatePausedTime();
+    }
 }
 
 int TodoModel::rowCount(const QModelIndex &parent) const
@@ -51,7 +59,6 @@ bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int rol
         TodoItem *oldItem = activeItem();
         if (oldItem) {
             oldItem->setWatching(false);
-            m_timer.disconnect(oldItem);
         }
         m_paused = false;
         emit pausedChanged();
@@ -67,7 +74,6 @@ bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int rol
         item->resetTimer();
         item->applyBlocklist();
         item->setWatching(true);
-        connect(&m_timer, &QTimer::timeout, item, &TodoItem::updateTimer);
         emit activeItemChanged();
         emit dataChanged(oldIndex, oldIndex, {ActiveRole});
         emit dataChanged(index, index, {ActiveRole});
@@ -168,8 +174,6 @@ void TodoModel::deserialize(const QJsonObject& json) {
     Blocklist::removeAllBlocks();
     if (item) {
         item->setWatching(false);
-        // may not be needed, but
-        m_timer.disconnect(item);
     }
     const QJsonArray& todoItemsJson(json["todoItems"].toArray());
     // FIXME: does not check if json is proper
@@ -227,12 +231,10 @@ bool TodoModel::setPaused(bool value)
 
     m_paused = value;
     if (m_paused) {
-        m_timer.disconnect(item);
         resetPausedTime();
     } else {
         item->resetTimer();
         resetPausedTime();
-        connect(&m_timer, &QTimer::timeout, item, &TodoItem::updateTimer);
     }
     emit pausedChanged();
 
