@@ -33,7 +33,7 @@ int main() {
     std::cin.tie(nullptr);
 
     std::ofstream log;
-    log.open("/tmp/focacciat_extensionhost_errlog", std::ios::app | std::ios::out);
+    log.open("/tmp/focacciat_extensionhost_errlog", std::ios::trunc | std::ios::out);
     log << "start" << std::endl;
 
     constexpr size_t maxBufLength = 4096;

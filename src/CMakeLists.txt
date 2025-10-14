@@ -13,9 +13,17 @@ qt_standard_project_setup(REQUIRES 6.9) # Older versions MAY work, but you would
 
 add_subdirectory(extensionhost)  # FIXME: extensionintegration
 
+# FIXME
+if(APPLE)
+set(extensionhost_binary "${extensionhost_BINARY_DIR}/extensionhost")
+set_source_files_properties(${extensionhost_binary} PROPERTIES
+       MACOSX_PACKAGE_LOCATION "MacOS")
+qt_add_executable(Focacciat MACOSX_BUNDLE main.cpp ${extensionhost_binary})
+else()
 qt_add_executable(Focacciat
     main.cpp
 )
+endif()
 
 
 # Required for QML integration
@@ -81,12 +89,6 @@ install(TARGETS Focacciat
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
-
-if(APPLE)
-install(TARGETS extensionhost
-        RUNTIME DESTINATION ./Focacciat.app/Contents/MacOS)
-        # FIXME: extensionintegration
-endif()
 
 
 # Now generate the deployment script
