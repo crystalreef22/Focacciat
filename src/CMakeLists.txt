@@ -11,7 +11,7 @@ find_package(Qt6 REQUIRED COMPONENTS Core Quick Network Widgets)
 qt_standard_project_setup(REQUIRES 6.9) # Older versions MAY work, but you would
                                         # need to set necessary qt_policies
 
-#add_subdirectory(extensionhost)  # FIXME: extensionintegration
+add_subdirectory(extensionhost)  # FIXME: extensionintegration
 
 qt_add_executable(Focacciat
     main.cpp
@@ -83,8 +83,8 @@ install(TARGETS Focacciat
 )
 
 if(APPLE)
-#install(TARGETS extensionhost
-        #RUNTIME DESTINATION ./Focacciat.app/Contents/MacOS)
+install(TARGETS extensionhost
+        RUNTIME DESTINATION ./Focacciat.app/Contents/MacOS)
         # FIXME: extensionintegration
 endif()
 
