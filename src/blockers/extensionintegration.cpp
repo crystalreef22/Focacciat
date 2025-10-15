@@ -88,7 +88,7 @@ void ExtensionIntegration::setBlocklist(const QStringList& blocklist, const QStr
     m_blocklistName = name;
     sendBlocklist();
 }
-bool ExtensionIntegration::sendBlocklist() {
+bool ExtensionIntegration::sendBlocklist(QLocalSocket* client) {
     QJsonDocument obj {
         QJsonObject{
             {"response", QJsonObject{
@@ -98,19 +98,25 @@ bool ExtensionIntegration::sendBlocklist() {
             }}
         }
     };
-    return sendRaw(obj.toJson(QJsonDocument::Compact));
+    return sendRaw(obj.toJson(QJsonDocument::Compact), client);
 }
 
-bool ExtensionIntegration::sendPing() {
-    return sendRaw("{\"type\":\"ping\"}");
+bool ExtensionIntegration::sendPing(QLocalSocket* client) {
+    return sendRaw("{\"type\":\"ping\"}", client);
 }
 
-bool ExtensionIntegration::sendRaw(const QByteArray& bytes) {
+bool ExtensionIntegration::sendRaw(const QByteArray& bytes, QLocalSocket* client) {
+    // TODO: this is a mess
     bool success{false};
     uint32_t header = bytes.size();
-    for (QLocalSocket* client: std::as_const(m_clients)) {
+    if (client) {
         success |= (client->write(reinterpret_cast<char*>(&header), sizeof(header)) == sizeof(header));
         success |= (client->write(bytes) == bytes.length());
+    } else {
+        for (QLocalSocket* iclient: std::as_const(m_clients)) {
+            success |= (iclient->write(reinterpret_cast<char*>(&header), sizeof(header)) == sizeof(header));
+            success |= (iclient->write(bytes) == bytes.length());
+        }
     }
     if (!success) qInfo() << "did not write to any clients";
     return success;

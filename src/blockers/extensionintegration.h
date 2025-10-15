@@ -28,7 +28,7 @@ signals:
     void firefoxEnabledChanged();
 
 public slots:
-    bool sendPing();
+    bool sendPing(QLocalSocket* client = nullptr);
     void setBlocklist(const QStringList& blocklist, const QString& name);
 
 private:
@@ -37,8 +37,8 @@ private:
     void connectNextSocket();
     void readMessage(QLocalSocket* conn);
     void socketDisconnected();
-    bool sendRaw(const QByteArray& bytes);
-    bool sendBlocklist();
+    bool sendRaw(const QByteArray& bytes, QLocalSocket* client = nullptr);
+    bool sendBlocklist(QLocalSocket* client = nullptr);
 
     QStringList m_blocklist;
     QString m_blocklistName{"None"};

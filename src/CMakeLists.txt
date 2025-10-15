@@ -32,6 +32,7 @@ target_include_directories(Focacciat
     PRIVATE
         blockers
         components
+        settings
 )
 
 qt_add_qml_module(Focacciat
@@ -44,7 +45,7 @@ qt_add_qml_module(Focacciat
         ProjectView.qml
         TimerCircle.qml
         TodoView.qml
-        blockers/BlocklistPopup.qml
+        settings/BlocklistPopup.qml
         components/TimeInput.qml
     SOURCES
         blockers/blocklist.h blockers/blocklist.cpp
