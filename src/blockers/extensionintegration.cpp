@@ -64,6 +64,7 @@ void ExtensionIntegration::socketDisconnected() {
 
 void ExtensionIntegration::readMessage(QLocalSocket* conn) {
     // header is taken care of by extensionhost
+    // TODO: write a proper schema
     QByteArray data{conn->readAll()};
     QJsonDocument doc = QJsonDocument::fromJson(data);
     if (doc.isNull() || !doc.isObject()) {
@@ -74,8 +75,8 @@ void ExtensionIntegration::readMessage(QLocalSocket* conn) {
         if (!request.empty()) {
             QString type = request.value("type").toString();
             if (type == "blocklist") {
-                qInfo() << "Sending blocklist";
-                sendBlocklist();
+                qInfo() << "Sending blocklist to one";
+                sendBlocklist(conn);
             } else {
                 qWarning() << "Recieved unknown request for " << type;
             }

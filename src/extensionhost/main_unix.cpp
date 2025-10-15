@@ -27,7 +27,21 @@
 
 
 
-int main() {
+int main(int argc, char* argv[]) {
+    // read args
+
+    bool nldelstdin = false;
+    for (size_t i=0; i < argc; i++) {
+        if (strcmp(argv[i],"-h") == 0) {
+            std::cout << "Focacciat extensionhost. Run with -n for newline-delimited stdin" << std::endl;
+            return 0;
+        }
+        if (strcmp(argv[i],"-h") == 0) {
+            std::cout << "Running with newline-delimited stdin" << std::endl;
+            nldelstdin = true;
+        }
+    }
+
     // set up cout and stuff for this usage, also no printf
     std::ios_base::sync_with_stdio(false);
     std::cin.tie(nullptr);
@@ -51,11 +65,11 @@ int main() {
     addr.sun_family = PF_UNIX;
 
     // get tmpdir
-    const size_t sunPathLimit = sizeof(addr.sun_path);
+    constexpr size_t sunPathLimit = sizeof(addr.sun_path);
     constexpr char socketName[] = "focacciat_nmhostpipe";
     constexpr size_t socketNameLen = sizeof(socketName)/sizeof(char)-1;
     // subtract 1 for null character
-    const size_t confstrMaxSize = sunPathLimit - 1 - socketNameLen;
+    constexpr size_t confstrMaxSize = sunPathLimit - 1 - socketNameLen;
 #ifdef __APPLE__
     size_t confstrSize = confstr(_CS_DARWIN_USER_TEMP_DIR, addr.sun_path, confstrMaxSize);
 #else
@@ -114,12 +128,18 @@ int main() {
                     break;
                 }
                 if (eventsStdin & POLLIN) {
-                    uint32_t respSize{0};
-                    std::cin.read(reinterpret_cast<char*>(&respSize), sizeof(respSize));
-                    char* response = static_cast<char*>(malloc(sizeof(char)*respSize));
-                    std::cin.read(response, respSize);
-                    send(sockfd, response, respSize, 0);
-                    free(response);
+                    if (nldelstdin) {
+                        uint32_t respSize{0};
+                        std::cin.read(reinterpret_cast<char*>(&respSize), sizeof(respSize));
+                        char* response = static_cast<char*>(malloc(sizeof(char)*respSize));
+                        std::cin.read(response, respSize);
+                        send(sockfd, response, respSize, 0);
+                        free(response);
+                    } else {
+                        std::string result;
+                        std::getline(std::cin, result);
+                        send(sockfd, result.c_str(), result.size(), 0);
+                    }
                 }
                 if (eventsSock & POLLIN) {
                     int bytesRecieved = 0;
