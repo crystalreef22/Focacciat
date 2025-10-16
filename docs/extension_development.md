@@ -26,8 +26,8 @@ Focacciat's ipc we are using. Focacciat sends:
 
 ```json
 {
-    "type": "response",
-    "action": "ping",
+    "type": "request",
+    "action": "connection",
     "version": 0,
     "supportedVersions": [0]
 }
@@ -37,26 +37,26 @@ Please reply:
 
 ```json
 {
-    "type": "request",
+    "type": "response",
     "action": "connection",
     "version": 0
 }
 ```
 
-Focacciat responds:
+Focacciat responds if success:
 
 ```json
 {
-    "type": "response",
-    "action": "connection",
+    "type": "message",
+    "action": "connection"
 }
 ```
 
-or if error
+If it fails, you will receive one of the following:
 
 ```json
 {
-    "type": "response",
+    "type": "message",
     "action": "connection",
     "error": {
         "code": "unsupported_version"
@@ -64,18 +64,17 @@ or if error
 }
 ```
 
-or if error
-
 ```json
 {
-    "type": "response",
+    "type": "message",
+    "action": "connection",
     "error": {
         "code": "invalid_message"
     }
 }
 ```
 
-Once a successful response is recieved from Focacciat, you may start doing stuff
+If a successful response is received from Focacciat, you may start doing stuff. Otherwise, you will just receive errors.
 
 ## ping
 
@@ -90,7 +89,6 @@ Once a successful response is recieved from Focacciat, you may start doing stuff
 {
     "type": "response",
     "action": "ping",
-    "version": 0,
 }
 ```
 
@@ -129,3 +127,4 @@ Once a successful response is recieved from Focacciat, you may start doing stuff
     "type": "response",
     "action": "blocklist.append",
 }
+```
