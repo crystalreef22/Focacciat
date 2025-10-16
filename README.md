@@ -15,7 +15,7 @@ This is a program I've been working on to reduce my procrastination. Features in
 
 Follow development of this project on [my Discord server](https://discord.gg/whEy3EMDac)!
 
-(Read the developer documentation)[./docs/]
+[Read the developer documentation](./docs/)
 
 ## FAQ
 
