@@ -9,6 +9,7 @@
 class BlocklistListModel : public QAbstractListModel
 {
     Q_OBJECT
+    Q_PROPERTY(Blocklist *activeItem READ activeItem NOTIFY activeItemChanged FINAL)
     QML_ELEMENT
     QML_UNCREATABLE("Managed by GlobalState.h")
 
@@ -19,7 +20,8 @@ public:
 
     enum Roles {
         NameRole = Qt::UserRole,
-        ItemRole
+        ItemRole,
+        ActiveRole
     };
     Q_ENUM(Roles);
 
@@ -36,8 +38,13 @@ public:
 
     virtual QHash<int, QByteArray> roleNames() const override;
 
+    Blocklist* activeItem() const;
+
     QJsonObject serialize() const;
     void deserialize(const QJsonObject& json);
+
+signals:
+    void activeItemChanged();
 
 public slots:
     void appendItem();
@@ -47,6 +54,7 @@ public slots:
 
 private:
     QVector<Blocklist*> m_blocklists;
+    QPersistentModelIndex m_activeIndex;
 };
 
 #endif // BLOCKLISTLISTMODEL_H

@@ -39,8 +39,28 @@ bool BlocklistListModel::setData(const QModelIndex &index, const QVariant &value
         m_blocklists.at(index.row())->setName(value.toString());
         emit dataChanged(index, index, {role});
         return true;
+    } else if (role == ActiveRole) {
+        Blocklist *oldItem = activeItem();
+        if (oldItem) {
+            oldItem->setWatching(false);
+        }
+        if (m_activeIndex == index) {
+            m_activeIndex = QPersistentModelIndex{};
+            emit activeItemChanged();
+            Blocklist::removeAllBlocks();
+            return true;
+        }
+        const QModelIndex oldIndex = m_activeIndex;
+        m_activeIndex = index;
+        emit activeItemChanged();
+        emit dataChanged(oldIndex, oldIndex, {ActiveRole});
+        emit dataChanged(index, index, {ActiveRole});
+        return true;
+        // FIXME: aksdjdosakjsaklsdajk
+        return false;
+    } else [[unlikely]] {
+        return false;
     }
-    return false;
 }
 
 Qt::ItemFlags BlocklistListModel::flags(const QModelIndex &index) const {
@@ -55,6 +75,13 @@ QHash<int, QByteArray> BlocklistListModel::roleNames() const {
     names[NameRole] = "name";
     names[ItemRole] = "item";
     return names;
+}
+
+Blocklist *BlocklistListModel::activeItem() const {
+    if (m_activeIndex.isValid())
+        return m_blocklists.at(m_activeIndex.row());
+    else
+        return nullptr;
 }
 
 QJsonObject BlocklistListModel::serialize() const {

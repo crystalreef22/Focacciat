@@ -3,7 +3,7 @@
 #include <QDir>
 #include <QDebug>
 #include <QLocalServer>
-#include <QLocalSocket>
+#include "extensionclient.h"
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
@@ -36,6 +36,10 @@ ExtensionIntegration* ExtensionIntegration::create(QQmlEngine *engine, QJSEngine
 }
 
 void ExtensionIntegration::connectNextSocket() {
+    if (m_clients.size() < m_maxConnections) {
+        qWarning() << "max connections reached";
+        return;
+    }
     QLocalSocket* conn = m_server.nextPendingConnection();
     if (!conn) {
         qWarning() << "connection failed";
@@ -46,14 +50,12 @@ void ExtensionIntegration::connectNextSocket() {
         conn->deleteLater();
         return;
     }
-    m_clients.append(conn);
-    connect(conn, &QLocalSocket::disconnected, this, &ExtensionIntegration::socketDisconnected);
-    connect(conn, &QLocalSocket::readyRead, this, [=]{
-        readMessage(conn);
-    });
+    ExtensionClient* client = new ExtensionClient(conn, this);
+    m_clients.append(client);
+    connect(client, &ExtensionClient::disconnected, this, &ExtensionIntegration::clientDisconnected);
 }
 
-void ExtensionIntegration::socketDisconnected() {
+void ExtensionIntegration::clientDisconnected() {
     QLocalSocket* socket = qobject_cast<QLocalSocket*>(sender());
     if (socket) {
         m_clients.removeOne(socket);

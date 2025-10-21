@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QtQmlIntegration/qqmlintegration.h>
-#include <QLocalSocket>
+#include "extensionclient.h"
 #include <QLocalServer>
 
 class QQmlEngine;
@@ -36,7 +36,7 @@ private:
 
     void connectNextSocket();
     void readMessage(QLocalSocket* conn);
-    void socketDisconnected();
+    void clientDisconnected();
     bool sendRaw(const QByteArray& bytes, QLocalSocket* client = nullptr);
     bool sendBlocklist(QLocalSocket* client = nullptr);
 
@@ -45,8 +45,10 @@ private:
     bool m_firefoxEnabled{false};
     QString m_firefoxNMManifestDir;
     QLocalServer m_server;
-    QVector<QLocalSocket*> m_clients; // clients are automatically children of server, so are deleted
+    QVector<ExtensionClient*> m_clients; // clients are automatically children of server, so are deleted
     static constexpr char m_serverName[] = "focacciat_nmhostpipe";
+
+    size_t m_maxConnections{20};
 
     inline static ExtensionIntegration* m_pThis{nullptr};
 };
