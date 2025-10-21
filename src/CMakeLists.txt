@@ -16,19 +16,21 @@ add_subdirectory(extensionhost)  # FIXME: extensionintegration
 
 # FIXME
 if(APPLE)
-set(MACOSX_BUNDLE_ICON_FILE focusassisticon)
-set(app_icon_macos "${CMAKE_CURRENT_SOURCE_DIR}/assets/icons/focacciat-icon.icns")
+set(MACOSX_BUNDLE_ICON_FILE focacciaticon.icns)
+set(MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist")
+set(app_icon_macos "${CMAKE_CURRENT_SOURCE_DIR}/assets/icons/focacciaticon.icns")
 set_source_files_properties(${app_icon_macos} PROPERTIES
        MACOSX_PACKAGE_LOCATION "Resources")
 set(extensionhost_binary "${extensionhost_BINARY_DIR}/extensionhost")
 set_source_files_properties(${extensionhost_binary} PROPERTIES
        MACOSX_PACKAGE_LOCATION "MacOS")
-qt_add_executable(Focacciat MACOSX_BUNDLE main.cpp ${app_icon_macos} ${extensionhost_binary})
+   qt_add_executable(Focacciat MACOSX_BUNDLE main.cpp ${app_icon_macos} ${extensionhost_binary})
 else()
 qt_add_executable(Focacciat
     main.cpp
 )
 endif()
+
 
 
 # Required for QML integration
@@ -74,7 +76,7 @@ qt_add_qml_module(Focacciat
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.
 set_target_properties(Focacciat PROPERTIES
-#    MACOSX_BUNDLE_GUI_IDENTIFIER com.example.Focacciat
+    MACOSX_BUNDLE_GUI_IDENTIFIER com.cryref.Focacciat
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
     MACOSX_BUNDLE TRUE
