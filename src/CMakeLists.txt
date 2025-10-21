@@ -16,10 +16,14 @@ add_subdirectory(extensionhost)  # FIXME: extensionintegration
 
 # FIXME
 if(APPLE)
+set(MACOSX_BUNDLE_ICON_FILE focusassisticon)
+set(app_icon_macos "${CMAKE_CURRENT_SOURCE_DIR}/assets/icons/focacciat-icon.icns")
+set_source_files_properties(${app_icon_macos} PROPERTIES
+       MACOSX_PACKAGE_LOCATION "Resources")
 set(extensionhost_binary "${extensionhost_BINARY_DIR}/extensionhost")
 set_source_files_properties(${extensionhost_binary} PROPERTIES
        MACOSX_PACKAGE_LOCATION "MacOS")
-qt_add_executable(Focacciat MACOSX_BUNDLE main.cpp ${extensionhost_binary})
+qt_add_executable(Focacciat MACOSX_BUNDLE main.cpp ${app_icon_macos} ${extensionhost_binary})
 else()
 qt_add_executable(Focacciat
     main.cpp
