@@ -28,14 +28,10 @@ Blocklist::Blocklist(const QString &name, QObject *parent)
 
 Blocklist::~Blocklist() {
     m_blocklistUUIDMap.remove(m_UUID);
-    if (m_watching) {
-        removeAllBlocks();
-    }
 }
 
 Blocklist::Blocklist(const Blocklist& other) noexcept
-    : m_watching{false}
-    , m_name{other.m_name}
+    : m_name{other.m_name}
     , m_websiteList{other.m_websiteList}
 {
     m_blocklistUUIDMap.insert(m_UUID, this);
@@ -44,7 +40,6 @@ Blocklist::Blocklist(const Blocklist& other) noexcept
 
 Blocklist& Blocklist::operator=(const Blocklist& other) noexcept {
     if (this != &other) {
-        m_watching = false;
         m_name = other.m_name;
         m_websiteList = other.m_websiteList;
         m_UUID = QUuid::createUuid();
@@ -53,15 +48,13 @@ Blocklist& Blocklist::operator=(const Blocklist& other) noexcept {
     return *this;
 }
 Blocklist::Blocklist(Blocklist&& other) noexcept
-    : m_watching{std::move(other.m_watching)}
-    , m_name{std::move(other.m_name)}
+    : m_name{std::move(other.m_name)}
     , m_websiteList{std::move(other.m_websiteList)}
 {
     m_blocklistUUIDMap.insert(m_UUID, this);
 }
 Blocklist& Blocklist::operator=(Blocklist&& other) noexcept {
     if (this != &other) {
-        m_watching = other.watching();
         m_name = std::move(other.m_name);
         m_websiteList = std::move(other.m_websiteList);
         m_blocklistUUIDMap.insert(m_UUID, this);
@@ -70,7 +63,6 @@ Blocklist& Blocklist::operator=(Blocklist&& other) noexcept {
 }
 
 const QString& Blocklist::name() const { return m_name; }
-bool Blocklist::watching() const { return m_watching; }
 const QString& Blocklist::websiteList() const { return m_websiteList; }
 
 QUuid Blocklist::UUID() const {
@@ -81,24 +73,14 @@ void Blocklist::setName(const QString& value) {
     m_name = value;
     emit nameChanged();
 }
-void Blocklist::setWatching(bool value) {
-    m_watching = value;
-    emit watchingChanged();
-}
 void Blocklist::setWebsiteList(const QString& websiteList) {
     m_websiteList = websiteList;
     emit websiteListChanged();
-    if (m_watching) {
-        applyBlocks();
-    }
 }
 
 void Blocklist::appendWebsites(const QString& value) {
     m_websiteList += "\n" + value;
     emit websiteListChanged();
-    if (m_watching) {
-        applyBlocks();
-    }
 }
 
 QJsonObject Blocklist::serialize() const {
@@ -120,15 +102,4 @@ Blocklist *Blocklist::deserialize(const QJsonObject& json, QObject* parent) {
 
 Blocklist *Blocklist::fromUUID(QUuid uuid) {
     return m_blocklistUUIDMap.value(uuid, nullptr);
-}
-
-void Blocklist::applyBlocks() {
-    QStringList list = m_websiteList.split('\n');
-    list.removeAll(QString(""));
-    ExtensionIntegration::instance()->setBlocklist(list, m_name);
-
-}
-
-void Blocklist::removeAllBlocks() {
-    ExtensionIntegration::instance()->setBlocklist(QStringList(), "None");
 }

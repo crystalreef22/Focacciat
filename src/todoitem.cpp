@@ -63,8 +63,6 @@ void TodoItem::setBlocklist(Blocklist *value)
 {
     if (_blocklist) {
         _blocklist->disconnect(this);
-        if (_watching)
-            _blocklist->setWatching(false);
     }
     _blocklist = value;
     if (_blocklist) {
@@ -72,20 +70,8 @@ void TodoItem::setBlocklist(Blocklist *value)
             _blocklist = nullptr;
             emit blocklistChanged();
         });
-        if (_watching)
-            _blocklist->setWatching(true);
     }
-    if (_watching)
-        applyBlocklist();
     emit blocklistChanged();
-}
-
-void TodoItem::setWatching(bool value)
-{
-    _watching = value;
-    if (_blocklist) {
-        _blocklist->setWatching(value);
-    }
 }
 
 QJsonObject TodoItem::serialize() const {

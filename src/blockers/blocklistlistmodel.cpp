@@ -41,13 +41,9 @@ bool BlocklistListModel::setData(const QModelIndex &index, const QVariant &value
         return true;
     } else if (role == ActiveRole) {
         Blocklist *oldItem = activeItem();
-        if (oldItem) {
-            oldItem->setWatching(false);
-        }
         if (m_activeIndex == index) {
             m_activeIndex = QPersistentModelIndex{};
             emit activeItemChanged();
-            Blocklist::removeAllBlocks();
             return true;
         }
         const QModelIndex oldIndex = m_activeIndex;

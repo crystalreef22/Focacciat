@@ -35,7 +35,6 @@ public:
     void setTimeEstimate(long long value);
     void setTimeElapsed(long long value);
     void setBlocklist(Blocklist *value);
-    void setWatching(bool value);
 
     QJsonObject serialize() const;
     static TodoItem* deserialize(const QJsonObject& json, QObject *parent = nullptr);
@@ -62,9 +61,6 @@ private:
     long long _lastResetTime{0};
 
     bool _timerExpired{false};
-
-    // WARNING: this is a bad idea
-    bool _watching{false}; // resets blocklist watching when changing _blocklist
 
     QPointer<Blocklist> _blocklist{};
 };

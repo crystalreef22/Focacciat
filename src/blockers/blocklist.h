@@ -11,13 +11,12 @@ class Blocklist : public QObject
     Q_OBJECT
     Q_PROPERTY(QString websiteList READ websiteList WRITE setWebsiteList NOTIFY websiteListChanged FINAL)
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged FINAL)
-    Q_PROPERTY(bool watching READ watching WRITE setWatching NOTIFY watchingChanged FINAL)
     Q_PROPERTY(QUuid UUID READ UUID CONSTANT FINAL)
 public:
     explicit Blocklist(QObject *parent = nullptr);
     explicit Blocklist(QUuid UUID, QObject *parent = nullptr);
     explicit Blocklist(const QString &name, QObject *parent = nullptr);
-    ~Blocklist(); // unset m_watching
+    ~Blocklist(); // remove from uuid map
 
     // Rule of 5
     Blocklist(const Blocklist& other) noexcept;
@@ -26,11 +25,9 @@ public:
     Blocklist& operator=(Blocklist&& other) noexcept;
 
     const QString& name() const;
-    bool watching() const;
     const QString& websiteList() const;
     QUuid UUID() const;
     void setName(const QString& value);
-    void setWatching(bool value);
     void setWebsiteList(const QString& value);
     void appendWebsites(const QString& value);
 
@@ -42,17 +39,12 @@ public:
 signals:
     void websiteListChanged();
     void nameChanged();
-    void watchingChanged();
-
-public slots:
-    void applyBlocks();
-    static void removeAllBlocks();
 
 private:
     QString m_websiteList;
     QString m_name;
     QUuid m_UUID;
-    bool m_watching{false}; // FIXME: REMOVENOW
+    // NOTE: before adding new members, make sure to include in constructors
     inline static QHash<QUuid, Blocklist*> m_blocklistUUIDMap;
 };
 
