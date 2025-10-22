@@ -93,6 +93,14 @@ void Blocklist::setWebsiteList(const QString& websiteList) {
     }
 }
 
+void Blocklist::appendWebsites(const QString& value) {
+    m_websiteList += "\n" + value;
+    emit websiteListChanged();
+    if (m_watching) {
+        applyBlocks();
+    }
+}
+
 QJsonObject Blocklist::serialize() const {
     return QJsonObject{
         {"name", m_name},

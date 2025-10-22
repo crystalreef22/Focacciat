@@ -56,58 +56,12 @@ void ExtensionIntegration::connectNextSocket() {
 }
 
 void ExtensionIntegration::clientDisconnected() {
-    QLocalSocket* socket = qobject_cast<QLocalSocket*>(sender());
-    if (socket) {
-        m_clients.removeOne(socket);
-        socket->deleteLater();
+    ExtensionClient* client = qobject_cast<ExtensionClient*>(sender());
+    if (client) {
+        m_clients.removeOne(client);
+        client->deleteLater();
     }
 }
-
-
-void ExtensionIntegration::readMessage(QLocalSocket* conn) {
-    // header is taken care of by extensionhost
-    // TODO: write a proper schema
-    QByteArray data{conn->readAll()};
-    QJsonDocument doc = QJsonDocument::fromJson(data);
-    if (doc.isNull() || !doc.isObject()) {
-        qWarning() << "recieved errored data: " << data;
-    } else {
-        QJsonObject obj = doc.object();
-        QJsonObject request = obj.value("request").toObject();
-        if (!request.empty()) {
-            QString type = request.value("type").toString();
-            if (type == "blocklist") {
-                qInfo() << "Sending blocklist to one";
-                sendBlocklist(conn);
-            } else {
-                qWarning() << "Recieved unknown request for " << type;
-            }
-        }
-    }
-}
-
-void ExtensionIntegration::setBlocklist(const QStringList& blocklist, const QString &name = "") {
-    m_blocklist = blocklist;
-    m_blocklistName = name;
-    sendBlocklist();
-}
-bool ExtensionIntegration::sendBlocklist(QLocalSocket* client) {
-    QJsonDocument obj {
-        QJsonObject{
-            {"response", QJsonObject{
-                {"type", "blocklist"},
-                {"name", m_blocklistName},
-                {"data", QJsonArray::fromStringList(m_blocklist)}
-            }}
-        }
-    };
-    return sendRaw(obj.toJson(QJsonDocument::Compact), client);
-}
-
-bool ExtensionIntegration::sendPing(QLocalSocket* client) {
-    return sendRaw("{\"type\":\"ping\"}", client);
-}
-
 
 bool ExtensionIntegration::checkFirefoxEnabled() {
     m_firefoxEnabled = QFile::exists(m_firefoxNMManifestDir + "/Focacciat.json");

@@ -27,30 +27,21 @@ public:
 signals:
     void firefoxEnabledChanged();
 
-public slots:
-    bool sendPing(QLocalSocket* client = nullptr);
-    void setBlocklist(const QStringList& blocklist, const QString& name);
-
 private:
     explicit ExtensionIntegration(QObject *parent = nullptr);
 
     void connectNextSocket();
-    void readMessage(QLocalSocket* conn);
     void clientDisconnected();
-    bool sendRaw(const QByteArray& bytes, QLocalSocket* client = nullptr);
-    bool sendBlocklist(QLocalSocket* client = nullptr);
 
-    QStringList m_blocklist;
-    QString m_blocklistName{"None"};
     bool m_firefoxEnabled{false};
     QString m_firefoxNMManifestDir;
     QLocalServer m_server;
     QVector<ExtensionClient*> m_clients; // clients are automatically children of server, so are deleted
     static constexpr char m_serverName[] = "focacciat_nmhostpipe";
 
-    size_t m_maxConnections{20};
+    size_t m_maxConnections{50};
 
-    inline static ExtensionIntegration* m_pThis{nullptr};
+    inline static ExtensionIntegration* m_pThis{nullptr}; // for singleton
 };
 
 #endif // EXTENSIONINTEGRATION_H

@@ -12,16 +12,21 @@ class ExtensionClient : public QObject
 public:
     explicit ExtensionClient(QLocalSocket* client, QObject *parent = nullptr);
 
+    void requestPing() const;
+
 signals:
     void disconnected();
+    void pingRecieved();
 
 private:
     void readMessage();
 
     QLocalSocket* m_connection;
     int m_connectedver;
-    bool sendBlocklist(QLocalSocket *client);
-    bool sendRaw(const QByteArray &bytes);
+    bool sendBlocklist() const;
+    bool sendJson(const QJsonDocument& doc) const;
+
+    bool sendError(const QString &errorcode, const QString &description = "") const;
 };
 
 #endif // EXTENSIONCLIENT_H

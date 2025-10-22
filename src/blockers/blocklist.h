@@ -32,6 +32,7 @@ public:
     void setName(const QString& value);
     void setWatching(bool value);
     void setWebsiteList(const QString& value);
+    void appendWebsites(const QString& value);
 
     QJsonObject serialize() const;
     static Blocklist* deserialize(const QJsonObject& json, QObject* parent);
@@ -51,7 +52,7 @@ private:
     QString m_websiteList;
     QString m_name;
     QUuid m_UUID;
-    bool m_watching{false};
+    bool m_watching{false}; // FIXME: REMOVENOW
     inline static QHash<QUuid, Blocklist*> m_blocklistUUIDMap;
 };
 
