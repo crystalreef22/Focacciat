@@ -20,6 +20,8 @@ private:
 
     QLocalSocket* m_connection;
     int m_connectedver;
+    bool sendBlocklist(QLocalSocket *client);
+    bool sendRaw(const QByteArray &bytes);
 };
 
 #endif // EXTENSIONCLIENT_H

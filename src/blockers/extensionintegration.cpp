@@ -108,22 +108,6 @@ bool ExtensionIntegration::sendPing(QLocalSocket* client) {
     return sendRaw("{\"type\":\"ping\"}", client);
 }
 
-bool ExtensionIntegration::sendRaw(const QByteArray& bytes, QLocalSocket* client) {
-    // TODO: this is a mess
-    bool success{false};
-    uint32_t header = bytes.size();
-    if (client) {
-        success |= (client->write(reinterpret_cast<char*>(&header), sizeof(header)) == sizeof(header));
-        success |= (client->write(bytes) == bytes.length());
-    } else {
-        for (QLocalSocket* iclient: std::as_const(m_clients)) {
-            success |= (iclient->write(reinterpret_cast<char*>(&header), sizeof(header)) == sizeof(header));
-            success |= (iclient->write(bytes) == bytes.length());
-        }
-    }
-    if (!success) qInfo() << "did not write to any clients";
-    return success;
-}
 
 bool ExtensionIntegration::checkFirefoxEnabled() {
     m_firefoxEnabled = QFile::exists(m_firefoxNMManifestDir + "/Focacciat.json");
