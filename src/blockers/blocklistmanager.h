@@ -6,6 +6,8 @@
 #include <QPointer>
 #include "blocklist.h"
 
+class QUuid;
+
 class BlocklistManager : public QAbstractListModel
 {
     Q_OBJECT
@@ -17,6 +19,7 @@ public:
     explicit BlocklistManager(QObject *parent = nullptr);
     BlocklistManager (const BlocklistManager&) = delete;
     BlocklistManager& operator=(const BlocklistManager&) = delete;
+    ~BlocklistManager();
 
     enum Roles {
         NameRole = Qt::UserRole,
@@ -40,6 +43,7 @@ public:
     virtual QHash<int, QByteArray> roleNames() const override;
 
     Blocklist* activeItem() const;
+    Blocklist* blocklistFromUUID(QUuid uuid) const;
 
     QJsonObject serialize() const;
     void deserialize(const QJsonObject& json);

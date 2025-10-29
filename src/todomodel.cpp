@@ -59,13 +59,15 @@ bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int rol
         m_paused = false;
         emit pausedChanged();
         resetPausedTime();
-        // FIXME: this is a bad way to do it. check if value is true and set accordingly
         if (value.toBool()) {
             const QModelIndex oldIndex = m_activeIndex;
             m_activeIndex = index;
+            // we NEED to resetTimer after changing the active item because the
+            // updateTimer function and start time stuff
             item->resetTimer();
             emit activeItemChanged();
-            emit dataChanged(oldIndex, oldIndex, {ActiveRole});
+            if (oldIndex.isValid())
+                emit dataChanged(oldIndex, oldIndex, {ActiveRole});
             emit dataChanged(index, index, {ActiveRole});
         } else {
             if (m_activeIndex == index) {
