@@ -14,9 +14,6 @@ ExtensionClient::ExtensionClient(QLocalSocket* conn, QObject *parent)
 {
     connect(conn, &QLocalSocket::disconnected, this, &ExtensionClient::disconnected);
     connect(conn, &QLocalSocket::readyRead, this, &ExtensionClient::readMessage);
-    connect(GlobalState::instance()->blocklistListModel(), &BlocklistListModel::activeItemChanged, this, &ExtensionClient::sendBlocklist);
-    // FIXME: is activeItemChanged emitted when the contents of the blocklist change?
-    // fix by adding a dataUpdated to the model
 }
 
 void ExtensionClient::requestPing() const {
@@ -29,7 +26,7 @@ void ExtensionClient::requestPing() const {
 }
 
 bool ExtensionClient::sendBlocklist() const {
-    const Blocklist* blocklist = GlobalState::instance()->blocklistListModel()->activeItem();
+    const Blocklist* blocklist = GlobalState::instance()->blocklistManager()->activeItem();
     // FIXME: blocklist may be nullptr!!!
     QJsonDocument obj {
         QJsonObject{
@@ -78,7 +75,7 @@ void ExtensionClient::readMessage() {
                     });
                 } else {
                     const QJsonArray& arr = obj.value("data").toArray();
-                    Blocklist* blocklist = GlobalState::instance()->blocklistListModel()->activeItem();
+                    Blocklist* blocklist = GlobalState::instance()->blocklistManager()->activeItem();
                     // FIXME: blocklist may be nullptr!!!
                     for (const QJsonValue& item : arr) {
                         blocklist->appendWebsites(item.toString());

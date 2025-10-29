@@ -50,7 +50,7 @@ qt_add_qml_module(Focacciat
         components/TimeInput.qml
     SOURCES
         blockers/blocklist.h blockers/blocklist.cpp
-        blockers/blocklistlistmodel.h blockers/blocklistlistmodel.cpp
+        blockers/blocklistmanager.h blockers/blocklistmanager.cpp
         blockers/extensionintegration.h blockers/extensionintegration.cpp
         components/abstracttimeinput.h components/abstracttimeinput.cpp
         formatutils.h formatutils.cpp

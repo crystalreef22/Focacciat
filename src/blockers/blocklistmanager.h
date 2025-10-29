@@ -1,12 +1,12 @@
-#ifndef BLOCKLISTLISTMODEL_H
-#define BLOCKLISTLISTMODEL_H
+#ifndef BLOCKLISTMANAGER_H
+#define BLOCKLISTMANAGER_H
 
 #include <QAbstractListModel>
 #include <QtQmlIntegration/qqmlintegration.h>
 #include <QPointer>
 #include "blocklist.h"
 
-class BlocklistListModel : public QAbstractListModel
+class BlocklistManager : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(Blocklist *activeItem READ activeItem NOTIFY activeItemChanged FINAL)
@@ -14,14 +14,15 @@ class BlocklistListModel : public QAbstractListModel
     QML_UNCREATABLE("Managed by GlobalState.h")
 
 public:
-    explicit BlocklistListModel(QObject *parent = nullptr);
-    BlocklistListModel (const BlocklistListModel&) = delete;
-    BlocklistListModel& operator=(const BlocklistListModel&) = delete;
+    explicit BlocklistManager(QObject *parent = nullptr);
+    BlocklistManager (const BlocklistManager&) = delete;
+    BlocklistManager& operator=(const BlocklistManager&) = delete;
 
     enum Roles {
         NameRole = Qt::UserRole,
         ItemRole,
-        ActiveRole
+        ActiveRole,
+        WebsiteListRole
     };
     Q_ENUM(Roles);
 
@@ -57,4 +58,4 @@ private:
     QPersistentModelIndex m_activeIndex;
 };
 
-#endif // BLOCKLISTLISTMODEL_H
+#endif // BLOCKLISTMANAGER_H

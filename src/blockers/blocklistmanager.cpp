@@ -1,15 +1,15 @@
-#include "blocklistlistmodel.h"
+#include "blocklistmanager.h"
 #include <QDebug>
 #include <QJsonObject>
 #include <QJsonArray>
 
-BlocklistListModel::BlocklistListModel(QObject *parent)
+BlocklistManager::BlocklistManager(QObject *parent)
     : QAbstractListModel(parent)
 {
     appendItem();
 }
 
-int BlocklistListModel::rowCount(const QModelIndex &parent) const
+int BlocklistManager::rowCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
         return 0;
@@ -17,7 +17,7 @@ int BlocklistListModel::rowCount(const QModelIndex &parent) const
     return m_blocklists.length();
 }
 
-QVariant BlocklistListModel::data(const QModelIndex &index, int role) const
+QVariant BlocklistManager::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
         return QVariant();
@@ -28,12 +28,14 @@ QVariant BlocklistListModel::data(const QModelIndex &index, int role) const
         return QVariant(item->name());
     case ItemRole:
         return QVariant::fromValue(item);
+    case ActiveRole:
+        return QVariant(index == m_activeIndex);
     }
 
     return QVariant();
 }
 
-bool BlocklistListModel::setData(const QModelIndex &index, const QVariant &value, int role)
+bool BlocklistManager::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     if (role == NameRole && index.isValid() && data(index, role) != value) {
         m_blocklists.at(index.row())->setName(value.toString());
@@ -41,46 +43,52 @@ bool BlocklistListModel::setData(const QModelIndex &index, const QVariant &value
         return true;
     } else if (role == ActiveRole) {
         Blocklist *oldItem = activeItem();
-        if (m_activeIndex == index) {
-            m_activeIndex = QPersistentModelIndex{};
-            emit activeItemChanged();
-            return true;
+        if (value.toBool()) {
+            if (m_activeIndex != index) {
+                const QModelIndex oldIndex = m_activeIndex;
+                m_activeIndex = index;
+                emit activeItemChanged();
+                emit dataChanged(oldIndex, oldIndex, {ActiveRole});
+                emit dataChanged(index, index, {ActiveRole});
+            }
+        } else {
+            if (m_activeIndex == index) {
+                // deactivate
+                m_activeIndex = QPersistentModelIndex{};
+                emit activeItemChanged();
+                emit dataChanged(index, index, {ActiveRole});
+            }
         }
-        const QModelIndex oldIndex = m_activeIndex;
-        m_activeIndex = index;
-        emit activeItemChanged();
-        emit dataChanged(oldIndex, oldIndex, {ActiveRole});
-        emit dataChanged(index, index, {ActiveRole});
         return true;
-        // FIXME: aksdjdosakjsaklsdajk
-        return false;
     } else [[unlikely]] {
         return false;
     }
 }
 
-Qt::ItemFlags BlocklistListModel::flags(const QModelIndex &index) const {
+Qt::ItemFlags BlocklistManager::flags(const QModelIndex &index) const {
     if (!index.isValid())
         return Qt::NoItemFlags;
 
     return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
 }
 
-QHash<int, QByteArray> BlocklistListModel::roleNames() const {
+QHash<int, QByteArray> BlocklistManager::roleNames() const {
     QHash<int, QByteArray> names;
     names[NameRole] = "name";
     names[ItemRole] = "item";
+    names[ActiveRole] = "active";
+    names[WebsiteListRole] = "websiteList";
     return names;
 }
 
-Blocklist *BlocklistListModel::activeItem() const {
+Blocklist *BlocklistManager::activeItem() const {
     if (m_activeIndex.isValid())
         return m_blocklists.at(m_activeIndex.row());
     else
         return nullptr;
 }
 
-QJsonObject BlocklistListModel::serialize() const {
+QJsonObject BlocklistManager::serialize() const {
     QJsonArray items{};
     for (Blocklist* bl : std::as_const(m_blocklists)) {
         items.append(bl->serialize());
@@ -91,7 +99,7 @@ QJsonObject BlocklistListModel::serialize() const {
     };
 }
 
-void BlocklistListModel::deserialize(const QJsonObject &json) {
+void BlocklistManager::deserialize(const QJsonObject &json) {
     const QJsonArray& items = json.value("items").toArray();
     beginResetModel();
     for (auto item : std::as_const(m_blocklists)) {
@@ -108,18 +116,18 @@ void BlocklistListModel::deserialize(const QJsonObject &json) {
 
 
 
-void BlocklistListModel::appendItem() {
+void BlocklistManager::appendItem() {
     const int index = m_blocklists.size();
     beginInsertRows(QModelIndex{}, index, index);
     m_blocklists.append(new Blocklist("Blocklist " + QString::number(m_blocklists.length()+1), this));
     endInsertRows();
 }
-bool BlocklistListModel::removeItem(const QModelIndex &index) {
+bool BlocklistManager::removeItem(const QModelIndex &index) {
     if (!index.isValid()) return false;
     removeItem(index.row());
     return true;
 }
-bool BlocklistListModel::removeItem(int i) {
+bool BlocklistManager::removeItem(int i) {
     if (i < 0 || i >= m_blocklists.length()) return false;
     if (m_blocklists.length() == 1) {
         beginResetModel();

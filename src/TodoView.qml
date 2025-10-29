@@ -113,7 +113,7 @@ ColumnLayout {
                         MenuSeparator{}
                         Instantiator {
                             id: todoListViewComboboxPopupInstantiator
-                            model: GlobalState.blocklistListModel;
+                            model: GlobalState.blocklistManager;
                             delegate: MenuItem {
                                 text: model.name
                                 checked: todoListViewDelegate.model.item.blocklist === model.item

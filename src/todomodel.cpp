@@ -56,27 +56,25 @@ bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int rol
     case ItemRole:
         return false;
     case ActiveRole:
-        TodoItem *oldItem = activeItem();
-        if (oldItem) {
-            oldItem->setWatching(false);
-        }
         m_paused = false;
         emit pausedChanged();
         resetPausedTime();
-        if (m_activeIndex == index) {
-            m_activeIndex = QPersistentModelIndex{};
+        // FIXME: this is a bad way to do it. check if value is true and set accordingly
+        if (value.toBool()) {
+            const QModelIndex oldIndex = m_activeIndex;
+            m_activeIndex = index;
+            item->resetTimer();
             emit activeItemChanged();
-            Blocklist::removeAllBlocks();
-            return true;
+            emit dataChanged(oldIndex, oldIndex, {ActiveRole});
+            emit dataChanged(index, index, {ActiveRole});
+        } else {
+            if (m_activeIndex == index) {
+                // deactivate
+                m_activeIndex = QPersistentModelIndex{};
+                emit dataChanged(index, index, {ActiveRole});
+                emit activeItemChanged();
+            }
         }
-        const QModelIndex oldIndex = m_activeIndex;
-        m_activeIndex = index;
-        item->resetTimer();
-        item->applyBlocklist();
-        item->setWatching(true);
-        emit activeItemChanged();
-        emit dataChanged(oldIndex, oldIndex, {ActiveRole});
-        emit dataChanged(index, index, {ActiveRole});
         return true;
     }
     return false;
@@ -116,7 +114,6 @@ void TodoModel::removeCompletedItems()
         m_paused = false;
         emit pausedChanged();
         emit activeItemChanged();
-        Blocklist::removeAllBlocks();
     }
 
     for (qsizetype i = 0; i < m_list.size();) {
@@ -171,10 +168,6 @@ QJsonObject TodoModel::serialize() const {
 }
 void TodoModel::deserialize(const QJsonObject& json) {
     TodoItem* item = activeItem();
-    Blocklist::removeAllBlocks();
-    if (item) {
-        item->setWatching(false);
-    }
     const QJsonArray& todoItemsJson(json["todoItems"].toArray());
     // FIXME: does not check if json is proper
     // clear all list items
