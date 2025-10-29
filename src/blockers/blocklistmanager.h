@@ -42,14 +42,16 @@ public:
 
     virtual QHash<int, QByteArray> roleNames() const override;
 
-    Blocklist* activeItem() const;
-    Blocklist* blocklistFromUUID(QUuid uuid) const;
+    const Blocklist* activeItem() const;
+    const Blocklist* blocklistFromUUID(QUuid uuid) const;
+    bool appendWebsitesToActiveItem(const QStringList& items);
 
     QJsonObject serialize() const;
     void deserialize(const QJsonObject& json);
 
 signals:
     void activeItemChanged();
+    void activeBlocklistModified();
 
 public slots:
     void appendItem();

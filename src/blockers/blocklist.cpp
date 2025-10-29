@@ -30,8 +30,10 @@ void Blocklist::setWebsiteList(const QString& websiteList) {
     emit websiteListChanged();
 }
 
-void Blocklist::appendWebsites(const QString& value) {
-    m_websiteList += "\n" + value;
+void Blocklist::appendWebsites(const QStringList& values) {
+    for (const QString& value : values) {
+        m_websiteList += "\n" + value;
+    }
     emit websiteListChanged();
 }
 

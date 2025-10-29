@@ -66,6 +66,7 @@ bool BlocklistManager::setData(const QModelIndex &index, const QVariant &value, 
                     emit dataChanged(oldIndex, oldIndex, {ActiveRole});
                 }
                 emit dataChanged(index, index, {ActiveRole});
+                emit activeBlocklistModified();
             }
         } else {
             if (m_activeIndex == index) {
@@ -73,12 +74,16 @@ bool BlocklistManager::setData(const QModelIndex &index, const QVariant &value, 
                 m_activeIndex = QPersistentModelIndex{};
                 emit activeItemChanged();
                 emit dataChanged(index, index, {ActiveRole});
+                emit activeBlocklistModified();
             }
         }
         return true;
     case WebsiteListRole:
         item->setWebsiteList(value.toString());
         emit dataChanged(index, index, {WebsiteListRole});
+        if (m_activeIndex == index) {
+            emit activeBlocklistModified();
+        }
         return true;
     }
 return false;
@@ -100,20 +105,30 @@ QHash<int, QByteArray> BlocklistManager::roleNames() const {
     return names;
 }
 
-Blocklist *BlocklistManager::activeItem() const {
+const Blocklist* BlocklistManager::activeItem() const {
     if (m_activeIndex.isValid())
         return m_blocklists.at(m_activeIndex.row());
     else
         return nullptr;
 }
 
-Blocklist *BlocklistManager::blocklistFromUUID(QUuid uuid) const {
+const Blocklist* BlocklistManager::blocklistFromUUID(QUuid uuid) const {
     for (Blocklist* bl : std::as_const(m_blocklists)) {
         if (bl->UUID() == uuid) {
             return bl;
         }
     }
     return nullptr;
+}
+
+bool BlocklistManager::appendWebsitesToActiveItem(const QStringList &items) {
+    if (m_activeIndex.isValid()) {
+        m_blocklists.at(m_activeIndex.row())->appendWebsites(items);
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 QJsonObject BlocklistManager::serialize() const {
@@ -139,7 +154,8 @@ void BlocklistManager::deserialize(const QJsonObject &json) {
         m_blocklists.append(Blocklist::deserialize(value.toObject()));
     }
     endResetModel();
-
+    emit activeBlocklistModified();// TODO: only emit when needed
+    emit activeItemChanged(); // todo: serialize active item// TODO: only emit when needed
 }
 
 
@@ -162,11 +178,15 @@ bool BlocklistManager::removeItem(int i) {
         delete m_blocklists.at(0);
         m_blocklists[0] = new Blocklist("Blocklist 1");
         endResetModel();
+        emit activeBlocklistModified(); // TODO: only emit when needed
+        emit activeItemChanged();
         return true;
     }
     beginRemoveRows(QModelIndex{}, i, i);
     delete m_blocklists.at(i);
     m_blocklists.removeAt(i);
+    emit activeBlocklistModified(); // TODO: only emit when needed
+    emit activeItemChanged();
     endRemoveRows();
     return true;
 }

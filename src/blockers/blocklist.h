@@ -17,7 +17,7 @@ public:
     QUuid UUID() const;
     void setName(const QString& value);
     void setWebsiteList(const QString& value);
-    void appendWebsites(const QString& value);
+    void appendWebsites(const QStringList& values);
 
     QJsonObject serialize() const;
     static Blocklist* deserialize(const QJsonObject& json);

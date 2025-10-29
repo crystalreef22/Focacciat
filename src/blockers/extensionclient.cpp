@@ -7,6 +7,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <blocklistmanager.h>
 
 ExtensionClient::ExtensionClient(QLocalSocket* conn, QObject *parent)
     : m_connection{conn}
@@ -14,6 +15,7 @@ ExtensionClient::ExtensionClient(QLocalSocket* conn, QObject *parent)
 {
     connect(conn, &QLocalSocket::disconnected, this, &ExtensionClient::disconnected);
     connect(conn, &QLocalSocket::readyRead, this, &ExtensionClient::readMessage);
+    connect(GlobalState::instance()->blocklistManager(), &BlocklistManager::activeBlocklistModified, this, &ExtensionClient::sendBlocklist);
 }
 
 void ExtensionClient::requestPing() const {
@@ -27,13 +29,13 @@ void ExtensionClient::requestPing() const {
 
 bool ExtensionClient::sendBlocklist() const {
     const Blocklist* blocklist = GlobalState::instance()->blocklistManager()->activeItem();
-    // FIXME: blocklist may be nullptr!!!
+    // TODO: make activeBlocklistModified send over a blocklist pointer
     QJsonDocument obj {
         QJsonObject{
             {"type", "response"},
             {"action", "blocklist.get"},
-            {"name", blocklist->name()},
-            {"data", QJsonArray::fromStringList(blocklist->websiteList().split("\n"))}
+            {"name", blocklist ? blocklist->name() : "None"},
+            {"data", blocklist ? QJsonArray::fromStringList(blocklist->websiteList().split("\n")) : QJsonArray{}}
         }
     };
     return sendJson(obj);
@@ -74,12 +76,8 @@ void ExtensionClient::readMessage() {
                         }
                     });
                 } else {
-                    const QJsonArray& arr = obj.value("data").toArray();
-                    Blocklist* blocklist = GlobalState::instance()->blocklistManager()->activeItem();
-                    // FIXME: blocklist may be nullptr!!!
-                    for (const QJsonValue& item : arr) {
-                        blocklist->appendWebsites(item.toString());
-                    }
+                    const QStringList& arr = obj.value("data").toVariant().toStringList();
+                    GlobalState::instance()->blocklistManager()->appendWebsitesToActiveItem(arr);
                 }
             } else if (action == "ping") {
                 sendJson(QJsonDocument{
