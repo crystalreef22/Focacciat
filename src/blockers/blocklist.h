@@ -22,10 +22,6 @@ public:
     QJsonObject serialize() const;
     static Blocklist* deserialize(const QJsonObject& json);
 
-signals:
-    void websiteListChanged();
-    void nameChanged();
-
 private:
     QString m_websiteList;
     QString m_name;

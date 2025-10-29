@@ -23,18 +23,15 @@ QUuid Blocklist::UUID() const {
 
 void Blocklist::setName(const QString& value) {
     m_name = value;
-    emit nameChanged();
 }
 void Blocklist::setWebsiteList(const QString& websiteList) {
     m_websiteList = websiteList;
-    emit websiteListChanged();
 }
 
 void Blocklist::appendWebsites(const QStringList& values) {
     for (const QString& value : values) {
         m_websiteList += "\n" + value;
     }
-    emit websiteListChanged();
 }
 
 QJsonObject Blocklist::serialize() const {

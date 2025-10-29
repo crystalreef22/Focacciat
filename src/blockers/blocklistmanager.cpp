@@ -40,6 +40,8 @@ QVariant BlocklistManager::data(const QModelIndex &index, int role) const
         return QVariant(index == m_activeIndex);
     case WebsiteListRole:
         return QVariant(item->websiteList());
+    case UuidRole:
+        return QVariant(item->UUID());
     }
 
     return QVariant();
@@ -102,6 +104,7 @@ QHash<int, QByteArray> BlocklistManager::roleNames() const {
     names[ItemRole] = "item";
     names[ActiveRole] = "active";
     names[WebsiteListRole] = "websiteList";
+    names[UuidRole] = "UUID";
     return names;
 }
 
@@ -119,6 +122,15 @@ const Blocklist* BlocklistManager::blocklistFromUUID(QUuid uuid) const {
         }
     }
     return nullptr;
+}
+
+QPersistentModelIndex BlocklistManager::persistentModelIndexFromUUID(QUuid uuid) const {
+    for (int i = 0; i < m_blocklists.length(); i++) {
+        if (m_blocklists.at(i)->UUID() == uuid) {
+            return index(i);
+        }
+    }
+    return {};
 }
 
 bool BlocklistManager::appendWebsitesToActiveItem(const QStringList &items) {

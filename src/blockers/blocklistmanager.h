@@ -11,7 +11,7 @@ class QUuid;
 class BlocklistManager : public QAbstractListModel
 {
     Q_OBJECT
-    Q_PROPERTY(Blocklist *activeItem READ activeItem NOTIFY activeItemChanged FINAL)
+    Q_PROPERTY(const Blocklist *activeItem READ activeItem NOTIFY activeItemChanged FINAL)
     QML_ELEMENT
     QML_UNCREATABLE("Managed by GlobalState.h")
 
@@ -25,7 +25,8 @@ public:
         NameRole = Qt::UserRole,
         ItemRole,
         ActiveRole,
-        WebsiteListRole
+        WebsiteListRole,
+        UuidRole
     };
     Q_ENUM(Roles);
 
@@ -44,6 +45,7 @@ public:
 
     const Blocklist* activeItem() const;
     const Blocklist* blocklistFromUUID(QUuid uuid) const;
+    QPersistentModelIndex persistentModelIndexFromUUID(QUuid uuid) const;
     bool appendWebsitesToActiveItem(const QStringList& items);
 
     QJsonObject serialize() const;

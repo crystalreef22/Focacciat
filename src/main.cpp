@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     }
 
     QObject::connect(&app, &QGuiApplication::aboutToQuit, &app, [=] {
-        Blocklist::removeAllBlocks();
+        // Blocklist::removeAllBlocks();
         globalState->serializeToFile();
     }); // remove all blocks
     return app.exec();

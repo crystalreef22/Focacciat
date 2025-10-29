@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QPointer>
+#include <QPersistentModelIndex>
 #include <blockers/blocklist.h>
 #include <QJsonObject>
 
@@ -18,7 +19,7 @@ class TodoItem : public QObject
         long long timeElapsed READ timeElapsed WRITE setTimeElapsed NOTIFY timeElapsedChanged FINAL)
     Q_PROPERTY(long long timeRemaining READ timeRemaining NOTIFY timeRemainingChanged FINAL)
     Q_PROPERTY(bool timerExpired READ timerExpired NOTIFY timerExpiredChanged FINAL)
-    Q_PROPERTY(Blocklist *blocklist READ blocklist WRITE setBlocklist NOTIFY blocklistChanged FINAL)
+    Q_PROPERTY(QPersistentModelIndex blocklistIndex READ blocklistIndex WRITE setBlocklistIndex NOTIFY blocklistIndexChanged FINAL)
 public:
     explicit TodoItem(QObject *parent = nullptr);
 
@@ -28,13 +29,13 @@ public:
     long long timeElapsed() const;
     long long timeRemaining() const;
     bool timerExpired();
-    Blocklist *blocklist() const;
+    QPersistentModelIndex blocklistIndex() const;
 
     void setDone(bool value);
     void setDescription(const QString &value);
     void setTimeEstimate(long long value);
     void setTimeElapsed(long long value);
-    void setBlocklist(Blocklist *value);
+    void setBlocklistIndex(QPersistentModelIndex value);
 
     QJsonObject serialize() const;
     static TodoItem* deserialize(const QJsonObject& json, QObject *parent = nullptr);
@@ -46,7 +47,7 @@ signals:
     void timeElapsedChanged();
     void timeRemainingChanged();
     void timerExpiredChanged();
-    void blocklistChanged();
+    void blocklistIndexChanged();
 
 public slots:
     void updateTimer();
@@ -61,7 +62,7 @@ private:
 
     bool _timerExpired{false};
 
-    QPointer<Blocklist> _blocklist{};
+    QPersistentModelIndex _blocklist{};
 };
 
 #endif // TODOITEM_H

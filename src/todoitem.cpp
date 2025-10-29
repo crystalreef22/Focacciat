@@ -3,6 +3,8 @@
 
 #include "todoitem.h"
 #include <QJsonObject>
+#include "blocklistmanager.h"
+#include "globalstate.h"
 
 TodoItem::TodoItem(QObject *parent)
     : QObject{parent}
@@ -28,7 +30,7 @@ long long TodoItem::timeRemaining() const
 {
     return _timeEstimate - _timeElapsed;
 }
-Blocklist *TodoItem::blocklist() const
+QPersistentModelIndex TodoItem::blocklistIndex() const
 {
     return _blocklist;
 }
@@ -59,6 +61,12 @@ void TodoItem::setTimeElapsed(long long value)
     emit timeElapsedChanged();
     emit timeRemainingChanged();
 }
+
+void TodoItem::setBlocklistIndex(QPersistentModelIndex index) {
+    _blocklist = index;
+    emit blocklistIndexChanged();
+}
+/*
 void TodoItem::setBlocklist(Blocklist *value)
 {
     if (_blocklist) {
@@ -73,6 +81,7 @@ void TodoItem::setBlocklist(Blocklist *value)
     }
     emit blocklistChanged();
 }
+*/
 
 QJsonObject TodoItem::serialize() const {
     return QJsonObject{
@@ -80,7 +89,7 @@ QJsonObject TodoItem::serialize() const {
         { "description", _description },
         { "timeEstimate", _timeEstimate },
         { "timeElapsed", _timeElapsed },
-        { "blocklistUUID", _blocklist ? QJsonValue(_blocklist->UUID().toString()) : QJsonValue(QJsonValue::Null) }
+        { "blocklistUUID", _blocklist.isValid() ? QJsonValue(_blocklist.data(BlocklistManager::UuidRole).toUuid().toString()) : QJsonValue(QJsonValue::Null) }
     };
 }
 
@@ -91,8 +100,8 @@ TodoItem* TodoItem::deserialize(const QJsonObject& json, QObject *parent) {
     item->_timeEstimate = json.value("timeEstimate").toVariant().toLongLong();
     item->_timeElapsed = json.value("timeElapsed").toVariant().toLongLong();
     const auto blocklistUUID = QUuid::fromString(json.value("blocklistUUID").toString());
-    if (blocklistUUID.isNull()) {
-        item->setBlocklist(Blocklist::fromUUID(QUuid::fromString(json.value("blocklistUUID").toString())));
+    if (!blocklistUUID.isNull()) {
+        item->_blocklist = GlobalState::instance()->blocklistManager()->persistentModelIndexFromUUID(QUuid::fromString(json.value("blocklistUUID").toString()));
     }
     return item;
 }
