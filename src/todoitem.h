@@ -51,7 +51,6 @@ signals:
 public slots:
     void updateTimer();
     void resetTimer();
-    bool applyBlocklist();
 
 private:
     bool _done{false};

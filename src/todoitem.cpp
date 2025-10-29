@@ -119,13 +119,3 @@ bool TodoItem::timerExpired()
         emit timerExpiredChanged();
     return _timerExpired;
 }
-
-bool TodoItem::applyBlocklist()
-{
-    if (_blocklist == nullptr) {
-        Blocklist::removeAllBlocks();
-        return false;
-    }
-    _blocklist->applyBlocks();
-    return true;
-}

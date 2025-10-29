@@ -16,6 +16,7 @@ ExtensionClient::ExtensionClient(QLocalSocket* conn, QObject *parent)
     connect(conn, &QLocalSocket::readyRead, this, &ExtensionClient::readMessage);
     connect(GlobalState::instance()->blocklistListModel(), &BlocklistListModel::activeItemChanged, this, &ExtensionClient::sendBlocklist);
     // FIXME: is activeItemChanged emitted when the contents of the blocklist change?
+    // fix by adding a dataUpdated to the model
 }
 
 void ExtensionClient::requestPing() const {
