@@ -4,6 +4,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include "blockers/blocklist.h"
+#include <globalstate.h>
 
 TodoModel::TodoModel(QObject *parent)
     : QAbstractListModel(parent)
@@ -44,6 +45,8 @@ QVariant TodoModel::data(const QModelIndex &index, int role) const
         return QVariant::fromValue(item);
     case ActiveRole:
         return m_activeIndex == index;
+    case BlocklistRole:
+        return QVariant(item->blocklistIndex());
     }
 
     return QVariant();
@@ -69,16 +72,25 @@ bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int rol
             if (oldIndex.isValid())
                 emit dataChanged(oldIndex, oldIndex, {ActiveRole});
             emit dataChanged(index, index, {ActiveRole});
+            emit activeBlocklistChanged();
         } else {
             if (m_activeIndex == index) {
                 // deactivate
                 m_activeIndex = QPersistentModelIndex{};
                 emit dataChanged(index, index, {ActiveRole});
                 emit activeItemChanged();
+                emit activeBlocklistChanged();
             }
         }
         return true;
+    case BlocklistRole:
+        // todo: error check
+        item->setBlocklistIndex(value.toPersistentModelIndex());
+        if (index.row() == m_activeIndex.row())
+            emit activeBlocklistChanged();
+        return true;
     }
+
     return false;
 }
 
@@ -96,6 +108,7 @@ QHash<int, QByteArray> TodoModel::roleNames() const
     QHash<int, QByteArray> names;
     names[ItemRole] = "item";
     names[ActiveRole] = "active";
+    names[BlocklistRole] = "blocklist";
     return names;
 }
 

@@ -2,6 +2,8 @@
 #include <QDebug>
 #include <QJsonObject>
 #include <QJsonArray>
+#include "globalstate.h"
+#include "todomodel.h"
 
 class QUuid;
 
@@ -15,6 +17,12 @@ BlocklistManager::~BlocklistManager() {
     for (auto item : std::as_const(m_blocklists)) {
         delete item;
     }
+}
+
+void BlocklistManager::connectToTodoModel() {
+    connect(GlobalState::instance()->todoModel(), &TodoModel::activeBlocklistChanged, this, [this]{
+        setActiveIndex(GlobalState::instance()->todoModel()->activeItem()->blocklistIndex());
+    });
 }
 
 int BlocklistManager::rowCount(const QModelIndex &parent) const
@@ -42,6 +50,8 @@ QVariant BlocklistManager::data(const QModelIndex &index, int role) const
         return QVariant(item->websiteList());
     case UuidRole:
         return QVariant(item->UUID());
+    case ModelIndexRole:
+        return QVariant(index);
     }
 
     return QVariant();
@@ -60,24 +70,9 @@ bool BlocklistManager::setData(const QModelIndex &index, const QVariant &value, 
         return true;
     case ActiveRole:
         if (value.toBool()) {
-            if (m_activeIndex != index) { // one alternative may be data(index, role) != value at top
-                const QModelIndex oldIndex = m_activeIndex;
-                m_activeIndex = index;
-                emit activeItemChanged();
-                if (oldIndex.isValid()) {
-                    emit dataChanged(oldIndex, oldIndex, {ActiveRole});
-                }
-                emit dataChanged(index, index, {ActiveRole});
-                emit activeBlocklistModified();
-            }
+            setActiveIndex(index);
         } else {
-            if (m_activeIndex == index) {
-                // deactivate
-                m_activeIndex = QPersistentModelIndex{};
-                emit activeItemChanged();
-                emit dataChanged(index, index, {ActiveRole});
-                emit activeBlocklistModified();
-            }
+            setActiveIndex(QModelIndex{});
         }
         return true;
     case WebsiteListRole:
@@ -89,6 +84,29 @@ bool BlocklistManager::setData(const QModelIndex &index, const QVariant &value, 
         return true;
     }
 return false;
+}
+
+void BlocklistManager::setActiveIndex(QModelIndex index) {
+    if (index.isValid()) {
+        if (m_activeIndex != index) { // one alternative may be data(index, role) != value at top
+            const QModelIndex oldIndex = m_activeIndex;
+            m_activeIndex = index;
+            emit activeIndexChanged();
+            if (oldIndex.isValid()) {
+                emit dataChanged(oldIndex, oldIndex, {ActiveRole});
+            }
+            emit dataChanged(index, index, {ActiveRole});
+            emit activeBlocklistModified();
+        }
+    } else {
+        if (m_activeIndex == index) {
+            // deactivate
+            m_activeIndex = QPersistentModelIndex{};
+            emit activeIndexChanged();
+            emit dataChanged(index, index, {ActiveRole});
+            emit activeBlocklistModified();
+        }
+    }
 }
 
 Qt::ItemFlags BlocklistManager::flags(const QModelIndex &index) const {
@@ -105,7 +123,12 @@ QHash<int, QByteArray> BlocklistManager::roleNames() const {
     names[ActiveRole] = "active";
     names[WebsiteListRole] = "websiteList";
     names[UuidRole] = "UUID";
+    names[ModelIndexRole] = "modelIndex";
     return names;
+}
+
+QModelIndex BlocklistManager::activeIndex() const {
+    return m_activeIndex;
 }
 
 const Blocklist* BlocklistManager::activeItem() const {
@@ -167,7 +190,7 @@ void BlocklistManager::deserialize(const QJsonObject &json) {
     }
     endResetModel();
     emit activeBlocklistModified();// TODO: only emit when needed
-    emit activeItemChanged(); // todo: serialize active item// TODO: only emit when needed
+    emit activeIndexChanged(); // todo: serialize active item// TODO: only emit when needed
 }
 
 
@@ -191,14 +214,14 @@ bool BlocklistManager::removeItem(int i) {
         m_blocklists[0] = new Blocklist("Blocklist 1");
         endResetModel();
         emit activeBlocklistModified(); // TODO: only emit when needed
-        emit activeItemChanged();
+        emit activeIndexChanged();
         return true;
     }
     beginRemoveRows(QModelIndex{}, i, i);
     delete m_blocklists.at(i);
     m_blocklists.removeAt(i);
     emit activeBlocklistModified(); // TODO: only emit when needed
-    emit activeItemChanged();
+    emit activeIndexChanged();
     endRemoveRows();
     return true;
 }

@@ -11,7 +11,7 @@ class QUuid;
 class BlocklistManager : public QAbstractListModel
 {
     Q_OBJECT
-    Q_PROPERTY(const Blocklist *activeItem READ activeItem NOTIFY activeItemChanged FINAL)
+    Q_PROPERTY(QModelIndex activeIndex READ activeIndex WRITE setActiveIndex NOTIFY activeIndexChanged FINAL)
     QML_ELEMENT
     QML_UNCREATABLE("Managed by GlobalState.h")
 
@@ -20,13 +20,15 @@ public:
     BlocklistManager (const BlocklistManager&) = delete;
     BlocklistManager& operator=(const BlocklistManager&) = delete;
     ~BlocklistManager();
+    void connectToTodoModel();
 
     enum Roles {
         NameRole = Qt::UserRole,
         ItemRole,
         ActiveRole,
         WebsiteListRole,
-        UuidRole
+        UuidRole,
+        ModelIndexRole
     };
     Q_ENUM(Roles);
 
@@ -37,13 +39,14 @@ public:
 
     // Editable:
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
+    void setActiveIndex(QModelIndex index);
 
 
     Qt::ItemFlags flags(const QModelIndex &index) const override;
 
     virtual QHash<int, QByteArray> roleNames() const override;
 
-    const Blocklist* activeItem() const;
+    QModelIndex activeIndex() const;
     const Blocklist* blocklistFromUUID(QUuid uuid) const;
     QPersistentModelIndex persistentModelIndexFromUUID(QUuid uuid) const;
     bool appendWebsitesToActiveItem(const QStringList& items);
@@ -51,8 +54,9 @@ public:
     QJsonObject serialize() const;
     void deserialize(const QJsonObject& json);
 
+    const Blocklist *activeItem() const;
 signals:
-    void activeItemChanged();
+    void activeIndexChanged();
     void activeBlocklistModified();
 
 public slots:

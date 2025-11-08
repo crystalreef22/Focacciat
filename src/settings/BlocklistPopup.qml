@@ -93,8 +93,8 @@ Popup {
                         Button {
                             text: "Test blocklist"
                             onClicked: ()=>{
-                                websiteListEditor.editingFinished()
-                                model.item.applyBlocks()
+                                websiteListEditor.editingFinished();
+                                model.active = true;
                             }
                         }
                     }

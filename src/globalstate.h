@@ -8,6 +8,7 @@
 #include <blockers/blocklistmanager.h>
 #include <QFile>
 
+class QModelIndex;
 class QQmlEngine;
 class QJSEngine;
 
@@ -27,6 +28,7 @@ public:
     BlocklistManager* blocklistManager();
     Q_INVOKABLE bool serializeToFile();
     Q_INVOKABLE bool deserializeFromFile();
+    Q_INVOKABLE QModelIndex constructInvalidQModelIndex();
 private:
     explicit GlobalState();
     TodoModel* m_todoModel;

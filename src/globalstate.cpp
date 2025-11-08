@@ -4,6 +4,8 @@
 #include <QJsonDocument>
 #include <QtCore/qjsonobject.h>
 
+class QModelIndex;
+
 GlobalState::GlobalState()
 {
     m_todoModel = new TodoModel(this);
@@ -73,5 +75,9 @@ bool GlobalState::deserializeFromFile() {
     m_todoModel->deserialize(todoEntries);
 
     return true;
+}
+
+QModelIndex GlobalState::constructInvalidQModelIndex() {
+    return QModelIndex();
 }
 
