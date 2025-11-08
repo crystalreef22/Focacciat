@@ -67,7 +67,7 @@ Popup {
                     ColumnLayout {
                         anchors.fill: parent;
                         Label {
-                            text: model.item.UUID.toString()
+                            text: model.UUID.toString()
                         }
 
                         TextField {
@@ -85,7 +85,7 @@ Popup {
                             clip: true
                             TextArea {
                                 id: websiteListEditor
-                                text: model.item.websiteList
+                                text: model.websiteList
                                 onEditingFinished: model.item.websiteList = text
                                 Keys.onTabPressed: nextItemInFocusChain().forceActiveFocus(Qt.TabFocusReason)
                             }

@@ -108,7 +108,7 @@ ColumnLayout {
                         popupType: Popup.Native
                         MenuItem {
                             text: "None"
-                            onTriggered: todoListViewDelegate.model.item.blocklist = null;
+                            onTriggered: todoListViewDelegate.model.item.blocklistIndex = null;
                         }
                         MenuSeparator{}
                         Instantiator {
@@ -116,8 +116,8 @@ ColumnLayout {
                             model: GlobalState.blocklistManager;
                             delegate: MenuItem {
                                 text: model.name
-                                checked: todoListViewDelegate.model.item.blocklist === model.item
-                                onTriggered: todoListViewDelegate.model.item.blocklist = model.item
+                                checked: todoListViewDelegate.model.item.blocklistIndex === model.index
+                                onTriggered: ()=>{todoListViewDelegate.model.item.blocklistIndex = model.index; console.log(model.index, todoListViewDelegate.model.item.blocklistIndex)}
                             }
                             onObjectAdded: (index, object) => todoListViewComboboxPopup.insertItem(index+2, object) // index 1 is None, 2 is seperator
                             onObjectRemoved: (index, object) => todoListViewComboboxPopup.removeItem(object)
