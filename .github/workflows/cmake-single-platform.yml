@@ -40,7 +40,8 @@ jobs:
 
     - name: Build
       # Build your program with the given configuration
-      run: cmake -S src --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+      run: cmake -S src --build ${{github.workspace}}/build
+      # would need --config ${{env.BUILD_TYPE}} for windows
 
     - name: Test
       working-directory: ${{github.workspace}}/build
