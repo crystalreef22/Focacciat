@@ -22,10 +22,12 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Install packages
-      run: |
-        sudo apt update -y
-        sudo apt install -y --install-recommends qt6-base-dev qt6-declarative-dev
+    - name: Install an okay version of qt
+      uses: jurplel/install-qt-action@v4.3.0
+      with:
+        version: 6.9.1
+        archives: qtbase qtdeclarative
+        cache: true
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
