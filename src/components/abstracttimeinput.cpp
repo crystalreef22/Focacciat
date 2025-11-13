@@ -1,7 +1,7 @@
 #include "abstracttimeinput.h"
 #include <QDebug>
 #include <QKeyEvent>
-#include <QGUIApplication>
+#include <QGuiApplication>
 #include <QClipboard>
 #include <QFlags>
 
