@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_OSX_DEPLOYMENT_TARGET "12.0")
 set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64")
 
-find_package(Qt6 REQUIRED COMPONENTS Core Quick Network Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Core Quick Network Widgets Gui)
 
 qt_standard_project_setup(REQUIRES 6.8) # Older versions MAY work, but you would
                                         # need to set necessary qt_policies
@@ -88,12 +88,9 @@ set_target_properties(Focacciat PROPERTIES
 )
 
 target_link_libraries(Focacciat PRIVATE Qt6::Quick)
-target_link_libraries(Focacciat PRIVATE Qt6::Core)
 target_link_libraries(Focacciat PRIVATE Qt6::Network)
-target_link_libraries(Focacciat PRIVATE Qt6::Core)
-target_link_libraries(Focacciat PRIVATE Qt6::Core)
 target_link_libraries(Focacciat PRIVATE Qt6::Core Qt6::Widgets)
-target_link_libraries(Focacciat PRIVATE Qt6::Core)
+target_link_libraries(Focacciat PRIVATE Qt6::Gui)
 
 include(GNUInstallDirs)
 install(TARGETS Focacciat
