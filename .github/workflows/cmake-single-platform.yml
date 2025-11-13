@@ -25,13 +25,12 @@ jobs:
     - name: Install deps
       run: |
         sudo apt-get update
-        sudo apt-get install libicu-dev
 
     - name: Install an okay version of qt
       uses: jurplel/install-qt-action@v4.3.0
       with:
         version: 6.9.1
-        archives: qtbase qtdeclarative
+        archives: qtbase qtdeclarative icu
         cache: true
 
     - name: Configure CMake
