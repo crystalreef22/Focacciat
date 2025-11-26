@@ -86,6 +86,9 @@ set_target_properties(Focacciat PROPERTIES
     MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
 )
+if(UNIX AND NOT APPLE)
+    set_target_properties(Focacciat PROPERTIES CMAKE_EXECUTABLE_SUFFIX ".bin")
+endif()
 
 target_link_libraries(Focacciat PRIVATE Qt6::Quick)
 target_link_libraries(Focacciat PRIVATE Qt6::Network)
