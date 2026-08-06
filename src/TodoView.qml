@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtMultimedia
+import QtCore
 
 import Focacciat
 
@@ -101,23 +102,23 @@ ColumnLayout {
                 }
                 ComboBox {
                     visible: todoDelegateLayout.width > 340
-                    displayText: todoListViewDelegate.model.item.blocklist ? todoListViewDelegate.model.item.blocklist.name : "None"
+                    displayText: todoListViewDelegate.model.blocklistIndex.valid ? todoListViewDelegate.model.blocklistIndex.data(BlocklistManager.NameRole) : "None"
                     focusPolicy: Qt.TabFocus
                     popup: Menu {
                         id: todoListViewComboboxPopup
                         popupType: Popup.Native
                         MenuItem {
                             text: "None"
-                            onTriggered: todoListViewDelegate.model.item.blocklist = null;
+                            onTriggered: todoListViewDelegate.model.blocklistIndex = GlobalState.constructInvalidQModelIndex();
                         }
                         MenuSeparator{}
                         Instantiator {
                             id: todoListViewComboboxPopupInstantiator
-                            model: GlobalState.blocklistListModel;
+                            model: GlobalState.blocklistManager;
                             delegate: MenuItem {
                                 text: model.name
-                                checked: todoListViewDelegate.model.item.blocklist === model.item
-                                onTriggered: todoListViewDelegate.model.item.blocklist = model.item
+                                checked: todoListViewDelegate.model.blocklistIndex === model.modelIndex
+                                onTriggered: todoListViewDelegate.model.blocklistIndex = model.modelIndex
                             }
                             onObjectAdded: (index, object) => todoListViewComboboxPopup.insertItem(index+2, object) // index 1 is None, 2 is seperator
                             onObjectRemoved: (index, object) => todoListViewComboboxPopup.removeItem(object)

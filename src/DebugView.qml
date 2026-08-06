@@ -119,6 +119,9 @@ ApplicationWindow {
                     onClicked: GlobalState.serializeToFile();
                 }
             }
+            Label {
+                text: GlobalState.blocklistManager.activeIndex.valid ? GlobalState.blocklistManager.activeIndex.data(BlocklistManager.NameRole) : "No active index";
+            }
         }
     }
 

@@ -105,6 +105,8 @@ If a successful response is received from Focacciat, you may start doing stuff. 
 {
     "type": "response",
     "action": "blocklist.get",
+    "name": "blocklist 1",
+    "UUID": "{some uuid}",
     "data": [
         "example.com",
         "example.org"

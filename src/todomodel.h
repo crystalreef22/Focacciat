@@ -25,7 +25,7 @@ public:
     TodoModel(const TodoModel &) = delete;
     TodoModel &operator=(const TodoModel &) = delete;
 
-    enum Roles { ItemRole = Qt::UserRole, ActiveRole };
+    enum Roles { ItemRole = Qt::UserRole, ActiveRole, BlocklistRole };
     Q_ENUM(Roles);
 
     // Basic functionality:
@@ -54,6 +54,7 @@ signals:
     void activeItemChanged();
     void pausedChanged();
     void pausedTimeChanged();
+    void activeBlocklistChanged();
 
 public slots:
     void appendItem();

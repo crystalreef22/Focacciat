@@ -30,7 +30,7 @@ Popup {
             spacing: 2
             Repeater {
                 id: tabbarRepeater
-                model: GlobalState.blocklistListModel
+                model: GlobalState.blocklistManager
                 onItemAdded: (index, item)=>{
                     tabbar.currentIndex = index
                 }
@@ -51,7 +51,7 @@ Popup {
             }
             TabButton {
                 text: "+"
-                onToggled: GlobalState.blocklistListModel.appendItem()
+                onToggled: GlobalState.blocklistManager.appendItem()
             }
 
         }
@@ -62,12 +62,12 @@ Popup {
             Layout.fillWidth: true
             Layout.fillHeight: true
             Repeater {
-                model: GlobalState.blocklistListModel
+                model: GlobalState.blocklistManager
                 delegate: Item {
                     ColumnLayout {
                         anchors.fill: parent;
                         Label {
-                            text: model.item.UUID.toString()
+                            text: model.UUID.toString()
                         }
 
                         TextField {
@@ -76,7 +76,7 @@ Popup {
                         }
                         Button {
                             text: "delete"
-                            onClicked: GlobalState.blocklistListModel.removeItem(index)
+                            onClicked: GlobalState.blocklistManager.removeItem(index)
                         }
 
                         ScrollView {
@@ -85,7 +85,7 @@ Popup {
                             clip: true
                             TextArea {
                                 id: websiteListEditor
-                                text: model.item.websiteList
+                                text: model.websiteList
                                 onEditingFinished: model.item.websiteList = text
                                 Keys.onTabPressed: nextItemInFocusChain().forceActiveFocus(Qt.TabFocusReason)
                             }
@@ -93,8 +93,8 @@ Popup {
                         Button {
                             text: "Test blocklist"
                             onClicked: ()=>{
-                                websiteListEditor.editingFinished()
-                                model.item.applyBlocks()
+                                websiteListEditor.editingFinished();
+                                model.active = true;
                             }
                         }
                     }

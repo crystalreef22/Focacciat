@@ -3,6 +3,8 @@
 
 #include "todoitem.h"
 #include <QJsonObject>
+#include "blocklistmanager.h"
+#include "globalstate.h"
 
 TodoItem::TodoItem(QObject *parent)
     : QObject{parent}
@@ -28,7 +30,7 @@ long long TodoItem::timeRemaining() const
 {
     return _timeEstimate - _timeElapsed;
 }
-Blocklist *TodoItem::blocklist() const
+QPersistentModelIndex TodoItem::blocklistIndex() const
 {
     return _blocklist;
 }
@@ -59,12 +61,16 @@ void TodoItem::setTimeElapsed(long long value)
     emit timeElapsedChanged();
     emit timeRemainingChanged();
 }
+
+void TodoItem::setBlocklistIndex(QPersistentModelIndex index) {
+    _blocklist = index;
+    emit blocklistIndexChanged();
+}
+/*
 void TodoItem::setBlocklist(Blocklist *value)
 {
     if (_blocklist) {
         _blocklist->disconnect(this);
-        if (_watching)
-            _blocklist->setWatching(false);
     }
     _blocklist = value;
     if (_blocklist) {
@@ -72,21 +78,10 @@ void TodoItem::setBlocklist(Blocklist *value)
             _blocklist = nullptr;
             emit blocklistChanged();
         });
-        if (_watching)
-            _blocklist->setWatching(true);
     }
-    if (_watching)
-        applyBlocklist();
     emit blocklistChanged();
 }
-
-void TodoItem::setWatching(bool value)
-{
-    _watching = value;
-    if (_blocklist) {
-        _blocklist->setWatching(value);
-    }
-}
+*/
 
 QJsonObject TodoItem::serialize() const {
     return QJsonObject{
@@ -94,7 +89,7 @@ QJsonObject TodoItem::serialize() const {
         { "description", _description },
         { "timeEstimate", _timeEstimate },
         { "timeElapsed", _timeElapsed },
-        { "blocklistUUID", _blocklist ? QJsonValue(_blocklist->UUID().toString()) : QJsonValue(QJsonValue::Null) }
+        { "blocklistUUID", _blocklist.isValid() ? QJsonValue(_blocklist.data(BlocklistManager::UuidRole).toUuid().toString()) : QJsonValue(QJsonValue::Null) }
     };
 }
 
@@ -105,8 +100,8 @@ TodoItem* TodoItem::deserialize(const QJsonObject& json, QObject *parent) {
     item->_timeEstimate = json.value("timeEstimate").toVariant().toLongLong();
     item->_timeElapsed = json.value("timeElapsed").toVariant().toLongLong();
     const auto blocklistUUID = QUuid::fromString(json.value("blocklistUUID").toString());
-    if (blocklistUUID.isNull()) {
-        item->setBlocklist(Blocklist::fromUUID(QUuid::fromString(json.value("blocklistUUID").toString())));
+    if (!blocklistUUID.isNull()) {
+        item->_blocklist = GlobalState::instance()->blocklistManager()->persistentModelIndexFromUUID(QUuid::fromString(json.value("blocklistUUID").toString()));
     }
     return item;
 }
@@ -132,14 +127,4 @@ bool TodoItem::timerExpired()
     if (oldTimerExpired != _timerExpired)
         emit timerExpiredChanged();
     return _timerExpired;
-}
-
-bool TodoItem::applyBlocklist()
-{
-    if (_blocklist == nullptr) {
-        Blocklist::removeAllBlocks();
-        return false;
-    }
-    _blocklist->applyBlocks();
-    return true;
 }

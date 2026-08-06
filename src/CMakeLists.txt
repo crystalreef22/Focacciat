@@ -59,7 +59,7 @@ qt_add_qml_module(Focacciat
         components/TimeInput.qml
     SOURCES
         blockers/blocklist.h blockers/blocklist.cpp
-        blockers/blocklistlistmodel.h blockers/blocklistlistmodel.cpp
+        blockers/blocklistmanager.h blockers/blocklistmanager.cpp
         blockers/extensionintegration.h blockers/extensionintegration.cpp
         components/abstracttimeinput.h components/abstracttimeinput.cpp
         formatutils.h formatutils.cpp
@@ -74,6 +74,7 @@ qt_add_qml_module(Focacciat
         extensionmanifest.json
         media/alm_focus.mp3
         QML_FILES components/FlatButton.qml
+        SOURCES blockers/extensionclient.h blockers/extensionclient.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -93,6 +94,8 @@ endif()
 target_link_libraries(Focacciat PRIVATE Qt6::Quick)
 target_link_libraries(Focacciat PRIVATE Qt6::Network)
 target_link_libraries(Focacciat PRIVATE Qt6::Core Qt6::Widgets)
+target_link_libraries(Focacciat PRIVATE Qt6::Core)
+target_link_libraries(Focacciat PRIVATE Qt6::Core)
 target_link_libraries(Focacciat PRIVATE Qt6::Gui)
 
 include(GNUInstallDirs)

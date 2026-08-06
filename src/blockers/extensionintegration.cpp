@@ -3,7 +3,7 @@
 #include <QDir>
 #include <QDebug>
 #include <QLocalServer>
-#include <QLocalSocket>
+#include "extensionclient.h"
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
@@ -11,7 +11,6 @@
 ExtensionIntegration::ExtensionIntegration(QObject *parent)
     : QObject{parent}
 {
-    //return; // FIXME: extensionintegration
     ExtensionIntegration::m_pThis = this;
 
     m_firefoxNMManifestDir = QDir::homePath() + "/Library/Application Support/Mozilla/NativeMessagingHosts";
@@ -36,6 +35,10 @@ ExtensionIntegration* ExtensionIntegration::create(QQmlEngine *engine, QJSEngine
 }
 
 void ExtensionIntegration::connectNextSocket() {
+    if (m_clients.size() < m_maxConnections) {
+        qWarning() << "max connections reached";
+        return;
+    }
     QLocalSocket* conn = m_server.nextPendingConnection();
     if (!conn) {
         qWarning() << "connection failed";
@@ -46,81 +49,17 @@ void ExtensionIntegration::connectNextSocket() {
         conn->deleteLater();
         return;
     }
-    m_clients.append(conn);
-    connect(conn, &QLocalSocket::disconnected, this, &ExtensionIntegration::socketDisconnected);
-    connect(conn, &QLocalSocket::readyRead, this, [=]{
-        readMessage(conn);
-    });
+    ExtensionClient* client = new ExtensionClient(conn, this);
+    m_clients.append(client);
+    connect(client, &ExtensionClient::disconnected, this, &ExtensionIntegration::clientDisconnected);
 }
 
-void ExtensionIntegration::socketDisconnected() {
-    QLocalSocket* socket = qobject_cast<QLocalSocket*>(sender());
-    if (socket) {
-        m_clients.removeOne(socket);
-        socket->deleteLater();
-    }
-}
-
-
-void ExtensionIntegration::readMessage(QLocalSocket* conn) {
-    // header is taken care of by extensionhost
-    // TODO: write a proper schema
-    QByteArray data{conn->readAll()};
-    QJsonDocument doc = QJsonDocument::fromJson(data);
-    if (doc.isNull() || !doc.isObject()) {
-        qWarning() << "recieved errored data: " << data;
-    } else {
-        QJsonObject obj = doc.object();
-        QJsonObject request = obj.value("request").toObject();
-        if (!request.empty()) {
-            QString type = request.value("type").toString();
-            if (type == "blocklist") {
-                qInfo() << "Sending blocklist to one";
-                sendBlocklist(conn);
-            } else {
-                qWarning() << "Recieved unknown request for " << type;
-            }
-        }
-    }
-}
-
-void ExtensionIntegration::setBlocklist(const QStringList& blocklist, const QString &name = "") {
-    m_blocklist = blocklist;
-    m_blocklistName = name;
-    sendBlocklist();
-}
-bool ExtensionIntegration::sendBlocklist(QLocalSocket* client) {
-    QJsonDocument obj {
-        QJsonObject{
-            {"response", QJsonObject{
-                {"type", "blocklist"},
-                {"name", m_blocklistName},
-                {"data", QJsonArray::fromStringList(m_blocklist)}
-            }}
-        }
-    };
-    return sendRaw(obj.toJson(QJsonDocument::Compact), client);
-}
-
-bool ExtensionIntegration::sendPing(QLocalSocket* client) {
-    return sendRaw("{\"type\":\"ping\"}", client);
-}
-
-bool ExtensionIntegration::sendRaw(const QByteArray& bytes, QLocalSocket* client) {
-    // TODO: this is a mess
-    bool success{false};
-    uint32_t header = bytes.size();
+void ExtensionIntegration::clientDisconnected() {
+    ExtensionClient* client = qobject_cast<ExtensionClient*>(sender());
     if (client) {
-        success |= (client->write(reinterpret_cast<char*>(&header), sizeof(header)) == sizeof(header));
-        success |= (client->write(bytes) == bytes.length());
-    } else {
-        for (QLocalSocket* iclient: std::as_const(m_clients)) {
-            success |= (iclient->write(reinterpret_cast<char*>(&header), sizeof(header)) == sizeof(header));
-            success |= (iclient->write(bytes) == bytes.length());
-        }
+        m_clients.removeOne(client);
+        client->deleteLater();
     }
-    if (!success) qInfo() << "did not write to any clients";
-    return success;
 }
 
 bool ExtensionIntegration::checkFirefoxEnabled() {

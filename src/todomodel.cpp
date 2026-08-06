@@ -4,6 +4,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include "blockers/blocklist.h"
+#include <globalstate.h>
 
 TodoModel::TodoModel(QObject *parent)
     : QAbstractListModel(parent)
@@ -44,6 +45,8 @@ QVariant TodoModel::data(const QModelIndex &index, int role) const
         return QVariant::fromValue(item);
     case ActiveRole:
         return m_activeIndex == index;
+    case BlocklistRole:
+        return QVariant(item->blocklistIndex());
     }
 
     return QVariant();
@@ -56,29 +59,38 @@ bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int rol
     case ItemRole:
         return false;
     case ActiveRole:
-        TodoItem *oldItem = activeItem();
-        if (oldItem) {
-            oldItem->setWatching(false);
-        }
         m_paused = false;
         emit pausedChanged();
         resetPausedTime();
-        if (m_activeIndex == index) {
-            m_activeIndex = QPersistentModelIndex{};
+        if (value.toBool()) {
+            const QModelIndex oldIndex = m_activeIndex;
+            m_activeIndex = index;
+            // we NEED to resetTimer after changing the active item because the
+            // updateTimer function and start time stuff
+            item->resetTimer();
             emit activeItemChanged();
-            Blocklist::removeAllBlocks();
-            return true;
+            if (oldIndex.isValid())
+                emit dataChanged(oldIndex, oldIndex, {ActiveRole});
+            emit dataChanged(index, index, {ActiveRole});
+            emit activeBlocklistChanged();
+        } else {
+            if (m_activeIndex == index) {
+                // deactivate
+                m_activeIndex = QPersistentModelIndex{};
+                emit dataChanged(index, index, {ActiveRole});
+                emit activeItemChanged();
+                emit activeBlocklistChanged();
+            }
         }
-        const QModelIndex oldIndex = m_activeIndex;
-        m_activeIndex = index;
-        item->resetTimer();
-        item->applyBlocklist();
-        item->setWatching(true);
-        emit activeItemChanged();
-        emit dataChanged(oldIndex, oldIndex, {ActiveRole});
-        emit dataChanged(index, index, {ActiveRole});
+        return true;
+    case BlocklistRole:
+        // todo: error check
+        item->setBlocklistIndex(value.toPersistentModelIndex());
+        if (index.row() == m_activeIndex.row())
+            emit activeBlocklistChanged();
         return true;
     }
+
     return false;
 }
 
@@ -96,6 +108,7 @@ QHash<int, QByteArray> TodoModel::roleNames() const
     QHash<int, QByteArray> names;
     names[ItemRole] = "item";
     names[ActiveRole] = "active";
+    names[BlocklistRole] = "blocklist";
     return names;
 }
 
@@ -116,7 +129,6 @@ void TodoModel::removeCompletedItems()
         m_paused = false;
         emit pausedChanged();
         emit activeItemChanged();
-        Blocklist::removeAllBlocks();
     }
 
     for (qsizetype i = 0; i < m_list.size();) {
@@ -171,10 +183,6 @@ QJsonObject TodoModel::serialize() const {
 }
 void TodoModel::deserialize(const QJsonObject& json) {
     TodoItem* item = activeItem();
-    Blocklist::removeAllBlocks();
-    if (item) {
-        item->setWatching(false);
-    }
     const QJsonArray& todoItemsJson(json["todoItems"].toArray());
     // FIXME: does not check if json is proper
     // clear all list items
