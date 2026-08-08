@@ -25,7 +25,7 @@ public:
     TodoModel(const TodoModel &) = delete;
     TodoModel &operator=(const TodoModel &) = delete;
 
-    enum Roles { ItemRole = Qt::UserRole, ActiveRole, BlocklistRole };
+    enum Roles { ItemRole = Qt::UserRole, ActiveRole, BlocklistIndexRole };
     Q_ENUM(Roles);
 
     // Basic functionality:

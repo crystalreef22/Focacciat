@@ -45,7 +45,7 @@ QVariant TodoModel::data(const QModelIndex &index, int role) const
         return QVariant::fromValue(item);
     case ActiveRole:
         return m_activeIndex == index;
-    case BlocklistRole:
+    case BlocklistIndexRole:
         return QVariant(item->blocklistIndex());
     }
 
@@ -83,7 +83,7 @@ bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int rol
             }
         }
         return true;
-    case BlocklistRole:
+    case BlocklistIndexRole:
         // todo: error check
         item->setBlocklistIndex(value.toPersistentModelIndex());
         if (index.row() == m_activeIndex.row())
@@ -108,7 +108,7 @@ QHash<int, QByteArray> TodoModel::roleNames() const
     QHash<int, QByteArray> names;
     names[ItemRole] = "item";
     names[ActiveRole] = "active";
-    names[BlocklistRole] = "blocklist";
+    names[BlocklistIndexRole] = "blocklistIndex";
     return names;
 }
 
