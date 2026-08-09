@@ -18,7 +18,80 @@ ColumnLayout {
     SystemPalette {
         id: myPalette;
     }
+    Component {
+        id: todoListViewDelegate
+        Rectangle {
+            id: todoListViewContent
+            width: todoListView.width
+            height: 32
+            required property var model
+            color: model.active ? myPalette.highlight : myPalette.dark
 
+            //DragHandler { }
+            MouseArea {
+                onClicked: forceActiveFocus()
+                anchors.fill: parent
+            }
+            RowLayout {
+                id: todoDelegateLayout
+                width: parent.width - 15
+                anchors.centerIn: parent
+
+                CheckBox {
+                    checked: model.item.done
+                    onClicked: model.item.done = checked
+                }
+                TextInput {
+                    Layout.fillWidth: true
+                    clip: true
+                    onEditingFinished: model.item.description = text
+                    text: model.item.description
+                    focusPolicy: Qt.StrongFocus
+                }
+                TimeInput {
+                    visible: todoDelegateLayout.width > 175
+                    time: model.item.timeEstimate / 1000
+                    onEditingFinished: model.item.timeEstimate = time * 1000
+                    editorFlags: AbstractTimeInput.NoSeconds
+                }
+                Label {
+                    visible: todoDelegateLayout.width > 230
+                    text: FormatUtils.msToTime(model.item.timeRemaining)
+                    font.features: { "tnum": true }
+                }
+                ComboBox {
+                    visible: todoDelegateLayout.width > 340
+                    displayText: model.blocklistIndex.valid ? model.blocklistIndex.data(BlocklistManager.NameRole) : "None"
+                    focusPolicy: Qt.TabFocus
+                    popup: Menu {
+                        id: todoListViewComboboxPopup
+                        popupType: Popup.Native
+                        MenuItem {
+                            text: "None"
+                            onTriggered: model.blocklistIndex = GlobalState.constructInvalidQModelIndex();
+                        }
+                        MenuSeparator{}
+                        Instantiator {
+                            id: todoListViewComboboxPopupInstantiator
+                            model: GlobalState.blocklistManager;
+                            delegate: MenuItem {
+                                text: model.name
+                                checked: todoListViewContent.model.blocklistIndex === model.modelIndex
+                                onTriggered: todoListViewContent.model.blocklistIndex = model.modelIndex
+                            }
+                            onObjectAdded: (index, object) => todoListViewComboboxPopup.insertItem(index+2, object) // index 1 is None, 2 is seperator
+                            onObjectRemoved: (index, object) => todoListViewComboboxPopup.removeItem(object)
+                        }
+                    }
+                }
+            }
+            MouseArea {
+                acceptedButtons: Qt.RightButton
+                anchors.fill: parent
+                onClicked: ()=>{model.active = !model.active; forceActiveFocus()}
+            }
+        }
+    }
     ListView {
         id: todoListView
         Layout.fillWidth: true
@@ -61,78 +134,7 @@ ColumnLayout {
             ]
         }
 
-        delegate: Rectangle {
-            id: todoListViewDelegate
-            required property var model
-            width: todoListView.width
-            height: 32
-            color: model.active ? myPalette.highlight : myPalette.dark
-
-            //DragHandler { }
-            MouseArea {
-                onClicked: forceActiveFocus()
-                anchors.fill: parent
-            }
-            RowLayout {
-                id: todoDelegateLayout
-                width: parent.width - 15
-                anchors.centerIn: parent
-
-                CheckBox {
-                    checked: model.item.done
-                    onClicked: model.item.done = checked
-                }
-                TextInput {
-                    Layout.fillWidth: true
-                    clip: true
-                    onEditingFinished: model.item.description = text
-                    text: model.item.description
-                    focusPolicy: Qt.StrongFocus
-                }
-                TimeInput {
-                    visible: todoDelegateLayout.width > 175
-                    time: model.item.timeEstimate / 1000
-                    onEditingFinished: model.item.timeEstimate = time * 1000
-                    editorFlags: AbstractTimeInput.NoSeconds
-                }
-                Label {
-                    visible: todoDelegateLayout.width > 230
-                    text: FormatUtils.msToTime(model.item.timeRemaining)
-                    font.features: { "tnum": true }
-                }
-                ComboBox {
-                    visible: todoDelegateLayout.width > 340
-                    displayText: todoListViewDelegate.model.blocklistIndex.valid ? todoListViewDelegate.model.blocklistIndex.data(BlocklistManager.NameRole) : "None"
-                    focusPolicy: Qt.TabFocus
-                    popup: Menu {
-                        id: todoListViewComboboxPopup
-                        popupType: Popup.Native
-                        MenuItem {
-                            text: "None"
-                            onTriggered: todoListViewDelegate.model.blocklistIndex = GlobalState.constructInvalidQModelIndex();
-                        }
-                        MenuSeparator{}
-                        Instantiator {
-                            id: todoListViewComboboxPopupInstantiator
-                            model: GlobalState.blocklistManager;
-                            delegate: MenuItem {
-                                text: model.name
-                                checked: todoListViewDelegate.model.blocklistIndex === model.modelIndex
-                                onTriggered: todoListViewDelegate.model.blocklistIndex = model.modelIndex
-                            }
-                            onObjectAdded: (index, object) => todoListViewComboboxPopup.insertItem(index+2, object) // index 1 is None, 2 is seperator
-                            onObjectRemoved: (index, object) => todoListViewComboboxPopup.removeItem(object)
-                        }
-                    }
-                }
-            }
-            MouseArea {
-                acceptedButtons: Qt.RightButton
-                anchors.fill: parent
-                onClicked: ()=>{model.active = !model.active; forceActiveFocus()}
-            }
-
-        }
+        delegate: todoListViewDelegate
     }
 
     RowLayout {
