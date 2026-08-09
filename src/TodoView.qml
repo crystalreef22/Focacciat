@@ -61,14 +61,14 @@ ColumnLayout {
                 }
                 ComboBox {
                     visible: todoDelegateLayout.width > 340
-                    displayText: model.blocklistIndex.valid ? model.blocklistIndex.data(BlocklistManager.NameRole) : "None"
+                    displayText: todoListViewContent.model.blocklistIndex.valid ? todoListViewContent.model.blocklistIndex.data(BlocklistManager.NameRole) : "None"
                     focusPolicy: Qt.TabFocus
                     popup: Menu {
                         id: todoListViewComboboxPopup
                         popupType: Popup.Native
                         MenuItem {
                             text: "None"
-                            onTriggered: model.blocklistIndex = GlobalState.constructInvalidQModelIndex();
+                            onTriggered: todoListViewContent.model.blocklistIndex = GlobalState.constructInvalidQModelIndex();
                         }
                         MenuSeparator{}
                         Instantiator {

@@ -86,6 +86,7 @@ bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int rol
     case BlocklistIndexRole:
         // todo: error check
         item->setBlocklistIndex(value.toPersistentModelIndex());
+        emit dataChanged(index, index, {BlocklistIndexRole});
         if (index.row() == m_activeIndex.row())
             emit activeBlocklistChanged();
         return true;
