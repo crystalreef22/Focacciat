@@ -35,7 +35,7 @@ ExtensionIntegration* ExtensionIntegration::create(QQmlEngine *engine, QJSEngine
 }
 
 void ExtensionIntegration::connectNextSocket() {
-    if (m_clients.size() < m_maxConnections) {
+    if (m_clients.size() >= m_maxConnections) {
         qWarning() << "max connections reached";
         return;
     }
@@ -49,12 +49,14 @@ void ExtensionIntegration::connectNextSocket() {
         conn->deleteLater();
         return;
     }
+    qInfo() << "connected one";
     ExtensionClient* client = new ExtensionClient(conn, this);
     m_clients.append(client);
     connect(client, &ExtensionClient::disconnected, this, &ExtensionIntegration::clientDisconnected);
 }
 
 void ExtensionIntegration::clientDisconnected() {
+    qInfo() << "disconnected one";
     ExtensionClient* client = qobject_cast<ExtensionClient*>(sender());
     if (client) {
         m_clients.removeOne(client);
@@ -103,4 +105,11 @@ bool ExtensionIntegration::setFirefoxEnabled(bool b) {
         emit firefoxEnabledChanged();
     }
     return true;
+}
+
+void ExtensionIntegration::sendPings() {
+    qInfo("extensionintegration: ping requested");
+    for (ExtensionClient* client : m_clients) {
+        client->requestPing();
+    }
 }

@@ -81,7 +81,7 @@ ApplicationWindow {
             }
             Button {
                 text: "Ping extension"
-                onClicked: ExtensionIntegration.sendPing();
+                onClicked: ExtensionIntegration.sendPings();
             }
 
             BlocklistPopup {

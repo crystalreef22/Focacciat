@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
             std::cout << "Focacciat extensionhost. Run with -n for newline-delimited stdin" << std::endl;
             return 0;
         }
-        if (strcmp(argv[i],"-h") == 0) {
+        if (strcmp(argv[i],"-n") == 0) {
             std::cout << "Running with newline-delimited stdin" << std::endl;
             nldelstdin = true;
         }
@@ -94,8 +94,8 @@ int main(int argc, char* argv[]) {
         // TODO: check if stdin still exists at this point/
         sleep(10);
     }
-    constexpr uint32_t size = sizeof(socketClosedMessage)/sizeof(char);
-    std::cout.write(reinterpret_cast<const char*>(&size), sizeof(char));
+    constexpr uint32_t size = sizeof(socketOpenMessage)/sizeof(char) - 1; // subtract 1 for the \0
+    std::cout.write(reinterpret_cast<const char*>(&size), sizeof(size));
     std::cout << socketOpenMessage << std::flush;
 
     constexpr size_t pfds_len = 2;
@@ -118,15 +118,15 @@ int main(int argc, char* argv[]) {
             }
             if (eventsSock & (POLLHUP | POLLERR | POLLNVAL)) {
                 log << "Socket closed. Sending closed message." << std::endl;
-                constexpr uint32_t size = sizeof(socketClosedMessage)/sizeof(char);
-                std::cout.write(reinterpret_cast<const char*>(&size), sizeof(char));
+                constexpr uint32_t size = sizeof(socketClosedMessage)/sizeof(char) - 1;
+                std::cout.write(reinterpret_cast<const char*>(&size), sizeof(size));
                 std::cout << socketClosedMessage << std::flush;
 
                 close(sockfd);
                 return 0;
             }
             if (eventsStdin & POLLIN) {
-                if (nldelstdin) {
+                if (!nldelstdin) {
                     uint32_t respSize{0};
                     std::cin.read(reinterpret_cast<char*>(&respSize), sizeof(respSize));
                     char* response = static_cast<char*>(malloc(sizeof(char)*respSize));

@@ -28,7 +28,7 @@ set_source_files_properties(${app_icon_macos} PROPERTIES
 set(extensionhost_binary "${extensionhost_BINARY_DIR}/extensionhost")
 set_source_files_properties(${extensionhost_binary} PROPERTIES
        MACOSX_PACKAGE_LOCATION "MacOS")
-   qt_add_executable(Focacciat MACOSX_BUNDLE main.cpp ${app_icon_macos} )#${extensionhost_binary})
+   qt_add_executable(Focacciat MACOSX_BUNDLE main.cpp ${app_icon_macos} ${extensionhost_binary})
 else()
 qt_add_executable(Focacciat
     main.cpp

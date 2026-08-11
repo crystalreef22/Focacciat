@@ -21,7 +21,7 @@ ExtensionClient::ExtensionClient(QLocalSocket* conn, QObject *parent)
 void ExtensionClient::requestPing() const {
     sendJson(QJsonDocument{
         QJsonObject{
-            {"type", "response"},
+            {"type", "request"},
             {"action", "ping"}
         }
     });
@@ -44,10 +44,10 @@ bool ExtensionClient::sendBlocklist() const {
 bool ExtensionClient::sendJson(const QJsonDocument& doc) const {
     auto bytes = doc.toJson(QJsonDocument::Compact);
     // TODO: this is a mess
-    bool success{false};
+    bool success{true};
     uint32_t header = bytes.size();
-    success |= (m_connection->write(reinterpret_cast<char*>(&header), sizeof(header)) == sizeof(header));
-    success |= (m_connection->write(bytes) == bytes.length());
+    success &= (m_connection->write(reinterpret_cast<char*>(&header), sizeof(header)) == sizeof(header));
+    success &= (m_connection->write(bytes) == bytes.length());
     if (!success) qInfo() << "did not write to any clients";
     return success;
 }
@@ -91,6 +91,7 @@ void ExtensionClient::readMessage() {
             }
         } else if (type == "response") {
             if (action == "ping") {
+                qInfo("extensionclient: ping recieved");
                 emit pingRecieved();
             }
         } else [[unlikely]] {

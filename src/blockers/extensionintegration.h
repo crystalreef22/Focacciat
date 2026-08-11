@@ -24,6 +24,8 @@ public:
 
     bool setFirefoxEnabled(bool b);
 
+    Q_INVOKABLE void sendPings();
+
 signals:
     void firefoxEnabledChanged();
 
