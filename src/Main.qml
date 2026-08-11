@@ -40,7 +40,7 @@ MaskedApplicationWindow {
     }
     TimerCircle {
         id: timerCircle
-        anchors.left: parent.left; anchors.right: parent.right;
+        anchors.left: parent.left; anchors.right: parent.right;y: 1;
     }
 
 

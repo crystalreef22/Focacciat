@@ -30,10 +30,10 @@ Item {
     Component{
     id: circleMask
     MultiEffect {
-        source: progressContent
         maskEnabled: true
         maskSource: progressCircle
-        anchors.fill: progressCircle
+        maskThresholdMin: 0.5
+        maskSpreadAtMin: 1.0
     }
     }
 
@@ -158,8 +158,10 @@ Item {
             anchors.bottom: parent.bottom
             color: "yellow"; height: 0; clip: true
             ColumnLayout {
-                width: parent.width
+                anchors.left: parent.left
+                anchors.right: parent.right
                 Text {
+                    Layout.topMargin: 3
                     Layout.alignment: Qt.AlignHCenter
                     text: FormatUtils.msToTime(GlobalState.todoModel.pausedTime)
                 }
