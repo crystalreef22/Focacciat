@@ -22,12 +22,42 @@ ColumnLayout {
         id: todoListViewDelegate
         Rectangle {
             id: todoListViewContent
+            required property var model
             width: todoListView.width
             height: 32
-            required property var model
-            color: model.active ? myPalette.highlight : myPalette.dark
+            color: todoListViewDragArea.held ? "yellow" : (model.active ? myPalette.highlight : myPalette.dark)
+            states: State {
+                when: todoListViewDragArea.held
 
-            //DragHandler { }
+                ParentChange {
+                    target: todoListViewContent
+                    parent: todoListView
+                }
+                AnchorChanges {
+                    target: todoListViewContent
+                    anchors {
+                        horizontalCenter: undefined
+                        verticalCenter: undefined
+                    }
+                }
+            }
+            Drag.active: todoListViewDragArea.held
+            Drag.source: todoListViewContent
+            Drag.hotSpot {
+                x: width/2
+                y: height/2
+            }
+            DropArea {
+                anchors.fill: parent
+                anchors.margins: 10
+
+                onEntered: (drag) => {
+                    visualModel.items.move(
+                        drag.source.DelegateModel.itemsIndex,
+                        todoListViewContent.DelegateModel.itemsIndex)
+                }
+            }
+
             MouseArea {
                 onClicked: forceActiveFocus()
                 anchors.fill: parent
@@ -35,8 +65,26 @@ ColumnLayout {
             RowLayout {
                 id: todoDelegateLayout
                 width: parent.width - 15
-                anchors.centerIn: parent
+                anchors.verticalCenter: parent.verticalCenter
 
+                Rectangle {
+                    width: 20; height: 31
+                    MouseArea {
+                        id: todoListViewDragArea
+
+                        property bool held: false
+
+                        anchors.fill: parent
+                        height: todoListViewContent.height
+                        drag.target: held ? todoListViewContent : undefined
+                        drag.axis: Drag.YAxis
+                        onPressed: held = true
+                        onReleased: held = false
+                    }
+                    Label {
+                        text: "mv"
+                    }
+                }
                 CheckBox {
                     checked: model.item.done
                     onClicked: model.item.done = checked
@@ -92,6 +140,12 @@ ColumnLayout {
             }
         }
     }
+    DelegateModel {
+        id: visualModel
+        model: GlobalState.todoModel
+        delegate: todoListViewDelegate
+    }
+
     ListView {
         id: todoListView
         Layout.fillWidth: true
@@ -99,7 +153,7 @@ ColumnLayout {
         clip: true;
         spacing: 2
         acceptedButtons: Qt.NoButton // disable flicking
-        model: GlobalState.todoModel
+        model: visualModel
 
         MouseArea {
             onClicked: forceActiveFocus()
@@ -134,7 +188,6 @@ ColumnLayout {
             ]
         }
 
-        delegate: todoListViewDelegate
     }
 
     RowLayout {
