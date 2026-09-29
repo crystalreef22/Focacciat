@@ -12,7 +12,8 @@ public:
     explicit MaskedApplicationWindow(QWindow *parent = nullptr);
 
 protected:
-    void resizeEvent(QResizeEvent *) override;
+    void resizeEvent(QResizeEvent* ev) override;
+    void showEvent(QShowEvent* ev) override;
 
 signals:
 };
