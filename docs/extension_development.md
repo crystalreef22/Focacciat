@@ -22,22 +22,11 @@ Note that those comments are not supported
 Also note that this feature is not yet implemented.
 
 First we start with a handshake so that the programs know which version of
-Focacciat's ipc we are using. Focacciat sends:
+Focacciat's ipc we are using. The extension sends:
 
 ```json
 {
     "type": "request",
-    "action": "connection",
-    "version": 0,
-    "supportedVersions": [0]
-}
-```
-
-Please reply:
-
-```json
-{
-    "type": "response",
     "action": "connection",
     "version": 0
 }
@@ -47,8 +36,9 @@ Focacciat responds if success:
 
 ```json
 {
-    "type": "message",
-    "action": "connection"
+    "type": "response",
+    "action": "connection",
+    "success": true
 }
 ```
 
@@ -56,25 +46,23 @@ If it fails, you will receive one of the following:
 
 ```json
 {
-    "type": "message",
+    "type": "response",
     "action": "connection",
-    "error": {
-        "code": "unsupported_version"
-    }
+    "success": false,
+    "error": "unsupported_version"
 }
 ```
 
 ```json
 {
-    "type": "message",
+    "type": "response",
     "action": "connection",
-    "error": {
-        "code": "invalid_message"
-    }
+    "success": false,
+    "error": "invalid_message"
 }
 ```
 
-If a successful response is received from Focacciat, you may start doing stuff. Otherwise, you will just receive errors.
+If a successful response is received from Focacciat, you may start doing stuff. Otherwise, there is undefined behavior.
 
 ## ping
 
@@ -89,6 +77,7 @@ If a successful response is received from Focacciat, you may start doing stuff. 
 {
     "type": "response",
     "action": "ping",
+    "success": true
 }
 ```
 
@@ -111,6 +100,7 @@ If a successful response is received from Focacciat, you may start doing stuff. 
         "example.com",
         "example.org"
     ]
+    "success": true
 }
 ```
 
@@ -119,7 +109,7 @@ If a successful response is received from Focacciat, you may start doing stuff. 
 ```json
 {
     "type": "request",
-    "action": "blocklist.append",
+    "action": "blocklist.appendToCurrent",
     "data": ["example.net"]
 }
 ```
@@ -128,5 +118,17 @@ If a successful response is received from Focacciat, you may start doing stuff. 
 {
     "type": "response",
     "action": "blocklist.append",
+    "success": true
 }
 ```
+
+## Blocklist changed
+
+```json
+{
+    "type": "message",
+    "message": "blocklist.changed"
+}
+```
+
+You will need to call blocklist.get yourself.
