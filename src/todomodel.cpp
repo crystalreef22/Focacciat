@@ -34,8 +34,7 @@ int TodoModel::rowCount(const QModelIndex &parent) const
     return m_list.size();
 }
 
-QVariant TodoModel::data(const QModelIndex &index, int role) const
-{
+QVariant TodoModel::data(const QModelIndex &index, int role) const {
     if (!index.isValid())
         return QVariant();
 
@@ -52,8 +51,7 @@ QVariant TodoModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int role)
-{
+bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int role) {
     TodoItem *const item = m_list.at(index.row());
     switch (role) {
     case ItemRole:
@@ -95,8 +93,7 @@ bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int rol
     return false;
 }
 
-Qt::ItemFlags TodoModel::flags(const QModelIndex &index) const
-{
+Qt::ItemFlags TodoModel::flags(const QModelIndex &index) const {
     if (!index.isValid())
         return Qt::NoItemFlags;
 
@@ -104,8 +101,7 @@ Qt::ItemFlags TodoModel::flags(const QModelIndex &index) const
     // in tutorial it was just return Qt::ItemIsEditable
 }
 
-QHash<int, QByteArray> TodoModel::roleNames() const
-{
+QHash<int, QByteArray> TodoModel::roleNames() const {
     QHash<int, QByteArray> names;
     names[ItemRole] = "item";
     names[ActiveRole] = "active";
@@ -113,16 +109,16 @@ QHash<int, QByteArray> TodoModel::roleNames() const
     return names;
 }
 
-void TodoModel::appendItem()
-{
+void TodoModel::appendItem() {
     const int index = m_list.size();
     beginInsertRows(QModelIndex{}, index, index);
-    m_list.append(new TodoItem(this));
+    auto x = new TodoItem(this);
+    m_list.append(x);
     endInsertRows();
+    connect(x, &TodoItem::timeRemainingChanged, this, &TodoModel::totalTimeLeftChanged);
 }
 
-void TodoModel::removeCompletedItems()
-{
+void TodoModel::removeCompletedItems() {
     // make sure to clear active index if removed
     if (m_activeIndex.isValid() && m_list.at(m_activeIndex.row())->done()) {
         m_activeIndex = QPersistentModelIndex{};
@@ -136,6 +132,7 @@ void TodoModel::removeCompletedItems()
         if (m_list.at(i)->done()) {
             beginRemoveRows(QModelIndex{}, i, i);
             m_list.at(i)->deleteLater();
+            // m_list.at(i)->disconnect(this); might be needed if i ever make it so you can move between
             m_list.removeAt(i);
             endRemoveRows();
         } else {
@@ -144,8 +141,7 @@ void TodoModel::removeCompletedItems()
     }
 }
 
-bool TodoModel::moveItem(int fromIndex, int toIndex)
-{
+bool TodoModel::moveItem(int fromIndex, int toIndex) {
     if (fromIndex >= m_list.length() || toIndex >= m_list.length() || fromIndex < 0 || toIndex < 0
         || fromIndex == toIndex)
         return false;
@@ -160,8 +156,7 @@ bool TodoModel::moveItem(int fromIndex, int toIndex)
     return true;
 }
 
-long long TodoModel::pausedTime()
-{
+long long TodoModel::pausedTime() {
     return m_pausedTime;
 }
 
@@ -169,6 +164,17 @@ void TodoModel::setPausedTime(long long value) {
     m_pausedTime = value;
     m_pausedLastResetTime = QDateTime::currentMSecsSinceEpoch() - m_pausedTime;
     emit pausedTimeChanged();
+}
+
+long long TodoModel::totalTimeLeft() const {
+    long long sum = 0;
+    for (const TodoItem * item : std::as_const(m_list)) {
+        auto remaining = item->timeRemaining();
+        if ((! item->done()) && remaining > 0) {
+            sum += remaining;
+        }
+    }
+    return sum;
 }
 
 QJsonObject TodoModel::serialize() const {
@@ -198,40 +204,37 @@ void TodoModel::deserialize(const QJsonObject& json) {
     m_list = {};
     m_list.reserve(todoItemsJson.size());
     for (const QJsonValue& todoItemJson : todoItemsJson) {
-        m_list.append(TodoItem::deserialize(todoItemJson.toObject(), this));
+        auto x = TodoItem::deserialize(todoItemJson.toObject(), this);
+        m_list.append(x);
+        connect(x, &TodoItem::timeRemainingChanged, this, &TodoModel::totalTimeLeftChanged);
     }
     endResetModel();
     // TODO: serialize active index
 }
 
-void TodoModel::updatePausedTime()
-{
+void TodoModel::updatePausedTime() {
     m_pausedTime = QDateTime::currentMSecsSinceEpoch() - m_pausedLastResetTime;
     emit pausedTimeChanged();
 }
 
-void TodoModel::resetPausedTime()
-{
+void TodoModel::resetPausedTime() {
     m_pausedLastResetTime = QDateTime::currentMSecsSinceEpoch();
     m_pausedTime = 0;
     emit pausedTimeChanged();
 }
 
-TodoItem *TodoModel::activeItem() const
-{
+TodoItem *TodoModel::activeItem() const {
     if (m_activeIndex.isValid())
         return m_list.at(m_activeIndex.row());
     else
         return nullptr;
 }
 
-bool TodoModel::paused() const
-{
+bool TodoModel::paused() const {
     return m_paused;
 }
 
-bool TodoModel::setPaused(bool value)
-{
+bool TodoModel::setPaused(bool value) {
     if (m_paused == value)
         return false;
     TodoItem *item = activeItem();

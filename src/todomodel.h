@@ -15,6 +15,7 @@ class TodoModel : public QAbstractListModel
     Q_PROPERTY(TodoItem *activeItem READ activeItem NOTIFY activeItemChanged FINAL)
     Q_PROPERTY(bool paused READ paused WRITE setPaused NOTIFY pausedChanged FINAL)
     Q_PROPERTY(long long pausedTime READ pausedTime WRITE setPausedTime NOTIFY pausedTimeChanged FINAL)
+    Q_PROPERTY(long long totalTimeLeft READ totalTimeLeft NOTIFY totalTimeLeftChanged FINAL)
     QML_ELEMENT
     QML_UNCREATABLE("Managed by GlobalState.h")
 
@@ -46,6 +47,8 @@ public:
     long long pausedTime();
     void setPausedTime(long long value);
 
+    long long totalTimeLeft() const;
+
 
     QJsonObject serialize() const;
     void deserialize(const QJsonObject& json);
@@ -55,6 +58,8 @@ signals:
     void pausedChanged();
     void pausedTimeChanged();
     void activeBlocklistChanged();
+
+    void totalTimeLeftChanged();
 
 public slots:
     void appendItem();

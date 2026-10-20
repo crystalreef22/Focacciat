@@ -195,17 +195,22 @@ ColumnLayout {
 
     }
 
-    RowLayout {
+    ColumnLayout {
         Layout.alignment: Qt.AlignBottom
-        Button {
-            text: qsTr("Add")
-            onClicked: GlobalState.todoModel.appendItem()
-            Layout.fillWidth: true
+        Text {
+            text: FormatUtils.msToTime(GlobalState.todoModel.totalTimeLeft) + qsTr(" left");
         }
-        Button {
-            text: qsTr("Remove checked")
-            onClicked: GlobalState.todoModel.removeCompletedItems()
-            Layout.fillWidth: true
+        RowLayout {
+            Button {
+                text: qsTr("Add")
+                onClicked: GlobalState.todoModel.appendItem()
+                Layout.fillWidth: true
+            }
+            Button {
+                text: qsTr("Remove checked")
+                onClicked: GlobalState.todoModel.removeCompletedItems()
+                Layout.fillWidth: true
+            }
         }
     }
 }
