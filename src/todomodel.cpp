@@ -116,6 +116,7 @@ void TodoModel::appendItem() {
     m_list.append(x);
     endInsertRows();
     connect(x, &TodoItem::timeRemainingChanged, this, &TodoModel::totalTimeLeftChanged);
+    connect(x, &TodoItem::doneChanged, this, &TodoModel::totalTimeLeftChanged); // works without this idk why
 }
 
 void TodoModel::removeCompletedItems() {
@@ -207,6 +208,7 @@ void TodoModel::deserialize(const QJsonObject& json) {
         auto x = TodoItem::deserialize(todoItemJson.toObject(), this);
         m_list.append(x);
         connect(x, &TodoItem::timeRemainingChanged, this, &TodoModel::totalTimeLeftChanged);
+        connect(x, &TodoItem::doneChanged, this, &TodoModel::totalTimeLeftChanged);
     }
     endResetModel();
     // TODO: serialize active index
