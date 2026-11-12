@@ -235,8 +235,9 @@ Item {
         property real progress: GlobalState.todoModel.activeItem ? (GlobalState.todoModel.activeItem.timeElapsed / GlobalState.todoModel.activeItem.timeEstimate) : 0
         anchors.fill: progressCircle
         // anti alias
-        layer.enabled: true
-        layer.samples: 4
+        //layer.enabled: true
+        //layer.samples: 4
+        preferredRendererType: Shape.CurveRenderer
         ShapePath {
             id: pcpath
             strokeColor: myPalette.accent
