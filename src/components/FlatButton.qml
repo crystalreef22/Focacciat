@@ -62,6 +62,8 @@ AbstractButton {
             maskEnabled: true
             maskSource: bgrect
             anchors.fill: bgrect
+            maskThresholdMin: 0.5
+            maskSpreadAtMin: 1.0
         }
         }
         Item {
