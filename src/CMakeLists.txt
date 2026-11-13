@@ -116,7 +116,7 @@ qt_generate_deploy_qml_app_script(
 install(SCRIPT ${deploy_script})
 
 if(APPLE)
-install(CODE "execute_process(COMMAND codesign --deep --force --sign - \"${CMAKE_INSTALL_PREFIX}/Focacciat.app\")")
+install(CODE "execute_process(COMMAND codesign --deep --force --sign - \"\${CMAKE_INSTALL_PREFIX}/Focacciat.app\")")
 endif()
 
 install(CODE "message(\"it hopefully works but honestly id not be surprised if it doesnt\")")
