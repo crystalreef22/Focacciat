@@ -27,3 +27,8 @@ set_target_properties(extensionhost PROPERTIES
     WIN32_EXECUTABLE FALSE
 )
 # set_target_properties(extensionhost-test PROPERTIES MACOSX_BUNDLE FALSE WIN32_EXECUTABLE TRUE )
+
+# https://github.com/keepassxreboot/keepassxc/blob/develop/src/proxy/CMakeLists.txt
+install(TARGETS extensionhost
+        BUNDLE DESTINATION .
+        RUNTIME DESTINATION ${HOST_INSTALL_DIR})

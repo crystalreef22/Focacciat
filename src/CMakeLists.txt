@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(Focacciat VERSION 0.1 LANGUAGES CXX)
+project(Focacciat VERSION 0.2 LANGUAGES CXX OBJCXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -16,19 +16,19 @@ qt_policy(SET QTP0002 NEW)
 qt_policy(SET QTP0003 NEW)
 qt_policy(SET QTP0004 NEW)
 
-add_subdirectory(extensionhost)  # FIXME: extensionintegration
-
-# FIXME
 if(APPLE)
-set(MACOSX_BUNDLE_ICON_FILE focacciaticon.icns)
-set(MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist")
+set(HOST_INSTALL_DIR "Focacciat.app/Contents/MacOS")
+endif()
+add_subdirectory(extensionhost)
+
+if(APPLE)
 set(app_icon_macos "${CMAKE_CURRENT_SOURCE_DIR}/assets/icons/focacciaticon.icns")
 set_source_files_properties(${app_icon_macos} PROPERTIES
        MACOSX_PACKAGE_LOCATION "Resources")
 set(extensionhost_binary "${extensionhost_BINARY_DIR}/extensionhost")
 set_source_files_properties(${extensionhost_binary} PROPERTIES
        MACOSX_PACKAGE_LOCATION "MacOS")
-   qt_add_executable(Focacciat MACOSX_BUNDLE main.cpp ${app_icon_macos} ${extensionhost_binary})
+   qt_add_executable(Focacciat MACOSX_BUNDLE main.cpp ${app_icon_macos} )#${extensionhost_binary})
 else()
 qt_add_executable(Focacciat
     main.cpp
@@ -64,7 +64,7 @@ qt_add_qml_module(Focacciat
         components/abstracttimeinput.h components/abstracttimeinput.cpp
         formatutils.h formatutils.cpp
         globalstate.h globalstate.cpp
-        maskedapplicationwindow.h maskedapplicationwindow.cpp
+        maskedapplicationwindow.h maskedapplicationwindow.mm
         projectitem.h projectitem.cpp
         projectmodel.h projectmodel.cpp
         projectprogressmodel.h projectprogressmodel.cpp
@@ -81,7 +81,9 @@ qt_add_qml_module(Focacciat
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.
 set_target_properties(Focacciat PROPERTIES
+    MACOSX_BUNDLE_BUNDLE_NAME Focacciat
     MACOSX_BUNDLE_GUI_IDENTIFIER com.cryref.Focacciat
+    MACOSX_BUNDLE_ICON_FILE focacciaticon.icns
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
     MACOSX_BUNDLE TRUE
@@ -93,9 +95,7 @@ endif()
 
 target_link_libraries(Focacciat PRIVATE Qt6::Quick)
 target_link_libraries(Focacciat PRIVATE Qt6::Network)
-target_link_libraries(Focacciat PRIVATE Qt6::Core Qt6::Widgets)
-target_link_libraries(Focacciat PRIVATE Qt6::Core)
-target_link_libraries(Focacciat PRIVATE Qt6::Core)
+target_link_libraries(Focacciat PRIVATE Qt6::Core Qt6::Widgets) # FIXME: is widgets needed? idk the ide autogenned it
 target_link_libraries(Focacciat PRIVATE Qt6::Gui)
 
 include(GNUInstallDirs)
@@ -114,3 +114,9 @@ qt_generate_deploy_qml_app_script(
     NO_TRANSLATIONS
 )
 install(SCRIPT ${deploy_script})
+
+if(APPLE)
+install(CODE "execute_process(COMMAND codesign --deep --force --sign - \"${CMAKE_INSTALL_PREFIX}/Focacciat.app\")")
+endif()
+
+install(CODE "message(\"it hopefully works but honestly id not be surprised if it doesnt\")")
