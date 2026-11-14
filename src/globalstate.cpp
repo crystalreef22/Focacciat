@@ -14,6 +14,7 @@ GlobalState::GlobalState()
     m_saveTimer.setTimerType(Qt::VeryCoarseTimer);
     m_saveTimer.setInterval(1000*60*3);
     connect(&m_saveTimer, &QTimer::timeout, this, &GlobalState::serializeToFile);
+    m_blocklistManager->connectToTodoModel(m_todoModel);
 }
 
 GlobalState* GlobalState::instance() {
@@ -77,7 +78,4 @@ bool GlobalState::deserializeFromFile() {
     return true;
 }
 
-QModelIndex GlobalState::constructInvalidQModelIndex() {
-    return QModelIndex();
-}
 

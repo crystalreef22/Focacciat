@@ -7,6 +7,7 @@
 #include "blocklist.h"
 
 class QUuid;
+class TodoModel;
 
 class BlocklistManager : public QAbstractListModel
 {
@@ -20,7 +21,7 @@ public:
     BlocklistManager (const BlocklistManager&) = delete;
     BlocklistManager& operator=(const BlocklistManager&) = delete;
     ~BlocklistManager();
-    void connectToTodoModel();
+    void connectToTodoModel(TodoModel* todoModel);
 
     enum Roles {
         NameRole = Qt::UserRole,

@@ -86,7 +86,7 @@ Popup {
                             TextArea {
                                 id: websiteListEditor
                                 text: model.websiteList
-                                onEditingFinished: model.item.websiteList = text
+                                onEditingFinished: model.websiteList = text
                                 Keys.onTabPressed: nextItemInFocusChain().forceActiveFocus(Qt.TabFocusReason)
                             }
                         }

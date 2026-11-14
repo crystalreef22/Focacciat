@@ -35,7 +35,7 @@ bool ExtensionClient::sendBlocklist() const {
             {"type", "response"},
             {"action", "blocklist.get"},
             {"name", blocklist ? blocklist->name() : "None"},
-            {"data", blocklist ? QJsonArray::fromStringList(blocklist->websiteList().split("\n")) : QJsonArray{}}
+            {"data", blocklist ? QJsonArray::fromStringList(blocklist->websiteList().split("\n", Qt::SkipEmptyParts)) : QJsonArray{}}
         }
     };
     return sendJson(obj);

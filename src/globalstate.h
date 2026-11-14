@@ -28,7 +28,7 @@ public:
     BlocklistManager* blocklistManager();
     Q_INVOKABLE bool serializeToFile();
     Q_INVOKABLE bool deserializeFromFile();
-    Q_INVOKABLE QModelIndex constructInvalidQModelIndex();
+    Q_INVOKABLE inline QModelIndex constructInvalidQModelIndex() { return QModelIndex(); }
 private:
     explicit GlobalState();
     TodoModel* m_todoModel;

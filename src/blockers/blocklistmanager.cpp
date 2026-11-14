@@ -19,10 +19,12 @@ BlocklistManager::~BlocklistManager() {
     }
 }
 
-void BlocklistManager::connectToTodoModel() {
-    connect(GlobalState::instance()->todoModel(), &TodoModel::activeBlocklistChanged, this, [this]{
-        setActiveIndex(GlobalState::instance()->todoModel()->activeItem()->blocklistIndex());
-    });
+void BlocklistManager::connectToTodoModel(TodoModel* todoModel) {
+    connect(todoModel, &TodoModel::activeBlocklistChanged, this, [this]{
+        auto ait = GlobalState::instance()->todoModel()->activeItem();
+        if (ait) setActiveIndex(ait->blocklistIndex());
+        else setActiveIndex(QModelIndex{});
+    }); // TODO: might a qproperty be better?
 }
 
 int BlocklistManager::rowCount(const QModelIndex &parent) const
@@ -98,14 +100,19 @@ void BlocklistManager::setActiveIndex(QModelIndex index) {
             emit dataChanged(index, index, {ActiveRole});
             emit activeBlocklistModified();
         }
-    } else {
+    } else {/*
         if (m_activeIndex == index) {
             // deactivate
             m_activeIndex = QPersistentModelIndex{};
             emit activeIndexChanged();
             emit dataChanged(index, index, {ActiveRole});
             emit activeBlocklistModified();
-        }
+        }*/
+        // deactivate
+        m_activeIndex = QPersistentModelIndex{};
+        emit activeIndexChanged();
+        emit dataChanged(index, index, {ActiveRole});
+        emit activeBlocklistModified();
     }
 }
 

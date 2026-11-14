@@ -1,5 +1,6 @@
 #include "blocklist.h"
 #include <QJsonObject>
+#include <QDebug>
 
 Blocklist::Blocklist()
     :m_UUID{QUuid::createUuid()}
@@ -26,6 +27,7 @@ void Blocklist::setName(const QString& value) {
 }
 void Blocklist::setWebsiteList(const QString& websiteList) {
     m_websiteList = websiteList;
+    qInfo() << "oe" << websiteList;
 }
 
 void Blocklist::appendWebsites(const QStringList& values) {
