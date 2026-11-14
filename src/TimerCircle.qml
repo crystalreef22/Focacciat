@@ -10,9 +10,8 @@ Item {
     Shape {
         id: progressCircle
         anchors.fill: parent
-        // anti alias
         layer.enabled: true
-        layer.samples: 4
+        preferredRendererType: Shape.CurveRenderer
         ShapePath {
             fillColor: myPalette.base
             strokeWidth: 0
@@ -164,6 +163,7 @@ Item {
                     Layout.topMargin: 3
                     Layout.alignment: Qt.AlignHCenter
                     text: FormatUtils.msToTime(GlobalState.todoModel.pausedTime)
+                    font.features: {"tnum": 1}
                 }
                 Text {
                     Layout.alignment: Qt.AlignHCenter

@@ -9,8 +9,7 @@ set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64")
 
 find_package(Qt6 REQUIRED COMPONENTS Core Quick Network Widgets Gui)
 
-qt_standard_project_setup(REQUIRES 6.8) # Older versions MAY work, but you would
-                                        # need to set necessary qt_policies
+qt_standard_project_setup(REQUIRES 6.12) # qt 6.9 might work, qt 6.8 works with code edits
 qt_policy(SET QTP0001 NEW)
 qt_policy(SET QTP0002 NEW)
 qt_policy(SET QTP0003 NEW)
