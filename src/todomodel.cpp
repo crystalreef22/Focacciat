@@ -70,14 +70,16 @@ bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int rol
             if (oldIndex.isValid())
                 emit dataChanged(oldIndex, oldIndex, {ActiveRole});
             emit dataChanged(index, index, {ActiveRole});
-            emit activeBlocklistChanged();
+
+            TodoItem *const newItem = m_list.at(index.row());
+            emit activeBlocklistChanged(newItem->blocklistIndex());
         } else {
             if (m_activeIndex == index) {
                 // deactivate
                 m_activeIndex = QPersistentModelIndex{};
                 emit dataChanged(index, index, {ActiveRole});
                 emit activeItemChanged();
-                emit activeBlocklistChanged();
+                emit activeBlocklistChanged(QModelIndex{}); // clear it
             }
         }
         return true;
@@ -86,7 +88,7 @@ bool TodoModel::setData(const QModelIndex &index, const QVariant &value, int rol
         item->setBlocklistIndex(value.toPersistentModelIndex());
         emit dataChanged(index, index, {BlocklistIndexRole});
         if (index.row() == m_activeIndex.row())
-            emit activeBlocklistChanged();
+            emit activeBlocklistChanged(value.toModelIndex());
         return true;
     }
 

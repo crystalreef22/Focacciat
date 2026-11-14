@@ -57,7 +57,7 @@ signals:
     void activeItemChanged();
     void pausedChanged();
     void pausedTimeChanged();
-    void activeBlocklistChanged();
+    void activeBlocklistChanged(QModelIndex idx);
 
     void totalTimeLeftChanged();
 

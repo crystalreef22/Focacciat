@@ -20,11 +20,7 @@ BlocklistManager::~BlocklistManager() {
 }
 
 void BlocklistManager::connectToTodoModel(TodoModel* todoModel) {
-    connect(todoModel, &TodoModel::activeBlocklistChanged, this, [this]{
-        auto ait = GlobalState::instance()->todoModel()->activeItem();
-        if (ait) setActiveIndex(ait->blocklistIndex());
-        else setActiveIndex(QModelIndex{});
-    }); // TODO: might a qproperty be better?
+    connect(todoModel, &TodoModel::activeBlocklistChanged, this, &BlocklistManager::setActiveIndex); // TODO: might a qproperty be better?
 }
 
 int BlocklistManager::rowCount(const QModelIndex &parent) const
@@ -197,7 +193,7 @@ void BlocklistManager::deserialize(const QJsonObject &json) {
     }
     endResetModel();
     emit activeBlocklistModified();// TODO: only emit when needed
-    emit activeIndexChanged(); // todo: serialize active item// TODO: only emit when needed
+    emit activeIndexChanged(); // todo: serialize active item wait thats not needed since it will be reloaddadaddkfaljkhawelkjef wfewouht i need to touch grass // TODO: only emit when needed
 }
 
 
