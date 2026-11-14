@@ -4,6 +4,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Effects
 import QtQuick.Controls.impl
+import Focacciat 1.0
 
 Item {
     height: width;
@@ -147,7 +148,7 @@ Item {
                     anchors.horizontalCenter: parent.horizontalCenter
                     editorFlags: AbstractTimeInput.NoSeconds
                     time: GlobalState.todoModel.activeItem?.timeEstimate / 1000
-                    onEditingFinished: ()=>{ if(GlobalState.todoModel.activeItem) {GlobalState.todoModel.activeItem.timeEstimate = time * 1000} }
+                    onEditingFinished: { if(GlobalState.todoModel.activeItem) {GlobalState.todoModel.activeItem.timeEstimate = time * 1000} }
                 }
             }
         }
@@ -266,15 +267,14 @@ Item {
         }
         FlatButton{
             id: stopButton
-            enabled: GlobalState.todoModel.activeItem.timeElapsed !== 0;
             icon.name: "stop"
-            holdable: true
-            onHoldDone: () => {
+            holdable: true;
+            enabled: GlobalState.todoModel.activeItem.timeElapsed !== 0;
+            onHoldDone: {
                 GlobalState.todoModel.paused = true;
                 GlobalState.todoModel.pausedTime += GlobalState.todoModel.activeItem.timeElapsed;
                 GlobalState.todoModel.activeItem.timeElapsed = 0;
-            };
-            margins: 2
+            }
         }
     }
 }
